@@ -15,6 +15,7 @@ assert.equal(ids.size, data.rikishi.length, "Rikishi IDs must be unique");
 assert(currentBasho, "The data layer needs a current banzuke");
 assert.equal(currentBasho.division, "Makuuchi", "The current banzuke must be Makuuchi");
 assert.equal(currentBasho.entries.length, currentBasho.expectedRikishi, "Every official entry must be present in the dataset");
+assert.equal(currentBasho.officialRikishi.length, currentBasho.expectedRikishi, "The untouched official source list must remain available for comparison");
 assert.equal(currentBasho.entries.length, 42, "Nagoya 2026 must contain all 42 Makuuchi rikishi");
 assert.deepEqual(
   [...new Set(currentBasho.entries.map((entry) => entry.rikishiId))].sort(),
@@ -26,26 +27,35 @@ assert.equal(currentBasho.entries.filter((entry) => entry.side === "West").lengt
 assert(currentBasho.entries.some((entry) => entry.rank === "Maegashira 16" && entry.side === "East"), "M16 East must render");
 assert(currentBasho.entries.some((entry) => entry.rank === "Maegashira 16" && entry.side === "West"), "M16 West must render");
 assert.equal(currentBasho.entries.filter((entry) => entry.rank === "Sekiwake").length, 4, "Variable Sekiwake seats must remain in the data");
+assert(currentBasho.entries.some((entry) => entry.shikona === "Yoshinofuji"), "Yoshinofuji must reach the parsed dataset");
+assert.deepEqual(
+  [...new Set(currentBasho.officialRikishi.map((entry) => entry.shikona))].sort(),
+  [...new Set(currentBasho.entries.map((entry) => entry.shikona))].sort(),
+  "Official and parsed shikona sets must match exactly",
+);
 assert.equal(data.meta.totalDays, 15, "A basho has fifteen days");
+assert.equal(data.meta.day, 0, "Version 2 must begin before Day 1");
 assert.equal(data.players.length, 2, "The league has exactly two players");
 assert.deepEqual([...data.players.map((player) => player.id)].sort(), ["gwazy", "jake"], "Only Gwazy and Jake may be players");
 
 for (const player of data.players) {
-  assert.equal(player.team.length, 6, `${player.name} must have six starters`);
-  assert.equal(player.subs.length, 3, `${player.name} must have three substitutes`);
+  assert.equal(player.team.length, 0, `${player.name} must start a new basho with zero starters`);
+  assert.equal(player.subs.length, 0, `${player.name} must start a new basho with zero substitutes`);
+  assert.equal(player.score, 0, `${player.name} must start with zero points`);
+  assert.equal(player.today, 0, `${player.name} must start with zero daily points`);
+  assert.equal(player.sidePrediction, null, `${player.name} must start without a side prediction`);
+  assert.equal(player.favouriteWrestler, "", `${player.name} must start without a favourite wrestler`);
+  assert.equal(player.daily.length, 0, `${player.name} must start without timeline data`);
+  assert(!Object.hasOwn(player, "projection"), `${player.name} must not have forecast seed data`);
   for (const id of [...player.team, ...player.subs]) {
     assert(ids.has(id), `${player.name} references unknown rikishi: ${id}`);
   }
-  const starters = player.team.map((id) => data.rikishi.find((rikishi) => rikishi.id === id));
-  const sanyaku = starters.filter((rikishi) => ["Yokozuna", "Ozeki", "Sekiwake", "Komusubi"].includes(rikishi.rank));
-  const underdogs = starters.filter((rikishi) => /Maegashira (1[3-7])/.test(rikishi.rank));
-  assert(sanyaku.length <= 2, `${player.name} may have at most two Komusubi+ starters`);
-  assert.equal(underdogs.length, 1, `${player.name} must have exactly one M13–M17 underdog`);
-  assert(["East", "West"].includes(player.sidePrediction), `${player.name} needs an independent side prediction`);
-  assert(ids.has(player.favouriteWrestler), `${player.name} references an unknown favourite wrestler`);
 }
 
-assert.notEqual(data.players[0].sidePrediction, data.players[1].sidePrediction, "Seed predictions should demonstrate player isolation");
+assert(data.rikishi.every((rikishi) => rikishi.record === "0–0" && rikishi.wins === 0 && rikishi.losses === 0 && rikishi.points === 0), "Every rikishi must start with a blank basho record");
+assert(data.rikishi.every((rikishi) => rikishi.available), "Every current Makuuchi rikishi must start available");
+assert.equal(data.bouts.length, 0, "Version 2 must not ship match history");
+assert.equal(data.history.length, 0, "Version 2 must not ship previous basho history");
 
 for (const bout of data.bouts) {
   assert(ids.has(bout.east), `Bout references unknown east rikishi: ${bout.east}`);
@@ -81,14 +91,20 @@ for (const match of [...app.matchAll(/assets\/[^"']+/g)]) {
 assert(css.includes("@media (max-width: 620px)"), "Small-screen breakpoint must be present");
 assert(css.includes("prefers-reduced-motion"), "Reduced-motion support must be present");
 assert(html.includes('id="active-player-select"'), "The header needs a player selector");
-assert(app.includes('localStorage.setItem("sumoBattleSettings"'), "Player state must persist locally");
+assert(app.includes("localStorage.setItem(SETTINGS_STORAGE_KEY"), "Player state must persist locally");
+assert(app.includes("APP_SAVE_VERSION = 2"), "Version 2 must have an explicit save migration version");
+assert(app.includes("data-overview-empty") && app.includes("data-history-empty"), "Blank Overview and History states must be present");
 for (const capability of ["data-add-pick", "data-roster-move", "data-swap-pick", "data-history-edit", "calculateHistoryStats", "sidePrediction"]) {
   assert(app.includes(capability), `Missing player-system capability: ${capability}`);
 }
-for (const capability of ["banzukeRankRows", "data-banzuke-id", "applyBanzukeFilters", "verifyBanzukeIntegrity", "rikishi missing from rendered banzuke"]) {
+for (const capability of ["DRAFT_SCHEMA_VERSION", "normalizeDrafts", "draftOwner", "draftPoolStats", "data-draft-owner", "data-overview-roster", "draft-owner-gwazy", "draft-owner-jake"]) {
+  assert(app.includes(capability) || css.includes(capability), `Missing shared-draft capability: ${capability}`);
+}
+for (const capability of ["banzukeRankRows", "data-banzuke-id", "data-banzuke-shikona", "applyBanzukeFilters", "verifyBanzukeIntegrity", "rikishi missing from rendered banzuke", "Rendered ✗", "Not parsed", "console.error"]) {
   assert(app.includes(capability), `Missing complete-banzuke capability: ${capability}`);
 }
 assert(!app.includes("const pairs = ["), "Banzuke rows must not be hardcoded in the view");
+assert(!app.includes("byPosition.get(key)[entry.side] = entry"), "Same-rank, same-side wrestlers must never overwrite each other");
 assert(data.rikishi.every((rikishi) => rikishi.photo?.includes("sumo.or.jp/img/sumo_data/rikishi/")), "Every Makuuchi rikishi needs an official photo");
 assert(data.rikishi.every((rikishi) => rikishi.id && rikishi.shikona && rikishi.jsaId && rikishi.jsaPortrait && rikishi.wikipedia), "Every rikishi needs stable image-resolver metadata");
 assert(app.includes('loading="lazy"') && app.includes("data-rikishi-image"), "Rikishi images must use lazy resolver markup");

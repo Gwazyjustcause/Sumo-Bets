@@ -20,15 +20,56 @@ const icons = {
   pulse: "⌁",
 };
 
+const APP_SAVE_VERSION = 2;
+const DRAFT_SCHEMA_VERSION = 2;
+const SETTINGS_STORAGE_KEY = "sumoBattleSettings";
+const HISTORY_STORAGE_KEY = "sumoBattleHistoryCache";
+
 const defaultPlayers = Object.fromEntries(
   data.players.map((player) => [player.id, {
-    mainPicks: [...player.team],
-    substitutes: [...player.subs],
     sidePrediction: player.sidePrediction || null,
     favouriteWrestler: player.favouriteWrestler || "",
     notes: "",
   }]),
 );
+
+function emptyDraftPlayers() {
+  return Object.fromEntries(data.players.map((player) => [player.id, {
+    mainPicks: [],
+    substitutes: [],
+  }]));
+}
+
+function emptyDrafts() {
+  return Object.fromEntries(data.banzuke.bashos.map((basho) => [basho.id, emptyDraftPlayers()]));
+}
+
+function normalizeDrafts(saved) {
+  const drafts = emptyDrafts();
+  if (saved.draftSchemaVersion !== DRAFT_SCHEMA_VERSION || !saved.drafts) return drafts;
+
+  data.banzuke.bashos.forEach((basho) => {
+    const validIds = new Set(basho.entries.map((entry) => entry.rikishiId));
+    const owned = new Set();
+    data.players.forEach((player) => {
+      const stored = saved.drafts?.[basho.id]?.[player.id] || {};
+      const normalizeList = (values, limit) => {
+        const result = [];
+        (Array.isArray(values) ? values : []).forEach((id) => {
+          if (result.length >= limit || !validIds.has(id) || owned.has(id)) return;
+          owned.add(id);
+          result.push(id);
+        });
+        return result;
+      };
+      drafts[basho.id][player.id] = {
+        mainPicks: normalizeList(stored.mainPicks, 6),
+        substitutes: normalizeList(stored.substitutes, 3),
+      };
+    });
+  });
+  return drafts;
+}
 
 const defaults = {
   theme: "midnight",
@@ -37,23 +78,31 @@ const defaults = {
   compact: false,
   activePlayer: "gwazy",
   selectedBashoId: data.banzuke?.currentBashoId || "",
-  selectedDay: data.meta.day,
+  selectedDay: Math.max(1, data.meta.day),
   players: defaultPlayers,
+  appVersion: APP_SAVE_VERSION,
+  draftSchemaVersion: DRAFT_SCHEMA_VERSION,
+  drafts: emptyDrafts(),
   history: JSON.parse(JSON.stringify(data.history)),
 };
 
 const readState = () => {
   try {
-    const saved = JSON.parse(localStorage.getItem("sumoBattleSettings") || "{}");
+    const stored = JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) || "{}");
+    const compatible = stored.appVersion === APP_SAVE_VERSION;
+    if (!compatible) {
+      localStorage.removeItem(SETTINGS_STORAGE_KEY);
+      localStorage.removeItem(HISTORY_STORAGE_KEY);
+    }
+    const saved = compatible ? stored : {};
     const players = Object.fromEntries(data.players.map((player) => {
-      const legacy = saved.roster?.[player.id];
       const stored = saved.players?.[player.id] || {};
       const base = defaultPlayers[player.id];
       return [player.id, {
         ...base,
         ...stored,
-        mainPicks: [...(stored.mainPicks || legacy?.team || base.mainPicks)],
-        substitutes: [...(stored.substitutes || legacy?.subs || base.substitutes)],
+        mainPicks: undefined,
+        substitutes: undefined,
       }];
     }));
     if (!saved.players && saved.bonusPrediction && players[saved.activePlayer || "gwazy"]) {
@@ -78,8 +127,11 @@ const readState = () => {
     const selectedBashoId = data.banzuke?.bashos.some((basho) => basho.id === saved.selectedBashoId)
       ? saved.selectedBashoId
       : defaults.selectedBashoId;
-    return { ...defaults, ...saved, activePlayer, selectedBashoId, players, history };
+    const drafts = normalizeDrafts(saved);
+    return { ...defaults, ...saved, appVersion: APP_SAVE_VERSION, activePlayer, selectedBashoId, players, drafts, draftSchemaVersion: DRAFT_SCHEMA_VERSION, history };
   } catch {
+    localStorage.removeItem(SETTINGS_STORAGE_KEY);
+    localStorage.removeItem(HISTORY_STORAGE_KEY);
     return JSON.parse(JSON.stringify(defaults));
   }
 };
@@ -92,12 +144,15 @@ let banzukeProfileTimer = null;
 
 function saveState() {
   try {
-    localStorage.setItem("sumoBattleSettings", JSON.stringify(state));
-    localStorage.setItem("sumoBattleHistoryCache", JSON.stringify({ updated: new Date().toISOString(), events: state.history }));
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify({ version: APP_SAVE_VERSION, updated: new Date().toISOString(), events: state.history }));
   } catch {
     showToast("This browser is blocking local saves.");
   }
 }
+
+// Persist a clean Version 2 save immediately after any one-time migration.
+saveState();
 
 function getPlayerDefinition(id = state.activePlayer) {
   return data.players.find((player) => player.id === id);
@@ -107,9 +162,32 @@ function getPlayerState(id = state.activePlayer) {
   return state.players[id];
 }
 
-function getRoster(id = state.activePlayer) {
-  const player = getPlayerState(id);
-  return { team: player.mainPicks, subs: player.substitutes };
+function getRoster(id = state.activePlayer, bashoId = state.selectedBashoId) {
+  if (!state.drafts[bashoId]) state.drafts[bashoId] = emptyDraftPlayers();
+  if (!state.drafts[bashoId][id]) state.drafts[bashoId][id] = { mainPicks: [], substitutes: [] };
+  const draft = state.drafts[bashoId][id];
+  return { team: draft.mainPicks, subs: draft.substitutes };
+}
+
+function draftOwner(rikishiId, bashoId = state.selectedBashoId) {
+  return data.players.find((player) => {
+    const roster = getRoster(player.id, bashoId);
+    return roster.team.includes(rikishiId) || roster.subs.includes(rikishiId);
+  })?.id || null;
+}
+
+function draftPoolStats(basho = selectedBasho()) {
+  const counts = Object.fromEntries(data.players.map((player) => {
+    const roster = getRoster(player.id, basho.id);
+    return [player.id, new Set([...roster.team, ...roster.subs]).size];
+  }));
+  const drafted = Object.values(counts).reduce((sum, count) => sum + count, 0);
+  return {
+    total: basho.entries.length,
+    available: Math.max(0, basho.entries.length - drafted),
+    drafted,
+    counts,
+  };
 }
 
 function escapeHtml(value = "") {
@@ -228,66 +306,32 @@ function progressDots() {
 function scoreDuel() {
   const [gwazy, jake] = data.players;
   const lead = gwazy.score - jake.score;
+  const filledSlots = data.players.reduce((total, player) => {
+    const roster = getRoster(player.id);
+    return total + roster.team.length + roster.subs.length;
+  }, 0);
   return `
     <article class="score-duel glass-card reveal" aria-label="Current score: ${gwazy.name} ${gwazy.score}, ${jake.name} ${jake.score}">
-      <div class="duel-player leader">
+      <div class="duel-player ${lead > 0 ? "leader" : ""}">
         <span class="player-avatar violet">${gwazy.initials}</span>
         <div>
-          <div class="duel-label"><span class="live-chip">LEADING</span>${gwazy.name}</div>
+          <div class="duel-label">${lead > 0 ? '<span class="live-chip">LEADING</span>' : ""}${gwazy.name}</div>
           <strong class="count-up" data-value="${gwazy.score}">0</strong><small>PTS</small>
         </div>
       </div>
       <div class="duel-center">
-        <div class="lead-orb"><span>+${lead}</span><small>LEAD</small></div>
-        <p><b>${gwazy.projection}%</b> projected win</p>
+        <div class="lead-orb"><span>${lead ? `+${Math.abs(lead)}` : "0–0"}</span><small>${lead ? "LEAD" : "TIED"}</small></div>
+        <p><b>${filledSlots}</b> of 18 draft slots filled</p>
       </div>
-      <div class="duel-player right">
+      <div class="duel-player right ${lead < 0 ? "leader" : ""}">
         <div>
-          <div class="duel-label">${jake.name}</div>
+          <div class="duel-label">${jake.name}${lead < 0 ? '<span class="live-chip">LEADING</span>' : ""}</div>
           <strong class="count-up" data-value="${jake.score}">0</strong><small>PTS</small>
         </div>
         <span class="player-avatar gold">${jake.initials}</span>
       </div>
       <div class="duel-beam" aria-hidden="true"></div>
     </article>`;
-}
-
-function scoreBars() {
-  const max = Math.max(...data.players.map((player) => player.score));
-  return data.players
-    .map((player) => `
-      <div class="standing-row">
-        <div class="standing-meta"><strong>${player.name}</strong><span>+${player.today} today</span><b>${player.score}</b></div>
-        <div class="score-track"><span class="${player.color}" style="--width:${(player.score / max) * 100}%"></span></div>
-      </div>`)
-    .join("");
-}
-
-function lineChart() {
-  const width = 620;
-  const height = 160;
-  const maxScore = Math.max(...data.players.flatMap((player) => player.daily));
-  const paths = data.players.map((player) => {
-    const points = player.daily.map((value, index) => {
-      const x = 16 + (index / (player.daily.length - 1)) * (width - 32);
-      const y = height - 18 - (value / maxScore) * (height - 42);
-      return [x, y];
-    });
-    const path = points.map(([x, y], index) => `${index ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
-    return `<path class="chart-line ${player.color}" d="${path}" pathLength="1"></path>${points
-      .map(([x, y]) => `<circle class="chart-point ${player.color}" cx="${x}" cy="${y}" r="3"></circle>`)
-      .join("")}`;
-  });
-  return `
-    <div class="chart-wrap" role="img" aria-label="Score lead across tournament days">
-      <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" aria-hidden="true">
-        <line x1="16" y1="50" x2="604" y2="50"></line>
-        <line x1="16" y1="95" x2="604" y2="95"></line>
-        <line x1="16" y1="140" x2="604" y2="140"></line>
-        ${paths.join("")}
-      </svg>
-      <div class="chart-days">${Array.from({ length: 8 }, (_, i) => `<span>D${i + 1}</span>`).join("")}</div>
-    </div>`;
 }
 
 function boutCard(bout, compact = false) {
@@ -312,7 +356,8 @@ function boutCard(bout, compact = false) {
 }
 
 function rosterCard(rikishi, playerId, substitute = false) {
-  const heat = rikishi.form >= 75 ? "hot" : rikishi.form < 40 ? "cold" : "steady";
+  const hasResult = rikishi.wins + rikishi.losses + (rikishi.absences || 0) > 0;
+  const heat = !hasResult ? "unplayed" : rikishi.form >= 75 ? "hot" : rikishi.form < 40 ? "cold" : "steady";
   const isSwapSource = pendingSwap?.playerId === playerId && pendingSwap.rikishiId === rikishi.id;
   const isSwapTarget = pendingSwap?.playerId === playerId && pendingSwap.substitute !== substitute;
   return `
@@ -345,8 +390,52 @@ function compactPickCard(rikishi) {
     </button>`;
 }
 
+function overviewRosterSlots(player, ids, type, limit) {
+  const slots = Array.from({ length: limit }, (_, index) => {
+    const rikishi = getRikishi(ids[index]);
+    if (!rikishi) {
+      return `<div class="dashboard-pick-row empty" data-empty-draft-slot="${player.id}:${type}:${index + 1}">
+        <span class="dashboard-slot-number">${index + 1}</span>
+        <span class="dashboard-empty-avatar">+</span>
+        <span><b>Available slot</b><small>Draft from the Banzuke</small></span>
+      </div>`;
+    }
+    return `<button class="dashboard-pick-row" type="button" data-profile="${rikishi.id}">
+      <span class="dashboard-slot-number">${index + 1}</span>
+      ${wrestlerImage(rikishi)}
+      <span><b>${escapeHtml(rikishi.name)}</b><small>${escapeHtml(rikishi.rank)} · ${escapeHtml(rikishi.side)}</small></span>
+      <strong>${rikishi.points}<small> PTS</small></strong>
+    </button>`;
+  });
+  return slots.join("");
+}
+
+function overviewRosterDashboard(player) {
+  const roster = getRoster(player.id);
+  const prediction = getPlayerState(player.id).sidePrediction;
+  return `
+    <article class="team-preview overview-roster-column ${player.color}" data-overview-roster="${player.id}">
+      <div class="team-preview-head">
+        <span class="player-avatar ${player.color}">${player.initials}</span>
+        <div><small>${player.name.toUpperCase()}'S DRAFT</small><h3>${roster.team.length + roster.subs.length} / 9 slots filled</h3></div>
+        <strong>${player.score}</strong>
+      </div>
+      <div class="dashboard-team-meta"><span><small>CURRENT SCORE</small><b>${player.score} pts</b></span><span><small>SIDE PREDICTION</small><b>${prediction || "None"}</b></span></div>
+      <section class="dashboard-roster-section">
+        <div class="dashboard-roster-heading"><span>MAIN PICKS</span><b>${roster.team.length} / 6</b></div>
+        <div class="dashboard-roster-list">${overviewRosterSlots(player, roster.team, "main", 6)}</div>
+      </section>
+      <section class="dashboard-roster-section subs">
+        <div class="dashboard-roster-heading"><span>SUBSTITUTES</span><b>${roster.subs.length} / 3</b></div>
+        <div class="dashboard-roster-list">${overviewRosterSlots(player, roster.subs, "sub", 3)}</div>
+      </section>
+    </article>`;
+}
+
 function overviewView() {
-  const topBouts = data.bouts.slice(0, 4);
+  const basho = selectedBasho();
+  const pool = draftPoolStats(basho);
+  const draftStarted = pool.drafted > 0;
   return `
     <section class="overview-shell">
       <div class="hero-card reveal">
@@ -354,71 +443,28 @@ function overviewView() {
         <div class="hero-scrim"></div>
         <div class="hero-content">
           <div>
-            <p class="eyebrow"><span class="live-dot"></span> CURRENT BASHO</p>
+            <p class="eyebrow"><span class="live-dot"></span> UPCOMING BASHO</p>
             <h1>${data.meta.tournament}</h1>
             <p class="hero-detail"><span>${icons.calendar}</span> ${data.meta.dateRange}<span>${icons.pin}</span> ${data.meta.venue}</p>
           </div>
           <div class="basho-day">
-            <small>TOURNAMENT PROGRESS</small>
-            <strong>DAY ${data.meta.day}<span> / ${data.meta.totalDays}</span></strong>
-            <div class="day-progress">${progressDots()}</div>
+            <small>DRAFT PROGRESS</small>
+            <strong>${pool.drafted}<span> / 18 SLOTS</span></strong>
+            <div class="pre-basho-progress"><span style="--width:${(pool.drafted / 18) * 100}%"></span></div>
           </div>
         </div>
       </div>
 
-      ${scoreDuel()}
-
-      <div class="overview-grid">
-        <section class="glass-card standings-card reveal">
-          <div class="section-title">
-            <div><p class="eyebrow">LIVE SCORE</p><h2>Current standings</h2></div>
-            <span class="sync-badge"><i></i> Updated</span>
-          </div>
-          ${scoreBars()}
-          <div class="difference-row"><span>Current margin</span><strong>Gwazy +11</strong></div>
-        </section>
-
-        <section class="glass-card projection-card reveal">
-          <div class="section-title"><div><p class="eyebrow">FORECAST</p><h2>Projected winner</h2></div><span class="spark-icon">${icons.spark}</span></div>
-          <div class="projection-value"><strong>82<span>%</span></strong><p>Gwazy is favoured<br />with 7 days remaining</p></div>
-          <div class="probability-track"><span style="--width:82%"></span></div>
-          <p class="microcopy">Based on roster form, remaining bouts and the side bonus.</p>
-        </section>
-
-        <section class="glass-card timeline-card reveal">
-          <div class="section-title">
-            <div><p class="eyebrow">MOMENTUM</p><h2>Lead timeline</h2></div>
-            <div class="chart-legend"><span class="violet">Gwazy</span><span class="gold">Jake</span></div>
-          </div>
-          ${lineChart()}
-        </section>
-
-        <section class="glass-card form-card reveal">
-          <div class="section-title"><div><p class="eyebrow">FORM GUIDE</p><h2>Carrying the teams</h2></div></div>
-          ${["aonishiki", "takerufuji", "kotoeiho"].map((id, index) => {
-            const rikishi = getRikishi(id);
-            return `<button class="form-row" type="button" data-profile="${id}"><span>${index + 1}</span>${wrestlerImage(rikishi)}<b>${rikishi.name}</b><small>${rikishi.record}</small><strong>+${rikishi.points}</strong></button>`;
-          }).join("")}
-        </section>
-      </div>
-
-      <section class="content-section reveal">
-        <div class="section-title spacious">
-          <div><p class="eyebrow">DAY ${data.meta.day} · MAKUUCHI</p><h2>Today's key bouts</h2><p>Highest-impact matchups for the fantasy battle.</p></div>
-          <a class="text-link" href="#results">All results <span>${icons.arrow}</span></a>
-        </div>
-        <div class="bout-list">${topBouts.map((bout) => boutCard(bout)).join("")}</div>
-      </section>
+      ${draftStarted ? scoreDuel() : `
+        <section class="blank-state-panel overview-empty-state reveal" data-overview-empty>
+          <span class="blank-state-icon">番</span>
+          <div><p class="eyebrow">CLEAN SLATE</p><h2>The draft has not started yet.</h2><p>Select wrestlers from the Banzuke to build each player's team. All ${pool.total} Makuuchi rikishi are available.</p></div>
+          <a class="primary-button" href="#banzuke">Open Banzuke</a>
+        </section>`}
 
       <section class="content-section picks-preview reveal">
-        <div class="section-title spacious"><div><p class="eyebrow">YOUR TEAMS</p><h2>Roster pulse</h2><p>Green form is building. Red form needs watching.</p></div><a class="text-link" href="#roster">Open roster <span>${icons.arrow}</span></a></div>
-        <div class="pick-preview-grid">
-          ${data.players.map((player) => `
-            <article class="team-preview ${player.color}">
-              <div class="team-preview-head"><span class="player-avatar ${player.color}">${player.initials}</span><div><small>${player.name.toUpperCase()}'S TEAM</small><h3>${player.today} points today</h3></div><strong>${player.score}</strong></div>
-              <div class="pick-chip-grid">${getRoster(player.id).team.slice(0, 4).map((id) => compactPickCard(getRikishi(id))).join("")}</div>
-            </article>`).join("")}
-        </div>
+        <div class="section-title spacious"><div><p class="eyebrow">SHARED DRAFT · ${escapeHtml(basho.label.toUpperCase())}</p><h2>Complete rosters</h2><p>Both players' main picks, substitutes, scores, predictions, and completion progress update here automatically.</p></div><a class="text-link" href="#banzuke">Open draft <span>${icons.arrow}</span></a></div>
+        <div class="pick-preview-grid overview-rosters">${data.players.map(overviewRosterDashboard).join("")}</div>
       </section>
 
       <section class="bonus-panel reveal">
@@ -427,7 +473,7 @@ function overviewView() {
           <div class="scoring-rows">${data.scoring.map((rule) => `<span><small>${rule.label}</small><b>${rule.value}</b></span>`).join("")}</div>
         </div>
         <div class="bonus-prediction ${getPlayerDefinition().color}">
-          <div><p class="eyebrow">${getPlayerDefinition().name.toUpperCase()}'S BONUS PREDICTION</p><h2>Which side wins more bouts?</h2><p>This pick belongs only to ${getPlayerDefinition().name}. Switch players in the header to view the other prediction.</p></div>
+          <div><p class="eyebrow">${getPlayerDefinition().name.toUpperCase()}'S SIDE PREDICTION</p><h2>Which side wins more bouts?</h2><p>No prediction is selected by default. This choice belongs only to ${getPlayerDefinition().name}.</p></div>
           <div class="side-choice" role="group" aria-label="Bonus side prediction">
             <button type="button" class="east ${getPlayerState().sidePrediction === "East" ? "active" : ""}" data-bonus="East"><span>東</span><b>EAST</b><small>${getPlayerState().sidePrediction === "East" ? "PICKED" : "SELECT"}</small></button>
             <span class="bonus-vs">VS<small>20 PTS</small></span>
@@ -436,16 +482,9 @@ function overviewView() {
         </div>
       </section>
 
-      <section class="achievement-strip reveal">
-        <span class="achievement-icon">🏆</span>
-        <div><p class="eyebrow">ACHIEVEMENT UNLOCKED</p><h3>Perfect Underdog</h3><p>Takerufuji has scored in 6 of 8 bouts from Maegashira 13.</p></div>
-        <span class="achievement-points">+250 XP</span>
-      </section>
-
       ${appFooter()}
     </section>`;
 }
-
 function validateRoster(playerId) {
   const roster = getRoster(playerId);
   const team = roster.team.map(getRikishi);
@@ -535,54 +574,121 @@ function selectedBasho() {
 }
 
 function banzukeRankRows(basho = selectedBasho()) {
-  const rows = [];
-  const byPosition = new Map();
-  basho.entries.forEach((entry) => {
-    const position = entry.rankNumber ?? entry.rankSeat ?? 1;
-    const key = `${entry.rank}:${position}`;
-    if (!byPosition.has(key)) {
-      const row = { key, rank: entry.rank, position, East: null, West: null };
-      byPosition.set(key, row);
-      rows.push(row);
+  const groups = [];
+  const byRank = new Map();
+  basho.entries.forEach((entry, entryIndex) => {
+    const rank = entry.rank || "Unranked";
+    if (!byRank.has(rank)) {
+      const group = { rank, entries: [] };
+      byRank.set(rank, group);
+      groups.push(group);
     }
-    byPosition.get(key)[entry.side] = entry;
+    byRank.get(rank).entries.push({ ...entry, entryIndex });
+  });
+
+  const rows = [];
+  groups.forEach((group) => {
+    const east = group.entries.filter((entry) => entry.side === "East");
+    const west = group.entries.filter((entry) => entry.side === "West");
+    const unassigned = group.entries.filter((entry) => !["East", "West"].includes(entry.side));
+    const pairedRowCount = Math.max(east.length, west.length);
+    for (let index = 0; index < pairedRowCount; index += 1) {
+      rows.push({
+        key: `${group.rank}:${index + 1}`,
+        rank: group.rank,
+        position: index + 1,
+        East: east[index] || null,
+        West: west[index] || null,
+      });
+    }
+    unassigned.forEach((entry, index) => rows.push({
+      key: `${group.rank}:unassigned:${index + 1}`,
+      rank: group.rank,
+      position: pairedRowCount + index + 1,
+      East: entry,
+      West: null,
+      unassigned: true,
+    }));
   });
   return rows;
+}
+
+function rikishiForBanzukeEntry(entry) {
+  const parsed = getRikishi(entry.rikishiId);
+  if (parsed) return { rikishi: parsed, parsed: true };
+  return {
+    parsed: false,
+    rikishi: {
+      id: entry.rikishiId || `source-${entry.sourceIndex ?? "unknown"}`,
+      name: entry.shikona || "Unknown rikishi",
+      shikona: entry.shikona || "Unknown rikishi",
+      rank: entry.rank || "Unknown rank",
+      side: entry.side || "Unassigned",
+      record: "—",
+      wins: 0,
+      losses: 0,
+      points: 0,
+      form: 0,
+      stable: "Stable unavailable",
+      birthplace: "Birthplace unavailable",
+      height: "—",
+      weight: "—",
+      careerHigh: "—",
+      technique: "Profile unavailable",
+      available: false,
+      jsaId: null,
+      jsaPortrait: null,
+      wikipedia: null,
+      profile: null,
+    },
+  };
 }
 
 function banzukeRow(row) {
   const cell = (entry, side) => {
     if (!entry) return `<span class="banzuke-vacancy" aria-hidden="true"></span>`;
-    const rikishi = getRikishi(entry.rikishiId);
-    if (!rikishi) return `<span class="banzuke-vacancy missing-data" data-missing-rikishi="${escapeHtml(entry.rikishiId)}"></span>`;
-    const location = pickLocation(rikishi.id);
-    const unavailable = rikishi.available === false;
-    const action = location
-      ? `<button class="pick-action remove" type="button" data-remove-pick="${rikishi.id}"><small>${location === "main" ? "MAIN PICK" : "SUBSTITUTE"}</small>Remove</button>`
-      : `<button class="pick-action" type="button" data-add-pick="${rikishi.id}" ${unavailable ? "disabled" : ""}><small>${unavailable ? "UNAVAILABLE" : `FOR ${getPlayerDefinition().name.toUpperCase()}`}</small>${unavailable ? "Absent" : "Add to Team"}</button>`;
+    const resolved = rikishiForBanzukeEntry(entry);
+    const rikishi = resolved.rikishi;
+    const ownerId = draftOwner(rikishi.id);
+    const owner = ownerId ? getPlayerDefinition(ownerId) : null;
+    const location = ownerId ? pickLocation(rikishi.id, ownerId) : null;
+    const ownedByActivePlayer = ownerId === state.activePlayer;
+    const lockedByOtherPlayer = Boolean(ownerId && !ownedByActivePlayer);
+    const sourceUnavailable = rikishi.available === false || !resolved.parsed;
+    const availableToDraft = !ownerId && !sourceUnavailable;
+    let action;
+    if (ownedByActivePlayer) {
+      action = `<button class="pick-action remove" type="button" data-remove-pick="${rikishi.id}"><small>${location === "main" ? "YOUR MAIN PICK" : "YOUR SUBSTITUTE"}</small>Remove</button>`;
+    } else if (lockedByOtherPlayer) {
+      action = `<button class="pick-action locked ${owner.color}" type="button" disabled><small>DRAFTED</small>🔒 ${owner.name}</button>`;
+    } else {
+      action = `<button class="pick-action" type="button" data-add-pick="${rikishi.id}" ${sourceUnavailable ? "disabled" : ""}><small>${!resolved.parsed ? "DATA INCOMPLETE" : sourceUnavailable ? "UNAVAILABLE" : `FOR ${getPlayerDefinition().name.toUpperCase()}`}</small>${sourceUnavailable ? "Unavailable" : "Add to Team"}</button>`;
+    }
     const searchValue = `${rikishi.name} ${rikishi.fullName || ""} ${rikishi.stable} ${rikishi.rank} ${rikishi.side}`.toLowerCase();
     return `
-      <article class="banzuke-rikishi ${side} ${location ? "selected-pick" : ""} ${unavailable ? "unavailable" : ""}"
+      <article class="banzuke-rikishi ${side} ${ownerId ? `draft-owner-${ownerId}` : "draft-available"} ${ownedByActivePlayer ? "selected-pick" : ""} ${sourceUnavailable ? "unavailable" : ""} ${lockedByOtherPlayer ? "draft-locked" : ""} ${resolved.parsed ? "" : "incomplete-data"}"
         data-banzuke-id="${rikishi.id}" data-rank="${escapeHtml(rikishi.rank)}" data-side="${rikishi.side}"
-        data-search-value="${escapeHtml(searchValue)}" data-available="${String(!unavailable)}"
-        data-picked-current="${String(Boolean(location))}" data-picked-jake="${String(Boolean(pickLocation(rikishi.id, "jake")))}">
+        data-banzuke-shikona="${escapeHtml(entry.shikona || rikishi.shikona || rikishi.name)}" data-source-index="${entry.sourceIndex ?? ""}"
+        data-search-value="${escapeHtml(searchValue)}" data-available="${String(availableToDraft)}" data-draft-owner="${ownerId || ""}"
+        data-picked-current="${String(ownedByActivePlayer)}" data-picked-jake="${String(ownerId === "jake")}">
         ${side === "east" ? wrestlerImage(rikishi) : action}
         <button class="banzuke-profile" type="button" data-profile="${rikishi.id}" aria-label="Open ${escapeHtml(rikishi.name)} profile">
           <span class="banzuke-name-line"><b>${escapeHtml(rikishi.name)}</b><i class="position-chip ${side}">${rikishi.side}</i></span>
           <small>${escapeHtml(rikishi.stable)} stable</small>
+          <span class="draft-owner-badge ${owner?.color || "available"}">${owner ? `Owned by ${owner.name}` : availableToDraft ? "Available" : "Unavailable"}</span>
           <span class="banzuke-record"><strong>${escapeHtml(rikishi.record)}</strong><em><b>${rikishi.wins}</b> wins</em><em><b>${rikishi.losses}</b> losses</em></span>
         </button>
         ${side === "west" ? wrestlerImage(rikishi) : action}
         <aside class="banzuke-quick-profile" aria-hidden="true">
           <small>QUICK PROFILE</small><b>${escapeHtml(rikishi.fullName || rikishi.name)}</b>
           <span>${escapeHtml(formatRank(rikishi))}</span><span>${escapeHtml(rikishi.stable)} · ${escapeHtml(rikishi.birthplace)}</span>
-          <em>Single-click for full profile · double-click to ${location ? "remove" : "add"}</em>
+          <em>${lockedByOtherPlayer ? `Drafted by ${owner.name} · unavailable to ${getPlayerDefinition().name}` : `Single-click for full profile · double-click to ${ownedByActivePlayer ? "remove" : "add"}`}</em>
         </aside>
       </article>`;
   };
   const label = row.rank.toUpperCase();
   const isMaegashira = row.rank.startsWith("Maegashira");
-  const pairLabel = !isMaegashira && row.position > 1 ? `PAIR ${row.position} · ` : "";
+  const pairLabel = row.unassigned ? "SIDE UNKNOWN · " : !isMaegashira && row.position > 1 ? `PAIR ${row.position} · ` : "";
   return `<div class="banzuke-row" data-banzuke-row>${cell(row.East, "east")}<div class="rank-seal"><b>${escapeHtml(label)}</b><small>${pairLabel}${isMaegashira ? "前頭" : "役力士"}</small></div>${cell(row.West, "west")}</div>`;
 }
 
@@ -591,12 +697,20 @@ function banzukeView() {
   const roster = getRoster();
   const check = validateRoster(player.id);
   const basho = selectedBasho();
+  const pool = draftPoolStats(basho);
   const rows = banzukeRankRows(basho);
   const rankOptions = [...new Set(basho.entries.map((entry) => entry.rank))];
   return `
     <section class="page-shell">
       ${pageIntro(`${escapeHtml(basho.label.toUpperCase())} · TEAM BUILDER`, "Pick from the complete banzuke", `All ${basho.entries.length} official Makuuchi rikishi. Single-click a wrestler for their profile or double-click to edit ${player.name}'s roster.`, `<label class="search-field"><span>⌕</span><input id="banzuke-search" type="search" placeholder="Find a rikishi or stable" autocomplete="off" /></label>`)}
-      ${editingBanner(`Every roster action below changes ${player.name}'s team only.`)}
+      ${editingBanner(`Shared draft · currently editing ${player.name}. A rikishi drafted by either player is locked to the other.`)}
+      <section class="draft-pool-status reveal" data-draft-available="${pool.available}" data-draft-total="${pool.total}">
+        <div class="draft-pool-stat available"><small>AVAILABLE</small><b>${pool.available}</b><span>of ${pool.total} rikishi</span></div>
+        <div class="draft-pool-meter" aria-label="${pool.available} available, ${pool.counts.gwazy} drafted by Gwazy, ${pool.counts.jake} drafted by Jake">
+          <span class="available" style="--share:${pool.available}"></span><span class="gwazy" style="--share:${pool.counts.gwazy}"></span><span class="jake" style="--share:${pool.counts.jake}"></span>
+        </div>
+        <div class="draft-pool-stat drafted"><small>DRAFTED</small><b>${pool.drafted}</b><span>Gwazy ${pool.counts.gwazy} · Jake ${pool.counts.jake}</span></div>
+      </section>
       <section class="banzuke-builder ${player.color} reveal">
         <div class="builder-counts">
           <span><small>MAIN PICKS</small><b>${roster.team.length} / 6</b><em>${Math.max(0, 6 - roster.team.length)} remaining</em></span>
@@ -607,7 +721,7 @@ function banzukeView() {
       </section>
       <section class="banzuke-tools reveal" aria-label="Banzuke filters">
         <label><small>BASHO</small><select id="basho-select">${data.banzuke.bashos.map((item) => `<option value="${item.id}" ${item.id === basho.id ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></label>
-        <label><small>PICKS</small><select id="banzuke-pick-filter"><option value="all">All wrestlers</option><option value="mine">Only my picks</option><option value="jake">Only Jake's picks</option></select></label>
+        <label><small>PICKS</small><select id="banzuke-pick-filter"><option value="all">All wrestlers</option><option value="available">Available</option><option value="mine">Only my picks</option><option value="gwazy">Only Gwazy's picks</option><option value="jake">Only Jake's picks</option></select></label>
         <label><small>SIDE</small><select id="banzuke-side-filter"><option value="all">East & West</option><option value="East">East only</option><option value="West">West only</option></select></label>
         <label><small>RANK</small><select id="banzuke-rank-filter"><option value="all">All ranks</option>${rankOptions.map((rank) => `<option value="${escapeHtml(rank)}">${escapeHtml(rank)}</option>`).join("")}</select></label>
         <label class="availability-filter"><input id="banzuke-hide-unavailable" type="checkbox" /><span>Hide unavailable</span></label>
@@ -618,32 +732,25 @@ function banzukeView() {
         <div class="banzuke-integrity"><span class="status-dot"></span><b id="banzuke-render-count">Checking ${basho.expectedRikishi} official entries…</b><small>Every data-layer rikishi must render.</small></div>
         <div class="banzuke-rows">${rows.map(banzukeRow).join("")}</div>
       </section>
-      <p class="source-note"><a href="${basho.officialUrl}" target="_blank" rel="noreferrer">Official Japan Sumo Association banzuke ↗</a> · Records are current through Day ${data.meta.day}. Picks save immediately for ${player.name}.</p>
+      <p class="source-note"><a href="${basho.officialUrl}" target="_blank" rel="noreferrer">Official Japan Sumo Association banzuke ↗</a> · Every rikishi starts at 0–0. Picks save immediately for ${player.name}.</p>
       ${appFooter()}
     </section>`;
 }
 
 function resultsForDay(day) {
-  if (day > data.meta.day) return [];
-  if (day === data.meta.day) return data.bouts;
-  const offset = Math.max(0, day - 1) % data.bouts.length;
-  return [...data.bouts.slice(offset), ...data.bouts.slice(0, offset)].slice(0, 7).map((bout, index) => ({
-    ...bout,
-    winner: (index + day) % 3 ? bout.winner : bout.winner === bout.east ? bout.west : bout.east,
-    swing: index % 2 ? `+${(index % 5) + 1} Jake` : `+${(index % 6) + 2} Gwazy`,
-  }));
+  if (!data.bouts.length || day !== data.meta.day) return [];
+  return data.bouts.filter((bout) => !bout.day || bout.day === day);
 }
 
 function resultsView() {
   const day = Number(state.selectedDay);
   const bouts = resultsForDay(day);
-  const dailyGwazy = day === 8 ? 39 : 26 + ((day * 3) % 15);
-  const dailyJake = day === 8 ? 34 : 25 + ((day * 5) % 14);
+  const [gwazy, jake] = data.players;
   return `
     <section class="page-shell">
-      ${pageIntro(`NAGOYA 2026 · DAY ${day}`, "Bout results", "Every result, winning technique and fantasy-point swing in one place.", `<div class="daily-score"><span>GWAZY <b>+${dailyGwazy}</b></span><i></i><span>JAKE <b>+${dailyJake}</b></span></div>`)}
+      ${pageIntro(`${escapeHtml(selectedBasho().label.toUpperCase())} · DAY ${day}`, "Bout results", "Results will appear here when the first basho begins.", `<div class="daily-score"><span>GWAZY <b>${gwazy.today}</b></span><i></i><span>JAKE <b>${jake.today}</b></span></div>`)}
       <div class="day-selector reveal" role="tablist" aria-label="Tournament day">${Array.from({ length: 15 }, (_, index) => `<button type="button" role="tab" aria-selected="${day === index + 1}" class="${day === index + 1 ? "active" : ""}" data-day="${index + 1}"><small>DAY</small>${index + 1}</button>`).join("")}</div>
-      <div class="results-summary reveal"><span class="status-dot"></span><strong>${day < data.meta.day ? "All bouts complete" : day === data.meta.day ? data.meta.status : "Torikumi not yet published"}</strong><span>${bouts.length} featured Makuuchi bouts</span><span>Fantasy total: ${dailyGwazy + dailyJake} pts</span></div>
+      <div class="results-summary reveal"><span class="status-dot"></span><strong>${bouts.length ? data.meta.status : "Awaiting the first torikumi"}</strong><span>${bouts.length} Makuuchi results</span><span>Fantasy total: ${gwazy.today + jake.today} pts</span></div>
       <section class="results-list reveal">${bouts.length ? bouts.map((bout, index) => `<div class="result-number">${String(index + 1).padStart(2, "0")}</div>${boutCard(bout, true)}`).join("") : `<div class="empty-results"><span>取</span><h2>Awaiting torikumi</h2><p>Day ${day} matchups will appear here when the official schedule is published.</p></div>`}</section>
       ${appFooter()}
     </section>`;
@@ -694,7 +801,8 @@ function calculateHistoryStats(events = state.history) {
 }
 
 function rikishiOptions(selected = "", excluded = []) {
-  return data.rikishi
+  const none = `<option value="" ${selected ? "" : "selected"}>None</option>`;
+  return none + data.rikishi
     .filter((rikishi) => !excluded.includes(rikishi.id) || rikishi.id === selected)
     .map((rikishi) => `<option value="${rikishi.id}" ${rikishi.id === selected ? "selected" : ""}>${rikishi.name} · ${rikishi.rank}</option>`)
     .join("");
@@ -751,6 +859,17 @@ function historyEditor() {
 }
 
 function historyView() {
+  if (!state.history.length) {
+    return `
+      <section class="page-shell">
+        ${pageIntro("RIVALRY ARCHIVE", "Basho history", "Completed tournaments will build the rivalry record here.")}
+        <section class="blank-state-panel history-empty-state reveal" data-history-empty>
+          <span class="blank-state-icon">歴</span>
+          <div><p class="eyebrow">NO ARCHIVED BASHO</p><h2>History starts with the first real tournament.</h2><p>There are no previous winners, scores, MVPs, picks, streaks, or head-to-head statistics yet.</p></div>
+        </section>
+        ${appFooter()}
+      </section>`;
+  }
   const stats = calculateHistoryStats();
   const player = getPlayerDefinition();
   const activeWins = stats.wins[player.name] || 0;
@@ -792,6 +911,7 @@ function toggleRow(id, title, copy, checked) {
 function settingsView() {
   const player = getPlayerDefinition();
   const playerState = getPlayerState();
+  const storageKilobytes = (JSON.stringify(state).length / 1024).toFixed(1);
   return `
     <section class="page-shell settings-shell">
       ${pageIntro("PREFERENCES & DATA", "Settings", "Make the battle yours and keep its source data healthy.")}
@@ -820,7 +940,7 @@ function settingsView() {
           <button class="secondary-button" type="button" data-mock-sync>Check data now</button>
         </section>
         <section class="settings-card reveal"><div class="settings-card-title"><span>⌁</span><div><h2>Local storage</h2><p>Preferences and draft rosters stay on this device.</p></div></div>
-          <div class="storage-meter"><div><span>Settings & draft</span><b>3.4 KB</b></div><span><i style="--width:18%"></i></span></div>
+          <div class="storage-meter"><div><span>Version 2 save</span><b>${storageKilobytes} KB</b></div><span><i style="--width:${Math.min(100, Number(storageKilobytes) * 4)}%"></i></span></div>
           <button class="danger-button" type="button" data-reset-settings>Reset local settings</button>
         </section>
       </div>
@@ -833,25 +953,29 @@ function appFooter() {
     <footer class="app-footer">
       <div class="brand footer-brand"><span class="brand-mon"><span>相</span></span><span><strong>SUMO BATTLE</strong><small>Made for the rivalry, not for money.</small></span></div>
       <p>Fantasy points are private and manually maintained. Tournament facts link back to the <a href="${data.meta.sources[0].url}" target="_blank" rel="noreferrer">Nihon Sumo Kyokai</a>.</p>
-      <span>v1.0 · ${data.meta.shortTournament}</span>
+      <span>v2.0 · ${data.meta.shortTournament}</span>
     </footer>`;
 }
 
 function profileMarkup(rikishi) {
-  const player = getPlayerDefinition();
-  const location = pickLocation(rikishi.id);
+  const ownerId = draftOwner(rikishi.id);
+  const owner = ownerId ? getPlayerDefinition(ownerId) : null;
+  const location = ownerId ? pickLocation(rikishi.id, ownerId) : null;
+  const profileLink = rikishi.profile
+    ? `<a class="primary-button profile-link" href="${escapeHtml(rikishi.profile)}" target="_blank" rel="noreferrer">Official profile ${icons.source}</a>`
+    : `<span class="profile-link-unavailable">Official profile unavailable</span>`;
   return `
     <div class="profile-hero">
       ${wrestlerImage(rikishi, "large")}
       <div><p class="eyebrow">${formatRank(rikishi)}</p><h2 id="profile-name">${rikishi.fullName || rikishi.name}</h2><p>${rikishi.stable} stable · ${rikishi.birthplace}</p><div class="profile-record"><strong>${rikishi.record}</strong><span>${rikishi.wins} wins<br />${rikishi.losses} losses</span></div></div>
-      <div class="profile-owner"><small>${player.name.toUpperCase()}'S TEAM</small><span class="player-avatar ${location ? player.color : "neutral"}">${location ? player.initials : "—"}</span><b>${location ? (location === "main" ? "Main pick" : "Substitute") : "Not selected"}</b></div>
+      <div class="profile-owner"><small>DRAFT OWNERSHIP</small><span class="player-avatar ${owner ? owner.color : "neutral"}">${owner ? owner.initials : "—"}</span><b>${owner ? `${owner.name} · ${location === "main" ? "Main pick" : "Substitute"}` : "Available"}</b></div>
     </div>
     <div class="profile-stats">
-      <span><small>POINTS</small><b>${rikishi.points}</b></span><span><small>FORM</small><b>${rikishi.form}%</b></span><span><small>HEIGHT</small><b>${rikishi.height}</b></span><span><small>WEIGHT</small><b>${rikishi.weight}</b></span>
+      <span><small>POINTS</small><b>${rikishi.points}</b></span><span><small>FORM</small><b>${rikishi.wins + rikishi.losses ? `${rikishi.form}%` : "—"}</b></span><span><small>HEIGHT</small><b>${rikishi.height}</b></span><span><small>WEIGHT</small><b>${rikishi.weight}</b></span>
     </div>
     <div class="profile-details"><div><small>CAREER HIGH</small><b>${rikishi.careerHigh}</b></div><div><small>SIGNATURE</small><b>${rikishi.technique}</b></div></div>
     <div class="profile-form"><span style="--width:${rikishi.form}%"></span></div>
-    <a class="primary-button profile-link" href="${rikishi.profile}" target="_blank" rel="noreferrer">Official profile ${icons.source}</a>`;
+    ${profileLink}`;
 }
 
 function openProfile(id) {
@@ -910,6 +1034,11 @@ function addPick(rikishiId) {
   const roster = getRoster();
   const rikishi = getRikishi(rikishiId);
   if (!rikishi || pickLocation(rikishiId)) return;
+  const ownerId = draftOwner(rikishiId);
+  if (ownerId && ownerId !== state.activePlayer) {
+    showToast(`${rikishi.name} was drafted by ${getPlayerDefinition(ownerId).name}.`);
+    return;
+  }
   if (rikishi.available === false) {
     showToast(`${rikishi.name} is unavailable for roster selection.`);
     return;
@@ -946,7 +1075,11 @@ function removePick(rikishiId) {
   const player = getPlayerDefinition();
   const roster = getRoster();
   const location = pickLocation(rikishiId);
-  if (!location) return;
+  if (!location) {
+    const ownerId = draftOwner(rikishiId);
+    if (ownerId) showToast(`${getRikishi(rikishiId).name} belongs to ${getPlayerDefinition(ownerId).name}.`);
+    return;
+  }
   const list = location === "main" ? roster.team : roster.subs;
   list.splice(list.indexOf(rikishiId), 1);
   if (pendingSwap?.rikishiId === rikishiId) pendingSwap = null;
@@ -1018,21 +1151,97 @@ function chooseSwap(rikishiId, source) {
   showToast(`${getRikishi(subId).name} moved into the main team.`);
 }
 
+function developmentDiagnosticsEnabled() {
+  return window.SUMO_DEBUG === true || ["localhost", "127.0.0.1"].includes(window.location?.hostname);
+}
+
+function occurrenceMap(values) {
+  return values.reduce((counts, value) => {
+    counts.set(value, (counts.get(value) || 0) + 1);
+    return counts;
+  }, new Map());
+}
+
 function verifyBanzukeIntegrity(basho = selectedBasho()) {
+  const official = basho.officialRikishi || basho.entries.map((entry) => ({
+    id: entry.rikishiId,
+    shikona: entry.shikona || getRikishi(entry.rikishiId)?.shikona || getRikishi(entry.rikishiId)?.name || entry.rikishiId,
+  }));
+  const datasetCounts = occurrenceMap(data.rikishi.map((rikishi) => rikishi.id));
   const rendered = [...app.querySelectorAll("[data-banzuke-id]")];
-  const renderedIds = new Set(rendered.map((element) => element.dataset.banzukeId));
-  const missing = basho.entries.filter((entry) => !renderedIds.has(entry.rikishiId));
+  const renderedCounts = occurrenceMap(rendered.map((element) => element.dataset.banzukeId));
+  const officialShikona = new Set(official.map((source) => source.shikona));
+  const renderedShikona = new Set(rendered.map((element) => element.dataset.banzukeShikona));
+  const missingShikona = [...officialShikona].filter((shikona) => !renderedShikona.has(shikona));
+  const unexpectedShikona = [...renderedShikona].filter((shikona) => !officialShikona.has(shikona));
+  const notParsed = official.filter((source) => !datasetCounts.has(source.id));
+  const parsedNotRendered = official.filter((source) => datasetCounts.has(source.id) && !renderedCounts.has(source.id));
+  const missingRendered = official.filter((source) => !renderedCounts.has(source.id));
+  const duplicateDataset = official.filter((source) => (datasetCounts.get(source.id) || 0) !== 1 && datasetCounts.has(source.id));
+  const duplicateRendered = official.filter((source) => (renderedCounts.get(source.id) || 0) > 1);
+  const development = developmentDiagnosticsEnabled();
   const status = app.querySelector("#banzuke-render-count");
   const integrity = status?.closest(".banzuke-integrity");
-  if (missing.length) {
-    console.warn(`${missing.length} rikishi missing from rendered banzuke.`);
-    if (status) status.textContent = `${missing.length} of ${basho.expectedRikishi} official rikishi are missing`;
+  integrity?.classList.remove("ok", "bad");
+
+  official.forEach((source) => {
+    const parsedCount = datasetCounts.get(source.id) || 0;
+    const renderedCount = renderedCounts.get(source.id) || 0;
+    if (!parsedCount) {
+      console.error(`WARNING\n\n${source.shikona}\n\nNot parsed`);
+      return;
+    }
+    if (!renderedCount) {
+      console.error([
+        "WARNING",
+        "",
+        source.shikona,
+        "",
+        "Parsed ✓",
+        "Rendered ✗",
+        "",
+        "Reason:",
+        "No matching banzuke card was created from the parsed dataset object.",
+      ].join("\n"));
+      return;
+    }
+    if (renderedCount > 1) {
+      console.error(`WARNING\n\n${source.shikona}\n\nParsed ✓\nRendered ${renderedCount} times ✗\n\nReason:\nExpected exactly one rendered card.`);
+      return;
+    }
+    if (development) console.info(`Rendered:\n\n${source.shikona} ✓`);
+  });
+
+  const summary = [
+    "Official:",
+    "",
+    `${official.length} rikishi`,
+    "",
+    "Rendered:",
+    "",
+    `${officialShikona.size - missingShikona.length} rikishi`,
+    "",
+    "Missing:",
+    "",
+    missingShikona.length ? missingShikona.join("\n") : "None",
+  ].join("\n");
+  const valid = !notParsed.length && !parsedNotRendered.length && !duplicateDataset.length && !duplicateRendered.length
+    && !missingShikona.length && !unexpectedShikona.length && renderedShikona.size === officialShikona.size;
+
+  if (!valid) {
+    if (missingRendered.length) console.error(`${missingRendered.length} rikishi missing from rendered banzuke.`);
+    if (duplicateDataset.length) console.error(`Dataset duplicates: ${duplicateDataset.map((source) => source.shikona).join(", ")}`);
+    if (duplicateRendered.length) console.error(`Rendered duplicates: ${duplicateRendered.map((source) => source.shikona).join(", ")}`);
+    if (unexpectedShikona.length) console.error(`Unexpected rendered shikona: ${unexpectedShikona.join(", ")}`);
+    console.error(`Banzuke coverage failure\n\n${summary}`);
+    if (status) status.textContent = `${officialShikona.size - missingShikona.length} / ${officialShikona.size} official rikishi rendered · INVALID`;
     integrity?.classList.add("bad");
     return false;
   }
-  if (status) status.textContent = `${renderedIds.size} / ${basho.expectedRikishi} official rikishi rendered`;
+  if (development) console.info(`Banzuke coverage valid\n\n${summary}`);
+  if (status) status.textContent = `${officialShikona.size} / ${officialShikona.size} official rikishi rendered`;
   integrity?.classList.add("ok");
-  return renderedIds.size === basho.expectedRikishi;
+  return true;
 }
 
 function applyBanzukeFilters() {
@@ -1048,7 +1257,9 @@ function applyBanzukeFilters() {
   app.querySelectorAll("[data-banzuke-id]").forEach((card) => {
     const matchesSearch = !term || card.dataset.searchValue.includes(term);
     const matchesPicks = pickFilter === "all"
+      || (pickFilter === "available" && card.dataset.draftOwner === "" && card.dataset.available === "true")
       || (pickFilter === "mine" && card.dataset.pickedCurrent === "true")
+      || (pickFilter === "gwazy" && card.dataset.draftOwner === "gwazy")
       || (pickFilter === "jake" && card.dataset.pickedJake === "true");
     const matchesSide = sideFilter === "all" || card.dataset.side === sideFilter;
     const matchesRank = rankFilter === "all" || card.dataset.rank === rankFilter;
@@ -1086,7 +1297,9 @@ function bindViewEvents() {
     clearTimeout(banzukeProfileTimer);
     const rikishi = getRikishi(card.dataset.banzukeId);
     if (!rikishi) return;
-    if (pickLocation(rikishi.id)) removePick(rikishi.id);
+    const ownerId = draftOwner(rikishi.id);
+    if (ownerId === state.activePlayer) removePick(rikishi.id);
+    else if (ownerId) showToast(`${rikishi.name} was drafted by ${getPlayerDefinition(ownerId).name}.`);
     else if (rikishi.available === false) showToast(`${rikishi.name} is unavailable for roster selection.`);
     else addPick(rikishi.id);
   }));
@@ -1159,13 +1372,14 @@ function bindViewEvents() {
     }, 900);
   });
   document.querySelector("[data-reset-settings]")?.addEventListener("click", () => {
-    localStorage.removeItem("sumoBattleSettings");
-    localStorage.removeItem("sumoBattleHistoryCache");
+    localStorage.removeItem(SETTINGS_STORAGE_KEY);
+    localStorage.removeItem(HISTORY_STORAGE_KEY);
     window.RIKISHI_IMAGES?.clearCache();
     state = readState();
     pendingSwap = null;
     historyEditMode = false;
     activeHistoryId = state.history[0]?.id || null;
+    saveState();
     setTheme();
     render();
     showToast("Local preferences and draft were reset.");
