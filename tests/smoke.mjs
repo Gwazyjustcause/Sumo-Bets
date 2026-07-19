@@ -99,14 +99,20 @@ assert(app.includes("localStorage.setItem(SETTINGS_STORAGE_KEY"), "Browser prefe
 assert(app.includes("APP_SAVE_VERSION = 3"), "Version 3 must have an explicit save migration version");
 assert(app.includes("drafts: undefined"), "The shared roster must never be written into browser localStorage");
 assert(app.includes("data-overview-empty") && app.includes("data-history-empty"), "Blank Overview and History states must be present");
-for (const capability of ["data-add-pick", "data-roster-move", "data-swap-pick", "data-history-edit", "calculateHistoryStats", "sidePrediction", "substituteRules", "substitutionTimeline", "data-replace-sub", "data-sub-reorder"]) {
+for (const capability of ["data-add-pick", "data-roster-move", "data-history-edit", "calculateHistoryStats", "sidePrediction", "substituteRules", "substitutionTimeline", "data-sub-reorder"]) {
   assert(app.includes(capability), `Missing player-system capability: ${capability}`);
 }
 for (const capability of ["DRAFT_SCHEMA_VERSION", "normalizeDrafts", "draftOwner", "draftPoolStats", "data-draft-owner", "data-overview-roster", "draft-owner-gwazy", "draft-owner-jake"]) {
   assert(app.includes(capability) || css.includes(capability), `Missing shared-draft capability: ${capability}`);
 }
-for (const capability of ["data-save-draft", "validateSharedDraft", "hasUnsavedDraftChanges", "beforeunload", "data-roster-add", "data-roster-replace", "lastSavedAt", "savedBy", "data-toggle-draft-lock"]) {
+for (const capability of ["data-save-draft", "validateSharedDraft", "hasUnsavedDraftChanges", "beforeunload", "lastSavedAt", "savedBy", "data-toggle-draft-lock"]) {
   assert(app.includes(capability), `Missing repository-backed roster capability: ${capability}`);
+}
+for (const removedControl of ["roster-management-panel", "data-roster-add", "data-roster-replace", "data-swap-pick", "data-replace-sub", "Add main wrestler", "Add substitute<select", "Replace main<select", "Change substitute<select"]) {
+  assert(!app.includes(removedControl), `Obsolete dropdown or swap UI must be removed: ${removedControl}`);
+}
+for (const directControl of ["&rarr; Substitute", "&larr; Main", "&#128465; Remove", "Add to Main", "Add to Subs"]) {
+  assert(app.includes(directControl), `Missing direct card-management control: ${directControl}`);
 }
 for (const capability of ["data-overview-analytics", "data-overview-standings", "data-overview-forecast", "data-overview-momentum", "projectedPlayerScore", "forecastModel", "momentumChart"]) {
   assert(app.includes(capability), `Missing restored Overview analytics capability: ${capability}`);

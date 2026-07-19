@@ -227,6 +227,10 @@ for (const route of ["roster", "banzuke", "results", "history", "settings"]) {
   window.listeners.hashchange();
   await new Promise((resolve) => setTimeout(resolve, 120));
   assert.equal(app.dataset.route, route, `${route} route should render without an exception`);
+  if (route === "roster") {
+    assert(!app.innerHTML.includes("roster-management-panel") && !app.innerHTML.includes("roster-add-main"), "Roster must not render the disconnected dropdown management form");
+    assert(app.innerHTML.includes("&rarr; Substitute") && app.innerHTML.includes("&#128465; Remove"), "Main wrestler cards must expose direct move and remove actions");
+  }
   if (route === "banzuke") {
     assert.equal((app.innerHTML.match(/data-banzuke-id=/g) || []).length, 42, "The view must render every current Makuuchi rikishi");
     assert.equal(vm.runInContext("banzukeRankRows().length", context), 21, "The data layer must generate all 21 East/West rows");
@@ -234,9 +238,14 @@ for (const route of ["roster", "banzuke", "results", "history", "settings"]) {
     assert(app.innerHTML.includes('data-banzuke-shikona="Yoshinofuji"'), "Yoshinofuji must render from the official dataset");
     assert(app.innerHTML.includes('data-draft-owner="jake"') && app.innerHTML.includes("🔒 Jake"), "The active player must see the other player's picks as locked");
     assert(app.innerHTML.includes('data-draft-available="40"'), "Draft availability must update immediately after two picks");
+    assert(app.innerHTML.includes("Add to Main") && !app.innerHTML.includes("Add to Subs"), "Banzuke cards must offer the single action for the section currently being filled");
   }
 }
+vm.runInContext("state.activePlayer='gwazy'; getDraftPlayer('gwazy').mainPicks=['kirishima','fujinokawa','gonoyama','hiradoumi','ura','nishikifuji']; location.hash='#banzuke'; render();", context);
+await new Promise((resolve) => setTimeout(resolve, 120));
+assert(app.innerHTML.includes("Add to Subs") && !app.innerHTML.includes("Add to Main"), "Banzuke cards must switch to substitute additions once the main roster is full");
 assert.equal(browserConsole.errors.length, 0, "A complete official banzuke must produce no coverage errors");
+app.innerHTML = "";
 
 const duplicateSideRows = JSON.parse(vm.runInContext(`JSON.stringify(banzukeRankRows({entries:[
   {rikishiId:"east",shikona:"East One",rank:"Komusubi",side:"East",sourceIndex:0},

@@ -176,8 +176,6 @@ const readState = () => {
 };
 
 let state = readState();
-let pendingSwap = null;
-let pendingSubstituteReplacement = null;
 let historyEditMode = false;
 let activeHistoryId = state.history[0]?.id || null;
 let banzukeProfileTimer = null;
@@ -577,8 +575,6 @@ function newBashoNotice() {
 function resetCurrentDraft() {
   if (savedSharedDraft?.locked) return;
   state.drafts[state.selectedBashoId] = emptyDraftPlayers();
-  pendingSwap = null;
-  pendingSubstituteReplacement = null;
   sharedValidationErrors = [];
 }
 
@@ -588,8 +584,6 @@ function startNewOfficialBashoDraft() {
   state.officialBashoId = data.meta.bashoId;
   state.officialDataSignature = data.meta.dataSignature;
   state.selectedDay = Math.max(1, data.meta.day);
-  pendingSwap = null;
-  pendingSubstituteReplacement = null;
   savedSharedDraft = { schemaVersion: DRAFT_SCHEMA_VERSION, bashoId: state.selectedBashoId, revision: 0, locked: false, lastSavedAt: null, savedBy: null, players: emptyDraftPlayers() };
   sharedValidationErrors = [];
 }
@@ -899,8 +893,6 @@ function boutCard(bout, compact = false) {
 function rosterCard(rikishi, playerId, substitute = false, role = "active") {
   const hasResult = rikishi.wins + rikishi.losses + (rikishi.absences || 0) > 0;
   const heat = !hasResult ? "unplayed" : rikishi.form >= 75 ? "hot" : rikishi.form < 40 ? "cold" : "steady";
-  const isSwapSource = pendingSwap?.playerId === playerId && pendingSwap.rikishiId === rikishi.id;
-  const isSwapTarget = pendingSwap?.playerId === playerId && pendingSwap.substitute !== substitute;
   const isKyujo = role === "kyujo";
   const isActiveSubstitute = role === "active-substitute";
   const isStandbySubstitute = role === "standby-substitute";
@@ -913,7 +905,7 @@ function rosterCard(rikishi, playerId, substitute = false, role = "active") {
         ? '<span class="roster-status-badge standby">○ STANDBY · 0 PTS</span>'
         : '<span class="roster-status-badge active-main">● ACTIVE MAIN</span>';
   return `
-    <article class="roster-card ${heat} ${isKyujo ? "is-kyujo" : ""} ${isActiveSubstitute ? "is-active-substitute" : ""} ${isStandbySubstitute ? "is-standby-substitute" : ""} ${isSwapSource ? "swap-source" : ""} ${isSwapTarget ? "swap-target" : ""}" data-profile="${rikishi.id}">
+    <article class="roster-card ${heat} ${isKyujo ? "is-kyujo" : ""} ${isActiveSubstitute ? "is-active-substitute" : ""} ${isStandbySubstitute ? "is-standby-substitute" : ""}" data-profile="${rikishi.id}">
       ${wrestlerImage(rikishi, "medium")}
       <div class="roster-card-main">
         <div class="roster-card-title">
@@ -927,10 +919,10 @@ function rosterCard(rikishi, playerId, substitute = false, role = "active") {
       <div class="roster-points"><strong>${isStandbySubstitute ? 0 : points}</strong><small>${isKyujo ? "BANKED PTS" : isStandbySubstitute ? "INACTIVE" : "COUNTED PTS"}</small></div>
       ${rikishi.badge ? `<span class="clutch-badge">✦ ${rikishi.badge}</span>` : ""}
       <div class="roster-card-actions">
-        <button type="button" data-roster-move="${rikishi.id}:${substitute ? "main" : "subs"}">${substitute ? "Move to main" : "Move to subs"}</button>
-        <button type="button" data-swap-pick="${rikishi.id}:${substitute ? "sub" : "main"}">${isSwapTarget ? "Swap here" : isSwapSource ? "Cancel swap" : "Swap"}</button>
-        ${substitute ? `<button type="button" data-sub-reorder="${rikishi.id}:up" aria-label="Move ${rikishi.name} earlier">↑ Earlier</button><button type="button" data-sub-reorder="${rikishi.id}:down" aria-label="Move ${rikishi.name} later">↓ Later</button><button type="button" data-replace-sub="${rikishi.id}">Change substitute</button>` : ""}
-        <button class="remove" type="button" data-remove-pick="${rikishi.id}">Remove</button>
+        ${substitute ? `<button class="move-section" type="button" data-roster-move="${rikishi.id}:main" ${draftEditingDisabled() ? "disabled" : ""}>&larr; Main</button>` : ""}
+        ${substitute ? `<button class="order-button" type="button" data-sub-reorder="${rikishi.id}:up" aria-label="Move ${rikishi.name} earlier" title="Move earlier" ${draftEditingDisabled() ? "disabled" : ""}>&uarr;</button><button class="order-button" type="button" data-sub-reorder="${rikishi.id}:down" aria-label="Move ${rikishi.name} later" title="Move later" ${draftEditingDisabled() ? "disabled" : ""}>&darr;</button>` : ""}
+        <button class="remove" type="button" data-remove-pick="${rikishi.id}" ${draftEditingDisabled() ? "disabled" : ""}>&#128465; Remove</button>
+        ${!substitute ? `<button class="move-section" type="button" data-roster-move="${rikishi.id}:subs" ${draftEditingDisabled() ? "disabled" : ""}>&rarr; Substitute</button>` : ""}
       </div>
     </article>`;
 }
@@ -1104,16 +1096,6 @@ function emptyRosterSlots(count, type) {
   return Array.from({ length: count }, (_, index) => `<div class="empty-roster-slot"><span>+</span><b>${type} slot ${index + 1}</b><small>Add from the Banzuke</small></div>`).join("");
 }
 
-function rosterPickerOptions({ currentId = null, type = "main" } = {}) {
-  const options = data.rikishi.filter((rikishi) => {
-    if (rikishi.id === currentId) return true;
-    if (rikishi.available === false || draftOwner(rikishi.id)) return false;
-    if (type === "sub") return isSanyaku(rikishi) || isMaegashira(rikishi);
-    return true;
-  });
-  return `<option value="">Choose a wrestler...</option>${options.map((rikishi) => `<option value="${rikishi.id}">${escapeHtml(rikishi.name)} - ${escapeHtml(rikishi.rank)} ${escapeHtml(rikishi.side)}</option>`).join("")}`;
-}
-
 function formatSharedSaveTime(value) {
   if (!value) return { day: "Never", time: "Not saved" };
   const date = new Date(value);
@@ -1152,12 +1134,10 @@ function rosterView() {
   const saveTime = formatSharedSaveTime(savedSharedDraft?.lastSavedAt);
   const unsaved = hasUnsavedDraftChanges();
   const locked = Boolean(savedSharedDraft?.locked);
-  const mainOptions = rosterPickerOptions({ type: "main" });
-  const subOptions = rosterPickerOptions({ type: "sub" });
   const validationErrors = sharedValidationErrors.length ? `<div class="shared-validation-errors" role="alert"><b>Draft cannot be saved</b><ul>${sharedValidationErrors.map((error) => `<li>${escapeHtml(error)}</li>`).join("")}</ul></div>` : "";
   return `
     <section class="page-shell">
-      ${pageIntro("TEAM WORKSPACE", `${player.name}'s roster`, "Review, remove, move, or swap picks without rebuilding the team.", `<a class="primary-button" href="#banzuke">Add from Banzuke</a>`)}
+      ${pageIntro("TEAM WORKSPACE", `${player.name}'s roster`, "Move or remove wrestlers directly from their cards. Add new picks from the Banzuke.", `<a class="primary-button" href="#banzuke">Add from Banzuke</a>`)}
       ${editingBanner(`This roster belongs only to ${player.name}. Use the header selector to edit the other player.`)}
       <div class="rules-strip reveal">
         <span><b>6</b> starters</span><i></i><span><b>1</b> Sanyaku substitute</span><i></i><span><b>2</b> Maegashira substitutes</span><i></i><span><b>SUBS SCORE</b> only while activated</span>
@@ -1175,14 +1155,6 @@ function rosterView() {
           <div><p class="eyebrow">${player.name.toUpperCase()}'S PICKS</p><h2>${playerScore(player.id)} points</h2></div>
           <span class="legal-badge ${check.valid ? "valid" : "invalid"}">${check.valid ? "✓ ROSTER LEGAL" : "! ROSTER INCOMPLETE"}</span>
         </div>
-        ${pendingSwap ? `<div class="swap-notice"><b>Swap mode:</b> choose a pick in the other column to swap with ${getRikishi(pendingSwap.rikishiId).name}. <button type="button" data-cancel-swap>Cancel</button></div>` : ""}
-        <section class="roster-management-panel ${locked ? "locked" : ""}">
-          <div><p class="eyebrow">WORKING COPY</p><h3>Add or replace picks</h3><p>Changes stay private in this tab until Save Picks publishes the complete shared draft.</p></div>
-          <label>Add main wrestler<select id="roster-add-main" ${draftEditingDisabled() ? "disabled" : ""}>${mainOptions}</select><button type="button" data-roster-add="main">Add wrestler</button></label>
-          <label>Add substitute<select id="roster-add-sub" ${draftEditingDisabled() ? "disabled" : ""}>${subOptions}</select><button type="button" data-roster-add="sub">Add substitute</button></label>
-          <label>Replace main<select id="roster-replace-main-old" ${draftEditingDisabled() ? "disabled" : ""}><option value="">Current main...</option>${roster.team.map((id) => `<option value="${id}">${escapeHtml(getRikishi(id)?.name || id)}</option>`).join("")}</select><select id="roster-replace-main-new" ${draftEditingDisabled() ? "disabled" : ""}>${mainOptions}</select><button type="button" data-roster-replace="main" ${draftEditingDisabled() ? "disabled" : ""}>Replace wrestler</button></label>
-          <label>Change substitute<select id="roster-replace-sub-old" ${draftEditingDisabled() ? "disabled" : ""}><option value="">Current substitute...</option>${roster.subs.map((id) => `<option value="${id}">${escapeHtml(getRikishi(id)?.name || id)}</option>`).join("")}</select><select id="roster-replace-sub-new" ${draftEditingDisabled() ? "disabled" : ""}>${subOptions}</select><button type="button" data-roster-replace="sub" ${draftEditingDisabled() ? "disabled" : ""}>Change substitute</button></label>
-        </section>
         <div class="active-roster-grid">
           <section>
             <div class="slot-heading"><span><small>ACTIVE ROSTER & REPLACEMENTS</small><b>${roster.team.length} / 6</b></span><strong>${timeline.activeSubIds.length} substitute${timeline.activeSubIds.length === 1 ? "" : "s"} active</strong></div>
@@ -1312,18 +1284,18 @@ function banzukeRow(row) {
     const availableToDraft = !ownerId && !sourceUnavailable;
     const activeRoster = getRoster();
     const canAddMain = activeRoster.team.length < 6 && mainPickRules([...activeRoster.team, rikishi.id]).valid;
-    const replacementIndex = pendingSubstituteReplacement ? activeRoster.subs.indexOf(pendingSubstituteReplacement) : -1;
-    const candidateSubs = replacementIndex >= 0
-      ? activeRoster.subs.map((id, index) => index === replacementIndex ? rikishi.id : id)
-      : [...activeRoster.subs, rikishi.id];
-    const canAddSub = (replacementIndex >= 0 || activeRoster.subs.length < 3) && substituteRules(candidateSubs).valid;
+    const candidateSubs = [...activeRoster.subs, rikishi.id];
+    const canAddSub = activeRoster.subs.length < 3 && substituteRules(candidateSubs).valid;
+    const fillingMain = activeRoster.team.length < 6;
+    const addTarget = fillingMain ? "main" : "sub";
+    const canAddToTarget = fillingMain ? canAddMain : canAddSub;
     let action;
     if (ownedByActivePlayer) {
       action = `<button class="pick-action remove" type="button" data-remove-pick="${rikishi.id}"><small>${location === "main" ? "YOUR MAIN PICK" : "YOUR SUBSTITUTE"}</small>Remove</button>`;
     } else if (lockedByOtherPlayer) {
       action = `<button class="pick-action locked ${owner.color}" type="button" disabled><small>DRAFTED</small>🔒 ${owner.name}</button>`;
     } else {
-      action = `<div class="pick-action-group"><button class="pick-action" type="button" data-add-pick="${rikishi.id}:main" ${editingUnavailable || sourceUnavailable || !canAddMain ? "disabled" : ""}><small>${!resolved.parsed ? "DATA INCOMPLETE" : "MAIN PICK"}</small>${editingUnavailable ? "Draft locked" : sourceUnavailable ? "Unavailable" : "Add Main"}</button><button class="pick-action substitute" type="button" data-add-pick="${rikishi.id}:sub" ${editingUnavailable || sourceUnavailable || !canAddSub ? "disabled" : ""}><small>${!resolved.parsed ? "DATA INCOMPLETE" : replacementIndex >= 0 ? "REPLACEMENT" : isSanyaku(rikishi) ? "SANYAKU SUB" : "MAEGASHIRA SUB"}</small>${editingUnavailable ? "Draft locked" : sourceUnavailable ? "Unavailable" : replacementIndex >= 0 ? "Replace" : "Add Sub"}</button></div>`;
+      action = `<button class="pick-action ${addTarget === "sub" ? "substitute" : ""}" type="button" data-add-pick="${rikishi.id}:${addTarget}" ${editingUnavailable || sourceUnavailable || !canAddToTarget ? "disabled" : ""}><small>${!resolved.parsed ? "DATA INCOMPLETE" : addTarget === "main" ? "MAIN ROSTER" : isSanyaku(rikishi) ? "SANYAKU SUBSTITUTE" : "MAEGASHIRA SUBSTITUTE"}</small>${editingUnavailable ? "Draft locked" : sourceUnavailable ? "Unavailable" : addTarget === "main" ? "Add to Main" : "Add to Subs"}</button>`;
     }
     const searchValue = `${rikishi.name} ${rikishi.fullName || ""} ${rikishi.stable} ${rikishi.rank} ${rikishi.side}`.toLowerCase();
     return `
@@ -1365,7 +1337,6 @@ function banzukeView() {
     <section class="page-shell">
       ${pageIntro(`${escapeHtml(basho.label.toUpperCase())} · TEAM BUILDER`, "Pick from the complete banzuke", `All ${basho.entries.length} official Makuuchi rikishi. Single-click a wrestler for their profile or double-click to edit ${player.name}'s roster.`, `<label class="search-field"><span>⌕</span><input id="banzuke-search" type="search" placeholder="Find a rikishi or stable" autocomplete="off" /></label>`)}
       ${editingBanner(`Shared draft · currently editing ${player.name}. A rikishi drafted by either player is locked to the other.`)}
-      ${pendingSubstituteReplacement ? `<aside class="replacement-mode reveal"><span>↻</span><div><small>CHANGE SUBSTITUTE</small><b>Choose a legal replacement for ${getRikishi(pendingSubstituteReplacement)?.name || "this substitute"}.</b></div><button type="button" data-cancel-sub-replacement>Cancel</button></aside>` : ""}
       <section class="draft-pool-status reveal" data-draft-available="${pool.available}" data-draft-total="${pool.total}">
         <div class="draft-pool-stat available"><small>AVAILABLE</small><b>${pool.available}</b><span>of ${pool.total} rikishi</span></div>
         <div class="draft-pool-meter" aria-label="${pool.available} available, ${pool.counts.gwazy} drafted by Gwazy, ${pool.counts.jake} drafted by Jake">
@@ -1379,7 +1350,7 @@ function banzukeView() {
           <span><small>SUBSTITUTES</small><b>${roster.subs.length} / 3</b><em>${Math.max(0, 3 - roster.subs.length)} remaining</em></span>
         </div>
         ${validationChecklist(check)}
-        <a class="secondary-button" href="#roster">Manage swaps</a>
+        <a class="secondary-button" href="#roster">Manage roster</a>
       </section>
       <section class="banzuke-tools reveal" aria-label="Banzuke filters">
         <label><small>BASHO</small><select id="basho-select">${data.banzuke.bashos.map((item) => `<option value="${item.id}" ${item.id === basho.id ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></label>
@@ -1727,35 +1698,31 @@ function addPick(rikishiId, requestedTarget = null) {
 
   const target = ["main", "sub"].includes(requestedTarget) ? requestedTarget : null;
   const canAddMain = roster.team.length < 6 && mainPickRules([...roster.team, rikishiId]).valid;
-  const replacementIndex = pendingSubstituteReplacement ? roster.subs.indexOf(pendingSubstituteReplacement) : -1;
-  const candidateSubs = replacementIndex >= 0
-    ? roster.subs.map((id, index) => index === replacementIndex ? rikishiId : id)
-    : [...roster.subs, rikishiId];
-  const canAddSub = (replacementIndex >= 0 || roster.subs.length < 3) && substituteRules(candidateSubs).valid;
+  const candidateSubs = [...roster.subs, rikishiId];
+  const canAddSub = roster.subs.length < 3 && substituteRules(candidateSubs).valid;
   let destination = null;
 
   if ((target === "main" || target === null) && canAddMain) {
     roster.team.push(rikishiId);
     destination = "main picks";
   } else if ((target === "sub" || target === null) && canAddSub) {
-    if (replacementIndex >= 0) roster.subs[replacementIndex] = rikishiId;
-    else roster.subs.push(rikishiId);
+    roster.subs.push(rikishiId);
     destination = "substitutes";
   }
 
   if (!destination) {
     const rule = mainPickRules([...roster.team, rikishiId]);
     const subRule = substituteRules(candidateSubs);
-    const reason = target === "sub" && roster.subs.length >= 3 && replacementIndex < 0
-      ? `${player.name}'s substitute roster is full. Choose Change substitute from the roster page.`
+    const reason = target === "sub" && roster.subs.length >= 3
+      ? `${player.name}'s substitute roster is full. Remove a substitute before adding another.`
       : target === "sub" && subRule.sanyaku > 1
         ? "Substitutes may include exactly one Komusubi-or-higher wrestler."
         : target === "sub" && subRule.maegashira > 2
           ? "Substitutes may include exactly two Maegashira wrestlers."
           : target === "main" && roster.team.length >= 6
-            ? `${player.name}'s main roster is full. Remove or swap a pick first.`
+            ? `${player.name}'s main roster is full. Remove a pick before adding another.`
             : roster.team.length >= 6 && roster.subs.length >= 3
-      ? `${player.name}'s roster is full. Remove or swap a pick first.`
+      ? `${player.name}'s roster is full. Remove a pick before adding another.`
       : rule.sanyaku > 2
         ? "Main picks can include at most two Komusubi or higher."
         : rule.underdogs > 1
@@ -1765,10 +1732,8 @@ function addPick(rikishiId, requestedTarget = null) {
     return;
   }
 
-  const replaced = pendingSubstituteReplacement ? getRikishi(pendingSubstituteReplacement) : null;
-  pendingSubstituteReplacement = null;
   render();
-  showToast(replaced ? `${rikishi.name} replaced ${replaced.name}. Save Picks to publish.` : `${rikishi.name} staged in ${player.name}'s ${destination}.`);
+  showToast(`${rikishi.name} staged in ${player.name}'s ${destination}. Save Picks to publish.`);
 }
 
 function removePick(rikishiId) {
@@ -1783,7 +1748,6 @@ function removePick(rikishiId) {
   }
   const list = location === "main" ? roster.team : roster.subs;
   list.splice(list.indexOf(rikishiId), 1);
-  if (pendingSwap?.rikishiId === rikishiId) pendingSwap = null;
   render();
   showToast(`${getRikishi(rikishiId).name} removed from the working copy.`);
 }
@@ -1808,51 +1772,8 @@ function movePick(rikishiId, target) {
   }
   from.splice(from.indexOf(rikishiId), 1);
   to.push(rikishiId);
-  pendingSwap = null;
   render();
   showToast(`${getRikishi(rikishiId).name} moved to ${player.name}'s ${target === "main" ? "main picks" : "substitutes"}.`);
-}
-
-function chooseSwap(rikishiId, source) {
-  if (draftEditingDisabled()) return;
-  const playerId = state.activePlayer;
-  const sourceIsSub = source === "sub";
-  if (pendingSwap?.playerId !== playerId) pendingSwap = null;
-  if (!pendingSwap) {
-    pendingSwap = { playerId, rikishiId, substitute: sourceIsSub };
-    render();
-    return;
-  }
-  if (pendingSwap.rikishiId === rikishiId) {
-    pendingSwap = null;
-    render();
-    return;
-  }
-  if (pendingSwap.substitute === sourceIsSub) {
-    pendingSwap = { playerId, rikishiId, substitute: sourceIsSub };
-    render();
-    return;
-  }
-
-  const roster = getRoster();
-  const mainId = sourceIsSub ? pendingSwap.rikishiId : rikishiId;
-  const subId = sourceIsSub ? rikishiId : pendingSwap.rikishiId;
-  const mainIndex = roster.team.indexOf(mainId);
-  const subIndex = roster.subs.indexOf(subId);
-  if (mainIndex < 0 || subIndex < 0) return;
-  const candidateMain = [...roster.team];
-  candidateMain[mainIndex] = subId;
-  const candidateSubs = [...roster.subs];
-  candidateSubs[subIndex] = mainId;
-  if (!mainPickRules(candidateMain).valid || !substituteRules(candidateSubs).valid) {
-    showToast("That swap would break a main-pick or substitute category rule.");
-    return;
-  }
-  roster.team[mainIndex] = subId;
-  roster.subs[subIndex] = mainId;
-  pendingSwap = null;
-  render();
-  showToast(`${getRikishi(subId).name} moved into the main team.`);
 }
 
 function reorderSubstitute(rikishiId, direction) {
@@ -1864,31 +1785,6 @@ function reorderSubstitute(rikishiId, direction) {
   [roster.subs[index], roster.subs[targetIndex]] = [roster.subs[targetIndex], roster.subs[index]];
   render();
   showToast(`${getRikishi(rikishiId).name} moved to substitute slot ${targetIndex + 1}.`);
-}
-
-function replaceRosterPick(oldId, newId, type) {
-  if (draftEditingDisabled() || !oldId || !newId || oldId === newId) return;
-  const owner = draftOwner(newId);
-  const rikishi = getRikishi(newId);
-  if (!rikishi || rikishi.available === false || owner) {
-    showToast("That wrestler is not available in the shared draft.");
-    return;
-  }
-  const roster = getRoster();
-  const list = type === "sub" ? roster.subs : roster.team;
-  const index = list.indexOf(oldId);
-  if (index < 0) return;
-  const candidate = [...list];
-  candidate[index] = newId;
-  const legal = type === "sub" ? substituteRules(candidate).valid : mainPickRules(candidate).valid;
-  if (!legal) {
-    showToast("That replacement would break a roster category rule.");
-    return;
-  }
-  list[index] = newId;
-  pendingSwap = null;
-  render();
-  showToast(`${rikishi.name} staged as the replacement. Save Picks to publish.`);
 }
 
 function developmentDiagnosticsEnabled() {
@@ -2024,7 +1920,7 @@ function currentHistoryEvent() {
 function bindViewEvents() {
   app.querySelectorAll("[data-profile]").forEach((element) => {
     element.addEventListener("click", (event) => {
-      if (event.target.closest("[data-add-pick], [data-remove-pick], [data-roster-move], [data-swap-pick], [data-replace-sub], [data-sub-reorder]")) return;
+      if (event.target.closest("[data-add-pick], [data-remove-pick], [data-roster-move], [data-sub-reorder]")) return;
       if (element.closest(".banzuke-rikishi")) {
         clearTimeout(banzukeProfileTimer);
         banzukeProfileTimer = setTimeout(() => openProfile(element.dataset.profile), 220);
@@ -2055,26 +1951,10 @@ function bindViewEvents() {
     event.stopPropagation();
     movePick(...button.dataset.rosterMove.split(":"));
   }));
-  app.querySelectorAll("[data-swap-pick]").forEach((button) => button.addEventListener("click", (event) => {
-    event.stopPropagation();
-    chooseSwap(...button.dataset.swapPick.split(":"));
-  }));
   app.querySelectorAll("[data-sub-reorder]").forEach((button) => button.addEventListener("click", (event) => {
     event.stopPropagation();
     reorderSubstitute(...button.dataset.subReorder.split(":"));
   }));
-  app.querySelectorAll("[data-replace-sub]").forEach((button) => button.addEventListener("click", (event) => {
-    event.stopPropagation();
-    pendingSubstituteReplacement = button.dataset.replaceSub;
-    pendingSwap = null;
-    location.hash = "#banzuke";
-    render();
-  }));
-  document.querySelector("[data-cancel-sub-replacement]")?.addEventListener("click", () => {
-    pendingSubstituteReplacement = null;
-    render();
-  });
-  document.querySelector("[data-cancel-swap]")?.addEventListener("click", () => { pendingSwap = null; render(); });
   app.querySelectorAll("[data-day]").forEach((button) => button.addEventListener("click", () => {
     state.selectedDay = Number(button.dataset.day);
     saveState();
@@ -2124,17 +2004,6 @@ function bindViewEvents() {
     render();
     showToast("Repository write access is ready for this session.");
   });
-  app.querySelectorAll("[data-roster-add]").forEach((button) => button.addEventListener("click", () => {
-    const type = button.dataset.rosterAdd;
-    const field = document.querySelector(type === "sub" ? "#roster-add-sub" : "#roster-add-main");
-    if (field?.value) addPick(field.value, type);
-  }));
-  app.querySelectorAll("[data-roster-replace]").forEach((button) => button.addEventListener("click", () => {
-    const type = button.dataset.rosterReplace;
-    const oldField = document.querySelector(type === "sub" ? "#roster-replace-sub-old" : "#roster-replace-main-old");
-    const newField = document.querySelector(type === "sub" ? "#roster-replace-sub-new" : "#roster-replace-main-new");
-    replaceRosterPick(oldField?.value, newField?.value, type);
-  }));
   document.querySelector("[data-mock-sync]")?.addEventListener("click", async (event) => {
     event.currentTarget.disabled = true;
     event.currentTarget.textContent = "Checking deployed snapshot…";
@@ -2267,8 +2136,6 @@ soundButton.addEventListener("click", () => {
 
 playerSelect.addEventListener("change", () => {
   state.activePlayer = playerSelect.value;
-  pendingSwap = null;
-  pendingSubstituteReplacement = null;
   saveState();
   setTheme();
   render();
