@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "source": "https://www.sumo.or.jp/EnHonbashoBanzuke/index/",
+  "basho": {
+    "id": "636",
+    "slug": "nagoya-2026",
+    "year": 2026,
+    "month": "July",
+    "name": "Nagoya Basho 2026",
+    "shortName": "July 2026",
+    "japaneseName": "令和八年 七月場所",
+    "startDate": "2026-07-12",
+    "endDate": "2026-07-26",
+    "dateRange": "12–26 July 2026",
+    "venueId": 3,
+    "venue": "IG Arena, Aichi",
+    "currentDay": 8,
+    "scheduledThroughDay": 9,
+    "totalDays": 15,
+    "active": true
+  },
+  "generatedAt": "2026-07-19T12:23:25.140Z",
+  "dataSignature": "fb23945c07d1824c480a89198d13ebea37452edf1721c516c56b12f501bef3cf"
+}

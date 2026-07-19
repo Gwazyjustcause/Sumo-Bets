@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "players": [
+    {
+      "id": "gwazy",
+      "name": "Gwazy",
+      "initials": "GW",
+      "color": "violet",
+      "favouriteWrestler": "",
+      "team": [],
+      "subs": [],
+      "sidePrediction": null,
+      "score": 0,
+      "today": 0,
+      "daily": []
+    },
+    {
+      "id": "jake",
+      "name": "Jake",
+      "initials": "JK",
+      "color": "gold",
+      "favouriteWrestler": "",
+      "team": [],
+      "subs": [],
+      "sidePrediction": null,
+      "score": 0,
+      "today": 0,
+      "daily": []
+    }
+  ]
+}

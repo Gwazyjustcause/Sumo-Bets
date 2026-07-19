@@ -111,16 +111,21 @@ const context = vm.createContext({
 vm.runInContext(load("data/sumo-data.js"), context, { filename: "data/sumo-data.js" });
 vm.runInContext(load("image-resolver.js"), context, { filename: "image-resolver.js" });
 vm.runInContext(load("app.js"), context, { filename: "app.js" });
-await new Promise((resolve) => setTimeout(resolve, 120));
+await new Promise((resolve) => setTimeout(resolve, 240));
 
-assert(app.innerHTML.includes("GWAZY'S SIDE PREDICTION"), "Overview should render the active player's prediction control");
+assert(app.innerHTML.includes("JAKE'S SIDE PREDICTION"), `Overview should preserve and render the selected player's prediction control. Browser errors: ${browserConsole.errors.join(" | ")}`);
 assert(app.innerHTML.includes("The draft has not started yet."), "A clean save must show the friendly pre-draft state");
-assert.equal(playerSelect.value, "gwazy", "Gwazy should be the default active player");
+assert.equal(playerSelect.value, "jake", "A storage migration must preserve the harmless active-player preference");
 const migratedSave = JSON.parse(storage.get("sumoBattleSettings"));
 assert.equal(migratedSave.appVersion, 2, "The first Version 2 run must write a new compatible save");
 assert.equal(JSON.parse(storage.get("sumoBattleHistoryCache")).events.length, 0, "The one-time migration must clear legacy history cache data");
 assert.equal(vm.runInContext("state.history.length", context), 0, "The live Version 2 state must have no archived basho");
 assert.equal(vm.runInContext("data.players.every((player) => player.score === 0 && player.sidePrediction === null)", context), true, "Scores and side predictions must start blank");
+assert.equal(vm.runInContext("data.meta.day", context), 8, "A draft migration must not erase the restored official day");
+assert(vm.runInContext("data.rikishi.some((rikishi) => rikishi.wins > 0)", context), "A draft migration must not erase official rikishi records");
+const archivedDraft = JSON.parse(vm.runInContext(`JSON.stringify(normalizeDrafts({draftSchemaVersion:2,drafts:{"old-basho":{gwazy:{mainPicks:["old-rikishi"],substitutes:[],sidePrediction:"West"},jake:{mainPicks:[],substitutes:[],sidePrediction:null}}}})["old-basho"])`, context));
+assert.deepEqual(archivedDraft.gwazy.mainPicks, ["old-rikishi"], "Loading a new official basho must preserve previous-basho draft data");
+assert.equal(archivedDraft.gwazy.sidePrediction, "West", "Previous-basho predictions must stay with their draft");
 
 playerSelect.value = "jake";
 playerSelect.listeners.change();
@@ -154,6 +159,13 @@ assert.equal(vm.runInContext("draftPoolStats().available", context), 41, "Removi
 vm.runInContext("addPick('kirishima');", context);
 await new Promise((resolve) => setTimeout(resolve, 120));
 assert.equal(vm.runInContext("JSON.stringify(getPlayerState('gwazy'))", context), gwazyRosterBefore, "Editing Jake must not change Gwazy");
+
+vm.runInContext("getDraftPlayer('gwazy').sidePrediction = 'East'; state.history = [{ id: 'kept', basho: 'Previous', winner: 'Gwazy', gwazyScore: 10, jakeScore: 9 }]; resetCurrentDraft();", context);
+assert.deepEqual(JSON.parse(vm.runInContext("JSON.stringify(getRoster('gwazy'))", context)), { team: [], subs: [] }, "Reset Draft must clear the current roster only");
+assert.equal(vm.runInContext("getSidePrediction('gwazy')", context), null, "Reset Draft must clear the current prediction");
+assert.equal(vm.runInContext("state.history.length", context), 1, "Reset Draft must preserve history");
+assert.equal(vm.runInContext("data.meta.day", context), 8, "Reset Draft must leave the official layer untouched");
+vm.runInContext("state.history = []; state.activePlayer = 'gwazy'; addPick('kirishima'); state.activePlayer = 'jake'; addPick('hoshoryu'); state.activePlayer = 'gwazy'; saveState();", context);
 
 location.hash = "#overview";
 window.listeners.hashchange();

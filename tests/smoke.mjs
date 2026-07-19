@@ -34,7 +34,8 @@ assert.deepEqual(
   "Official and parsed shikona sets must match exactly",
 );
 assert.equal(data.meta.totalDays, 15, "A basho has fifteen days");
-assert.equal(data.meta.day, 0, "Version 2 must begin before Day 1");
+assert(data.meta.day >= 0 && data.meta.day <= 15, "The official layer must expose a valid current day");
+assert(data.meta.day > 0, "The restored JSA snapshot must not erase published tournament days");
 assert.equal(data.players.length, 2, "The league has exactly two players");
 assert.deepEqual([...data.players.map((player) => player.id)].sort(), ["gwazy", "jake"], "Only Gwazy and Jake may be players");
 
@@ -52,9 +53,9 @@ for (const player of data.players) {
   }
 }
 
-assert(data.rikishi.every((rikishi) => rikishi.record === "0–0" && rikishi.wins === 0 && rikishi.losses === 0 && rikishi.points === 0), "Every rikishi must start with a blank basho record");
-assert(data.rikishi.every((rikishi) => rikishi.available), "Every current Makuuchi rikishi must start available");
-assert.equal(data.bouts.length, 0, "Version 2 must not ship match history");
+assert(data.rikishi.some((rikishi) => rikishi.wins > 0 || rikishi.losses > 0), "Published official records must survive a draft reset");
+assert(data.rikishi.every((rikishi) => Number.isFinite(rikishi.wins) && Number.isFinite(rikishi.losses)), "Every rikishi needs numeric official records");
+assert(data.bouts.length > 0, "The official layer must include the latest published Makuuchi results");
 assert.equal(data.history.length, 0, "Version 2 must not ship previous basho history");
 
 for (const bout of data.bouts) {
@@ -106,7 +107,8 @@ for (const capability of ["banzukeRankRows", "data-banzuke-id", "data-banzuke-sh
 assert(!app.includes("const pairs = ["), "Banzuke rows must not be hardcoded in the view");
 assert(!app.includes("byPosition.get(key)[entry.side] = entry"), "Same-rank, same-side wrestlers must never overwrite each other");
 assert(data.rikishi.every((rikishi) => rikishi.photo?.includes("sumo.or.jp/img/sumo_data/rikishi/")), "Every Makuuchi rikishi needs an official photo");
-assert(data.rikishi.every((rikishi) => rikishi.id && rikishi.shikona && rikishi.jsaId && rikishi.jsaPortrait && rikishi.wikipedia), "Every rikishi needs stable image-resolver metadata");
+assert(data.rikishi.every((rikishi) => rikishi.id && rikishi.shikona && rikishi.jsaId && rikishi.profile), "Every rikishi needs stable JSA identity metadata");
+assert(data.rikishi.every((rikishi) => Object.hasOwn(rikishi, "wikipedia")), "Every rikishi needs a stable Wikipedia resolver slot, even when unresolved");
 assert(app.includes('loading="lazy"') && app.includes("data-rikishi-image"), "Rikishi images must use lazy resolver markup");
 assert(!app.includes("fallback-initials"), "The single-letter image fallback must be removed");
 const resolverStages = ["assets/rikishi/${rikishi.id}.webp", "rikishi.jsaPortrait", "lookupWikipediaPortrait(rikishi)", "PLACEHOLDER_PATH"];
@@ -122,5 +124,21 @@ for (const textFile of ["index.html", "styles.css", "app.js", "image-resolver.js
   assert(!contents.includes("Ã"), `${textFile} contains likely mojibake`);
   assert(!contents.includes("â€“"), `${textFile} contains likely mojibake`);
 }
+
+for (const separatedFile of [
+  "data/official/basho.json",
+  "data/official/banzuke.json",
+  "data/official/rikishi.json",
+  "data/official/results.json",
+  "data/draft/current-draft.json",
+  "data/draft/history.json",
+  "data/draft/players.json",
+  "scripts/update-official-data.mjs",
+  ".github/workflows/update-jsa-data.yml",
+]) {
+  assert(existsSync(new URL(separatedFile, root)), `Missing separated data/update file: ${separatedFile}`);
+}
+assert(app.includes("resetCurrentDraft") && app.includes("data-reset-draft"), "Reset must be scoped to the current draft layer");
+assert(app.includes("playerScore") && app.includes("pointsThroughDay"), "Draft scores must recalculate from official results");
 
 console.log(`Smoke checks passed: ${data.rikishi.length} rikishi, ${data.bouts.length} bouts, ${data.history.length} archived basho.`);

@@ -27,7 +27,6 @@ const HISTORY_STORAGE_KEY = "sumoBattleHistoryCache";
 
 const defaultPlayers = Object.fromEntries(
   data.players.map((player) => [player.id, {
-    sidePrediction: player.sidePrediction || null,
     favouriteWrestler: player.favouriteWrestler || "",
     notes: "",
   }]),
@@ -37,6 +36,8 @@ function emptyDraftPlayers() {
   return Object.fromEntries(data.players.map((player) => [player.id, {
     mainPicks: [],
     substitutes: [],
+    sidePrediction: null,
+    substitutionEvents: [],
   }]));
 }
 
@@ -45,10 +46,21 @@ function emptyDrafts() {
 }
 
 function normalizeDrafts(saved) {
-  const drafts = emptyDrafts();
-  if (saved.draftSchemaVersion !== DRAFT_SCHEMA_VERSION || !saved.drafts) return drafts;
+  if (saved.draftSchemaVersion !== DRAFT_SCHEMA_VERSION || !saved.drafts) return emptyDrafts();
+  const drafts = Object.fromEntries(Object.entries(saved.drafts).map(([bashoId, bashoDraft]) => [bashoId,
+    Object.fromEntries(data.players.map((player) => {
+      const previous = bashoDraft?.[player.id] || {};
+      return [player.id, {
+        mainPicks: Array.isArray(previous.mainPicks) ? previous.mainPicks.filter((id) => typeof id === "string").slice(0, 6) : [],
+        substitutes: Array.isArray(previous.substitutes) ? previous.substitutes.filter((id) => typeof id === "string").slice(0, 3) : [],
+        sidePrediction: ["East", "West"].includes(previous.sidePrediction) ? previous.sidePrediction : null,
+        substitutionEvents: Array.isArray(previous.substitutionEvents) ? previous.substitutionEvents : [],
+      }];
+    })),
+  ]));
 
   data.banzuke.bashos.forEach((basho) => {
+    drafts[basho.id] = emptyDraftPlayers();
     const validIds = new Set(basho.entries.map((entry) => entry.rikishiId));
     const owned = new Set();
     data.players.forEach((player) => {
@@ -65,6 +77,12 @@ function normalizeDrafts(saved) {
       drafts[basho.id][player.id] = {
         mainPicks: normalizeList(stored.mainPicks, 6),
         substitutes: normalizeList(stored.substitutes, 3),
+        sidePrediction: ["East", "West"].includes(stored.sidePrediction)
+          ? stored.sidePrediction
+          : ["East", "West"].includes(saved.players?.[player.id]?.sidePrediction)
+            ? saved.players[player.id].sidePrediction
+            : null,
+        substitutionEvents: Array.isArray(stored.substitutionEvents) ? stored.substitutionEvents : [],
       };
     });
   });
@@ -84,17 +102,35 @@ const defaults = {
   draftSchemaVersion: DRAFT_SCHEMA_VERSION,
   drafts: emptyDrafts(),
   history: JSON.parse(JSON.stringify(data.history)),
+  officialBashoId: data.meta.bashoId || "",
+  officialDataSignature: data.meta.dataSignature || "",
 };
+
+function blankHistoryEvent() {
+  return {
+    rosters: { gwazy: [], jake: [] },
+    predictions: { gwazy: null, jake: null },
+    bonusPoints: { gwazy: 0, jake: 0 },
+    notes: { gwazy: "", jake: "" },
+    bestPicks: { gwazy: "", jake: "" },
+    worstPicks: { gwazy: "", jake: "" },
+  };
+}
 
 const readState = () => {
   try {
     const stored = JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) || "{}");
     const compatible = stored.appVersion === APP_SAVE_VERSION;
-    if (!compatible) {
-      localStorage.removeItem(SETTINGS_STORAGE_KEY);
-      localStorage.removeItem(HISTORY_STORAGE_KEY);
-    }
-    const saved = compatible ? stored : {};
+    const historyCache = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY) || "{}");
+    const saved = compatible ? stored : {
+      theme: stored.theme,
+      sound: stored.sound,
+      reducedMotion: stored.reducedMotion,
+      compact: stored.compact,
+      activePlayer: stored.activePlayer,
+      players: stored.players,
+      history: Array.isArray(historyCache.events) ? historyCache.events : stored.history,
+    };
     const players = Object.fromEntries(data.players.map((player) => {
       const stored = saved.players?.[player.id] || {};
       const base = defaultPlayers[player.id];
@@ -103,14 +139,12 @@ const readState = () => {
         ...stored,
         mainPicks: undefined,
         substitutes: undefined,
+        sidePrediction: undefined,
       }];
     }));
-    if (!saved.players && saved.bonusPrediction && players[saved.activePlayer || "gwazy"]) {
-      players[saved.activePlayer || "gwazy"].sidePrediction = saved.bonusPrediction;
-    }
     const history = Array.isArray(saved.history) && saved.history.every((event) => Number.isFinite(event.gwazyScore))
       ? saved.history.map((event) => {
-        const base = defaults.history.find((item) => item.id === event.id) || defaults.history[0];
+        const base = defaults.history.find((item) => item.id === event.id) || blankHistoryEvent();
         return {
           ...base,
           ...event,
@@ -128,7 +162,10 @@ const readState = () => {
       ? saved.selectedBashoId
       : defaults.selectedBashoId;
     const drafts = normalizeDrafts(saved);
-    return { ...defaults, ...saved, appVersion: APP_SAVE_VERSION, activePlayer, selectedBashoId, players, drafts, draftSchemaVersion: DRAFT_SCHEMA_VERSION, history };
+    const officialBashoId = saved.officialBashoId || defaults.officialBashoId;
+    const officialChanged = saved.officialDataSignature && saved.officialDataSignature !== data.meta.dataSignature;
+    const selectedDay = officialChanged ? Math.max(1, data.meta.day) : Number(saved.selectedDay || defaults.selectedDay);
+    return { ...defaults, ...saved, appVersion: APP_SAVE_VERSION, activePlayer, selectedBashoId, selectedDay, players, drafts, draftSchemaVersion: DRAFT_SCHEMA_VERSION, history, officialBashoId, officialDataSignature: data.meta.dataSignature };
   } catch {
     localStorage.removeItem(SETTINGS_STORAGE_KEY);
     localStorage.removeItem(HISTORY_STORAGE_KEY);
@@ -144,6 +181,7 @@ let banzukeProfileTimer = null;
 
 function saveState() {
   try {
+    syncAllSubstitutionEvents();
     localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(state));
     localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify({ version: APP_SAVE_VERSION, updated: new Date().toISOString(), events: state.history }));
   } catch {
@@ -162,11 +200,189 @@ function getPlayerState(id = state.activePlayer) {
   return state.players[id];
 }
 
-function getRoster(id = state.activePlayer, bashoId = state.selectedBashoId) {
+function getDraftPlayer(id = state.activePlayer, bashoId = state.selectedBashoId) {
   if (!state.drafts[bashoId]) state.drafts[bashoId] = emptyDraftPlayers();
-  if (!state.drafts[bashoId][id]) state.drafts[bashoId][id] = { mainPicks: [], substitutes: [] };
-  const draft = state.drafts[bashoId][id];
+  if (!state.drafts[bashoId][id]) state.drafts[bashoId][id] = { mainPicks: [], substitutes: [], sidePrediction: null, substitutionEvents: [] };
+  return state.drafts[bashoId][id];
+}
+
+function getSidePrediction(id = state.activePlayer, bashoId = state.selectedBashoId) {
+  return getDraftPlayer(id, bashoId).sidePrediction || null;
+}
+
+function getRoster(id = state.activePlayer, bashoId = state.selectedBashoId) {
+  const draft = getDraftPlayer(id, bashoId);
   return { team: draft.mainPicks, subs: draft.substitutes };
+}
+
+function isSanyaku(rikishi) {
+  return Boolean(rikishi && ["Yokozuna", "Ozeki", "Sekiwake", "Komusubi"].includes(rikishi.rank));
+}
+
+function isMaegashira(rikishi) {
+  return Boolean(rikishi?.rank?.startsWith("Maegashira"));
+}
+
+function substituteRules(ids) {
+  const picks = ids.map(getRikishi).filter(Boolean);
+  const sanyaku = picks.filter(isSanyaku).length;
+  const maegashira = picks.filter(isMaegashira).length;
+  return {
+    sanyaku,
+    maegashira,
+    valid: ids.length <= 3 && sanyaku <= 1 && maegashira <= 2 && (ids.length < 3 || (sanyaku === 1 && maegashira === 2)),
+  };
+}
+
+function rikishiDayStatus(rikishi, day) {
+  const result = rikishi?.dailyResults?.find((item) => item.day === day);
+  if (!result) return null;
+  if (result.status) return result.status;
+  if (result.kyujo) return "absent";
+  if (result.result) return result.result;
+  if (result.opponentId || result.opponentJsaId) return "scheduled";
+  return null;
+}
+
+function isKyujoOnDay(rikishi, day) {
+  if (!rikishi || day < 1) return false;
+  const status = rikishiDayStatus(rikishi, day);
+  if (["absent", "forfeit-loss"].includes(status)) return true;
+  if (["win", "loss", "forfeit-win", "scheduled", "completed"].includes(status)) return false;
+  return day <= (data.meta.scheduledThroughDay || data.meta.day) && isKyujoOnDay(rikishi, day - 1);
+}
+
+function currentLineupDay() {
+  return Math.max(0, data.meta.day || 0, data.meta.scheduledThroughDay || 0);
+}
+
+function substitutionTimeline(playerId, throughDay = currentLineupDay()) {
+  const roster = getRoster(playerId);
+  const mainPicks = roster.team.map(getRikishi).filter(Boolean);
+  const substitutes = roster.subs.map(getRikishi).filter(Boolean);
+  const assignments = new Map();
+  const events = [];
+  const byDay = new Map();
+
+  for (let day = 1; day <= throughDay; day += 1) {
+    for (const [mainId, subId] of [...assignments]) {
+      const main = getRikishi(mainId);
+      if (isKyujoOnDay(main, day)) continue;
+      assignments.delete(mainId);
+      events.push({ id: `${playerId}-${day}-returned-${mainId}-${subId}`, day, type: "returned", mainId, subId });
+    }
+
+    const occupiedSubstitutes = new Set(assignments.values());
+    for (const main of mainPicks) {
+      if (!isKyujoOnDay(main, day) || assignments.has(main.id)) continue;
+      const categoryTest = isSanyaku(main) ? isSanyaku : isMaegashira;
+      const substitute = substitutes.find((candidate) => categoryTest(candidate) && !occupiedSubstitutes.has(candidate.id));
+      if (!substitute) continue;
+      assignments.set(main.id, substitute.id);
+      occupiedSubstitutes.add(substitute.id);
+      events.push({ id: `${playerId}-${day}-activated-${main.id}-${substitute.id}`, day, type: "activated", mainId: main.id, subId: substitute.id });
+    }
+
+    const inactiveMainIds = mainPicks.filter((main) => isKyujoOnDay(main, day)).map((main) => main.id);
+    const activeMainIds = mainPicks.filter((main) => !inactiveMainIds.includes(main.id)).map((main) => main.id);
+    const activeSubIds = [...assignments.values()];
+    byDay.set(day, {
+      day,
+      assignments: [...assignments].map(([mainId, subId]) => ({ mainId, subId })),
+      inactiveMainIds,
+      activeMainIds,
+      activeSubIds,
+      activeIds: [...activeMainIds, ...activeSubIds],
+    });
+  }
+
+  const current = byDay.get(throughDay) || { day: throughDay, assignments: [], inactiveMainIds: [], activeMainIds: mainPicks.map((main) => main.id), activeSubIds: [], activeIds: mainPicks.map((main) => main.id) };
+  return { ...current, byDay, events, standbySubIds: substitutes.filter((substitute) => !current.activeSubIds.includes(substitute.id)).map((substitute) => substitute.id) };
+}
+
+function syncAllSubstitutionEvents() {
+  if (!state?.drafts) return;
+  for (const player of data.players) {
+    const draft = getDraftPlayer(player.id);
+    draft.substitutionEvents = substitutionTimeline(player.id).events;
+  }
+}
+
+function pointsThroughDay(rikishi, day = data.meta.day) {
+  const results = (rikishi.dailyResults || []).filter((result) => result.day <= day && result.completed);
+  const wins = results.filter((result) => result.result === "win").length;
+  const losses = results.filter((result) => result.result === "loss").length;
+  let kinboshi = 0;
+  for (const officialDay of data.results?.days || []) {
+    if (officialDay.day > day) continue;
+    for (const bout of officialDay.bouts || []) {
+      if (bout.completed && bout.winner === rikishi.id) {
+        const loserId = bout.winner === bout.east ? bout.west : bout.east;
+        if (rikishi.rank.startsWith("Maegashira") && getRikishi(loserId)?.rank === "Yokozuna") kinboshi += 1;
+      }
+    }
+  }
+  return wins - (losses >= 8 ? 1 : 0) + (kinboshi * 3);
+}
+
+function sideWinner(day = data.meta.day) {
+  if (day < data.meta.totalDays) return null;
+  const totals = data.meta.sideTotals || { East: 0, West: 0 };
+  return totals.East === totals.West ? null : totals.East > totals.West ? "East" : "West";
+}
+
+function playerScore(id, day = data.meta.day) {
+  const timeline = substitutionTimeline(id, day);
+  let pickPoints = 0;
+  for (let currentDay = 1; currentDay <= day; currentDay += 1) {
+    const lineup = timeline.byDay.get(currentDay);
+    for (const rikishiId of lineup?.activeIds || []) {
+      const rikishi = getRikishi(rikishiId);
+      pickPoints += pointsThroughDay(rikishi, currentDay) - pointsThroughDay(rikishi, currentDay - 1);
+    }
+  }
+  return pickPoints + (getSidePrediction(id) && getSidePrediction(id) === sideWinner(day) ? 20 : 0);
+}
+
+function playerDayScore(id, day = data.meta.day) {
+  if (day < 1) return 0;
+  return playerScore(id, day) - playerScore(id, day - 1);
+}
+
+function countedPointsForRikishi(playerId, rikishiId, day = data.meta.day) {
+  const timeline = substitutionTimeline(playerId, day);
+  const rikishi = getRikishi(rikishiId);
+  let points = 0;
+  for (let currentDay = 1; currentDay <= day; currentDay += 1) {
+    if (!timeline.byDay.get(currentDay)?.activeIds.includes(rikishiId)) continue;
+    points += pointsThroughDay(rikishi, currentDay) - pointsThroughDay(rikishi, currentDay - 1);
+  }
+  return points;
+}
+
+function hasNewOfficialBasho() {
+  return Boolean(state.officialBashoId && data.meta.bashoId && state.officialBashoId !== data.meta.bashoId);
+}
+
+function newBashoNotice() {
+  if (!hasNewOfficialBasho()) return "";
+  return `<aside class="new-basho-notice" role="status"><span>新</span><div><small>OFFICIAL BASHO DETECTED</small><b>A new basho has begun.</b><p>The JSA layer is already updated. Your history and previous drafts are protected.</p></div><button class="primary-button" type="button" data-start-new-draft>Start a new draft</button></aside>`;
+}
+
+function resetCurrentDraft() {
+  state.drafts[state.selectedBashoId] = emptyDraftPlayers();
+  pendingSwap = null;
+  saveState();
+}
+
+function startNewOfficialBashoDraft() {
+  state.selectedBashoId = data.banzuke.currentBashoId;
+  state.drafts[state.selectedBashoId] = emptyDraftPlayers();
+  state.officialBashoId = data.meta.bashoId;
+  state.officialDataSignature = data.meta.dataSignature;
+  state.selectedDay = Math.max(1, data.meta.day);
+  pendingSwap = null;
+  saveState();
 }
 
 function draftOwner(rikishiId, bashoId = state.selectedBashoId) {
@@ -305,18 +521,20 @@ function progressDots() {
 
 function scoreDuel() {
   const [gwazy, jake] = data.players;
-  const lead = gwazy.score - jake.score;
+  const gwazyScore = playerScore(gwazy.id);
+  const jakeScore = playerScore(jake.id);
+  const lead = gwazyScore - jakeScore;
   const filledSlots = data.players.reduce((total, player) => {
     const roster = getRoster(player.id);
     return total + roster.team.length + roster.subs.length;
   }, 0);
   return `
-    <article class="score-duel glass-card reveal" aria-label="Current score: ${gwazy.name} ${gwazy.score}, ${jake.name} ${jake.score}">
+    <article class="score-duel glass-card reveal" aria-label="Current score: ${gwazy.name} ${gwazyScore}, ${jake.name} ${jakeScore}">
       <div class="duel-player ${lead > 0 ? "leader" : ""}">
         <span class="player-avatar violet">${gwazy.initials}</span>
         <div>
           <div class="duel-label">${lead > 0 ? '<span class="live-chip">LEADING</span>' : ""}${gwazy.name}</div>
-          <strong class="count-up" data-value="${gwazy.score}">0</strong><small>PTS</small>
+          <strong class="count-up" data-value="${gwazyScore}">0</strong><small>PTS</small>
         </div>
       </div>
       <div class="duel-center">
@@ -326,7 +544,7 @@ function scoreDuel() {
       <div class="duel-player right ${lead < 0 ? "leader" : ""}">
         <div>
           <div class="duel-label">${jake.name}${lead < 0 ? '<span class="live-chip">LEADING</span>' : ""}</div>
-          <strong class="count-up" data-value="${jake.score}">0</strong><small>PTS</small>
+          <strong class="count-up" data-value="${jakeScore}">0</strong><small>PTS</small>
         </div>
         <span class="player-avatar gold">${jake.initials}</span>
       </div>
@@ -337,45 +555,60 @@ function scoreDuel() {
 function boutCard(bout, compact = false) {
   const east = getRikishi(bout.east);
   const west = getRikishi(bout.west);
-  const winner = getRikishi(bout.winner);
-  const stars = "★".repeat(bout.importance) + "☆".repeat(5 - bout.importance);
+  if (!east || !west) return "";
+  const winner = getRikishi(bout.winner) || east;
+  const importance = Math.max(1, Math.min(5, Number(bout.importance) || 1));
+  const stars = "★".repeat(importance) + "☆".repeat(5 - importance);
   return `
-    <button class="bout-card ${compact ? "compact" : ""}" type="button" data-profile="${winner.id}">
-      <span class="bout-importance" title="Match importance ${bout.importance} out of 5">${stars}</span>
+    <button class="bout-card ${compact ? "compact" : ""} ${bout.completed ? "" : "scheduled"}" type="button" data-profile="${winner.id}">
+      <span class="bout-importance" title="Match importance ${importance} out of 5">${stars}</span>
       <span class="bout-wrestler ${bout.winner === east.id ? "winner" : ""}">
         ${wrestlerImage(east)}
         <span><b>${east.name}</b><small>${east.rank} · ${east.record}</small></span>
       </span>
-      <span class="versus"><b>VS</b><small>${bout.technique}</small></span>
+      <span class="versus"><b>VS</b><small>${bout.technique || "Scheduled"}</small></span>
       <span class="bout-wrestler right ${bout.winner === west.id ? "winner" : ""}">
         <span><b>${west.name}</b><small>${west.rank} · ${west.record}</small></span>
         ${wrestlerImage(west)}
       </span>
-      <span class="bout-swing">${bout.swing}</span>
+      <span class="bout-swing">${bout.completed ? (bout.swing ?? "Official") : "Pending"}</span>
     </button>`;
 }
 
-function rosterCard(rikishi, playerId, substitute = false) {
+function rosterCard(rikishi, playerId, substitute = false, role = "active") {
   const hasResult = rikishi.wins + rikishi.losses + (rikishi.absences || 0) > 0;
   const heat = !hasResult ? "unplayed" : rikishi.form >= 75 ? "hot" : rikishi.form < 40 ? "cold" : "steady";
   const isSwapSource = pendingSwap?.playerId === playerId && pendingSwap.rikishiId === rikishi.id;
   const isSwapTarget = pendingSwap?.playerId === playerId && pendingSwap.substitute !== substitute;
+  const isKyujo = role === "kyujo";
+  const isActiveSubstitute = role === "active-substitute";
+  const isStandbySubstitute = role === "standby-substitute";
+  const points = countedPointsForRikishi(playerId, rikishi.id);
+  const statusBadge = isKyujo
+    ? '<span class="roster-status-badge kyujo">⚠ KYUJO · INACTIVE</span>'
+    : isActiveSubstitute
+      ? '<span class="roster-status-badge active-substitute">✓ ACTIVE SUBSTITUTE</span>'
+      : isStandbySubstitute
+        ? '<span class="roster-status-badge standby">○ STANDBY · 0 PTS</span>'
+        : '<span class="roster-status-badge active-main">● ACTIVE MAIN</span>';
   return `
-    <article class="roster-card ${heat} ${isSwapSource ? "swap-source" : ""} ${isSwapTarget ? "swap-target" : ""}" data-profile="${rikishi.id}">
+    <article class="roster-card ${heat} ${isKyujo ? "is-kyujo" : ""} ${isActiveSubstitute ? "is-active-substitute" : ""} ${isStandbySubstitute ? "is-standby-substitute" : ""} ${isSwapSource ? "swap-source" : ""} ${isSwapTarget ? "swap-target" : ""}" data-profile="${rikishi.id}">
       ${wrestlerImage(rikishi, "medium")}
       <div class="roster-card-main">
         <div class="roster-card-title">
           <div><h3>${rikishi.name}</h3><p>${rikishi.rank} · ${rikishi.stable}</p></div>
           ${sideBadge(rikishi)}
         </div>
+        ${statusBadge}
         <div class="record-line"><strong>${rikishi.record}</strong><span><b>${rikishi.wins}</b> wins · <b>${rikishi.losses}</b> losses</span></div>
         <div class="heat-track"><span style="--width:${rikishi.form}%"></span></div>
       </div>
-      <div class="roster-points"><strong>${rikishi.points}</strong><small>PTS</small></div>
+      <div class="roster-points"><strong>${isStandbySubstitute ? 0 : points}</strong><small>${isKyujo ? "BANKED PTS" : isStandbySubstitute ? "INACTIVE" : "COUNTED PTS"}</small></div>
       ${rikishi.badge ? `<span class="clutch-badge">✦ ${rikishi.badge}</span>` : ""}
       <div class="roster-card-actions">
         <button type="button" data-roster-move="${rikishi.id}:${substitute ? "main" : "subs"}">${substitute ? "Move to main" : "Move to subs"}</button>
         <button type="button" data-swap-pick="${rikishi.id}:${substitute ? "sub" : "main"}">${isSwapTarget ? "Swap here" : isSwapSource ? "Cancel swap" : "Swap"}</button>
+        ${substitute ? `<button type="button" data-replace-sub="${rikishi.id}">Change substitute</button>` : ""}
         <button class="remove" type="button" data-remove-pick="${rikishi.id}">Remove</button>
       </div>
     </article>`;
@@ -410,24 +643,53 @@ function overviewRosterSlots(player, ids, type, limit) {
   return slots.join("");
 }
 
+function overviewPickRow(player, rikishiId, status, slot) {
+  const rikishi = getRikishi(rikishiId);
+  if (!rikishi) return "";
+  const points = countedPointsForRikishi(player.id, rikishi.id);
+  const statusCopy = status === "kyujo" ? "Kyujo · inactive" : status === "active-substitute" ? "Active replacement" : status === "standby" ? "Standby · 0 points" : "Active main";
+  return `<button class="dashboard-pick-row ${status}" type="button" data-profile="${rikishi.id}">
+    <span class="dashboard-slot-number">${slot}</span>${wrestlerImage(rikishi)}
+    <span><b>${escapeHtml(rikishi.name)}</b><small>${statusCopy}</small></span>
+    <strong>${status === "standby" ? 0 : points}<small> PTS</small></strong>
+  </button>`;
+}
+
+function overviewEmptySlot(player, type, index) {
+  return `<div class="dashboard-pick-row empty" data-empty-draft-slot="${player.id}:${type}:${index}">
+    <span class="dashboard-slot-number">${index}</span><span class="dashboard-empty-avatar">+</span>
+    <span><b>Available slot</b><small>Draft from the Banzuke</small></span>
+  </div>`;
+}
+
 function overviewRosterDashboard(player) {
   const roster = getRoster(player.id);
-  const prediction = getPlayerState(player.id).sidePrediction;
+  const timeline = substitutionTimeline(player.id);
+  const prediction = getSidePrediction(player.id);
+  const score = playerScore(player.id);
+  const mainRows = Array.from({ length: 6 }, (_, index) => {
+    const mainId = roster.team[index];
+    if (!mainId) return overviewEmptySlot(player, "main", index + 1);
+    return overviewPickRow(player, mainId, timeline.inactiveMainIds.includes(mainId) ? "kyujo" : "active-main", index + 1);
+  }).join("");
+  const activeReplacementRows = timeline.assignments.map((assignment, index) => overviewPickRow(player, assignment.subId, "active-substitute", index + 1)).join("");
+  const standbyRows = timeline.standbySubIds.map((id, index) => overviewPickRow(player, id, "standby", index + 1)).join("");
   return `
     <article class="team-preview overview-roster-column ${player.color}" data-overview-roster="${player.id}">
       <div class="team-preview-head">
         <span class="player-avatar ${player.color}">${player.initials}</span>
         <div><small>${player.name.toUpperCase()}'S DRAFT</small><h3>${roster.team.length + roster.subs.length} / 9 slots filled</h3></div>
-        <strong>${player.score}</strong>
+        <strong>${score}</strong>
       </div>
-      <div class="dashboard-team-meta"><span><small>CURRENT SCORE</small><b>${player.score} pts</b></span><span><small>SIDE PREDICTION</small><b>${prediction || "None"}</b></span></div>
+      <div class="dashboard-team-meta"><span><small>CURRENT SCORE</small><b>${score} pts</b></span><span><small>SIDE PREDICTION</small><b>${prediction || "None"}</b></span></div>
       <section class="dashboard-roster-section">
         <div class="dashboard-roster-heading"><span>MAIN PICKS</span><b>${roster.team.length} / 6</b></div>
-        <div class="dashboard-roster-list">${overviewRosterSlots(player, roster.team, "main", 6)}</div>
+        <div class="dashboard-roster-list">${mainRows}</div>
       </section>
-      <section class="dashboard-roster-section subs">
-        <div class="dashboard-roster-heading"><span>SUBSTITUTES</span><b>${roster.subs.length} / 3</b></div>
-        <div class="dashboard-roster-list">${overviewRosterSlots(player, roster.subs, "sub", 3)}</div>
+      ${activeReplacementRows ? `<section class="dashboard-roster-section active-replacements"><div class="dashboard-roster-heading"><span>ACTIVE REPLACEMENTS</span><b>${timeline.activeSubIds.length}</b></div><div class="dashboard-roster-list">${activeReplacementRows}</div></section>` : ""}
+      <section class="dashboard-roster-section subs standby-substitutes">
+        <div class="dashboard-roster-heading"><span>STANDBY SUBSTITUTES</span><b>${timeline.standbySubIds.length} / ${roster.subs.length || 3}</b></div>
+        <div class="dashboard-roster-list">${standbyRows || (roster.subs.length ? "" : overviewRosterSlots(player, [], "sub", 3))}</div>
       </section>
     </article>`;
 }
@@ -443,7 +705,7 @@ function overviewView() {
         <div class="hero-scrim"></div>
         <div class="hero-content">
           <div>
-            <p class="eyebrow"><span class="live-dot"></span> UPCOMING BASHO</p>
+            <p class="eyebrow"><span class="live-dot"></span> OFFICIAL BASHO · DAY ${data.meta.day}</p>
             <h1>${data.meta.tournament}</h1>
             <p class="hero-detail"><span>${icons.calendar}</span> ${data.meta.dateRange}<span>${icons.pin}</span> ${data.meta.venue}</p>
           </div>
@@ -475,9 +737,9 @@ function overviewView() {
         <div class="bonus-prediction ${getPlayerDefinition().color}">
           <div><p class="eyebrow">${getPlayerDefinition().name.toUpperCase()}'S SIDE PREDICTION</p><h2>Which side wins more bouts?</h2><p>No prediction is selected by default. This choice belongs only to ${getPlayerDefinition().name}.</p></div>
           <div class="side-choice" role="group" aria-label="Bonus side prediction">
-            <button type="button" class="east ${getPlayerState().sidePrediction === "East" ? "active" : ""}" data-bonus="East"><span>東</span><b>EAST</b><small>${getPlayerState().sidePrediction === "East" ? "PICKED" : "SELECT"}</small></button>
+            <button type="button" class="east ${getSidePrediction() === "East" ? "active" : ""}" data-bonus="East"><span>東</span><b>EAST</b><small>${getSidePrediction() === "East" ? "PICKED" : "SELECT"}</small></button>
             <span class="bonus-vs">VS<small>20 PTS</small></span>
-            <button type="button" class="west ${getPlayerState().sidePrediction === "West" ? "active" : ""}" data-bonus="West"><span>西</span><b>WEST</b><small>${getPlayerState().sidePrediction === "West" ? "PICKED" : "SELECT"}</small></button>
+            <button type="button" class="west ${getSidePrediction() === "West" ? "active" : ""}" data-bonus="West"><span>西</span><b>WEST</b><small>${getSidePrediction() === "West" ? "PICKED" : "SELECT"}</small></button>
           </div>
         </div>
       </section>
@@ -528,7 +790,7 @@ function rosterView() {
       <section class="active-roster-workspace ${player.color} reveal">
         <div class="roster-owner">
           <span class="player-avatar ${player.color}">${player.initials}</span>
-          <div><p class="eyebrow">${player.name.toUpperCase()}'S PICKS</p><h2>${player.score} points</h2></div>
+          <div><p class="eyebrow">${player.name.toUpperCase()}'S PICKS</p><h2>${playerScore(player.id)} points</h2></div>
           <span class="legal-badge ${check.valid ? "valid" : "invalid"}">${check.valid ? "✓ ROSTER LEGAL" : "! ROSTER INCOMPLETE"}</span>
         </div>
         ${pendingSwap ? `<div class="swap-notice"><b>Swap mode:</b> choose a pick in the other column to swap with ${getRikishi(pendingSwap.rikishiId).name}. <button type="button" data-cancel-swap>Cancel</button></div>` : ""}
@@ -732,25 +994,35 @@ function banzukeView() {
         <div class="banzuke-integrity"><span class="status-dot"></span><b id="banzuke-render-count">Checking ${basho.expectedRikishi} official entries…</b><small>Every data-layer rikishi must render.</small></div>
         <div class="banzuke-rows">${rows.map(banzukeRow).join("")}</div>
       </section>
-      <p class="source-note"><a href="${basho.officialUrl}" target="_blank" rel="noreferrer">Official Japan Sumo Association banzuke ↗</a> · Every rikishi starts at 0–0. Picks save immediately for ${player.name}.</p>
+      <p class="source-note"><a href="${basho.officialUrl}" target="_blank" rel="noreferrer">Official Japan Sumo Association banzuke ↗</a> · Records update from the read-only JSA snapshot. Picks save only to ${player.name}'s local draft.</p>
       ${appFooter()}
     </section>`;
 }
 
 function resultsForDay(day) {
-  if (!data.bouts.length || day !== data.meta.day) return [];
-  return data.bouts.filter((bout) => !bout.day || bout.day === day);
+  const officialDay = data.results?.days?.find((item) => item.day === day);
+  if (!officialDay) return [];
+  return officialDay.bouts
+    .filter((bout) => getRikishi(bout.east) && getRikishi(bout.west))
+    .map((bout) => {
+      const ranks = [getRikishi(bout.east)?.rank, getRikishi(bout.west)?.rank];
+      const importance = ranks.includes("Yokozuna") ? 5 : ranks.includes("Ozeki") ? 4 : ranks.some((rank) => ["Sekiwake", "Komusubi"].includes(rank)) ? 3 : 1;
+      return { ...bout, importance };
+    });
 }
 
 function resultsView() {
   const day = Number(state.selectedDay);
   const bouts = resultsForDay(day);
   const [gwazy, jake] = data.players;
+  const gwazyToday = playerDayScore(gwazy.id, day);
+  const jakeToday = playerDayScore(jake.id, day);
+  const completed = bouts.filter((bout) => bout.completed).length;
   return `
     <section class="page-shell">
-      ${pageIntro(`${escapeHtml(selectedBasho().label.toUpperCase())} · DAY ${day}`, "Bout results", "Results will appear here when the first basho begins.", `<div class="daily-score"><span>GWAZY <b>${gwazy.today}</b></span><i></i><span>JAKE <b>${jake.today}</b></span></div>`)}
+      ${pageIntro(`${escapeHtml(selectedBasho().label.toUpperCase())} · DAY ${day}`, "Bout results", "Official schedules, records, winners, and kimarite update from the JSA snapshot.", `<div class="daily-score"><span>GWAZY <b>${gwazyToday}</b></span><i></i><span>JAKE <b>${jakeToday}</b></span></div>`)}
       <div class="day-selector reveal" role="tablist" aria-label="Tournament day">${Array.from({ length: 15 }, (_, index) => `<button type="button" role="tab" aria-selected="${day === index + 1}" class="${day === index + 1 ? "active" : ""}" data-day="${index + 1}"><small>DAY</small>${index + 1}</button>`).join("")}</div>
-      <div class="results-summary reveal"><span class="status-dot"></span><strong>${bouts.length ? data.meta.status : "Awaiting the first torikumi"}</strong><span>${bouts.length} Makuuchi results</span><span>Fantasy total: ${gwazy.today + jake.today} pts</span></div>
+      <div class="results-summary reveal"><span class="status-dot"></span><strong>${bouts.length ? (completed === bouts.length ? `Day ${day} official results` : `Day ${day} official schedule`) : "Awaiting the official torikumi"}</strong><span>${completed} completed · ${bouts.length - completed} scheduled</span><span>Draft points today: ${gwazyToday + jakeToday}</span></div>
       <section class="results-list reveal">${bouts.length ? bouts.map((bout, index) => `<div class="result-number">${String(index + 1).padStart(2, "0")}</div>${boutCard(bout, true)}`).join("") : `<div class="empty-results"><span>取</span><h2>Awaiting torikumi</h2><p>Day ${day} matchups will appear here when the official schedule is published.</p></div>`}</section>
       ${appFooter()}
     </section>`;
@@ -934,14 +1206,15 @@ function settingsView() {
           <button class="secondary-button test-sound" type="button">Test sound</button>
           <p class="microcopy">Sound always requires a user gesture and can be disabled instantly in the header.</p>
         </section>
-        <section class="settings-card data-card reveal"><div class="settings-card-title"><span>↻</span><div><h2>Data layer</h2><p>Static JSON-shaped data, ready for a GitHub Action updater.</p></div></div>
-          <div class="sync-panel"><span class="sync-icon">✓</span><div><b>Data is current</b><small>${data.meta.lastUpdated}</small></div><span class="sync-badge"><i></i> Connected</span></div>
+        <section class="settings-card data-card reveal"><div class="settings-card-title"><span>↻</span><div><h2>Official JSA layer</h2><p>Read-only banzuke, records, schedules, results, and injury data.</p></div></div>
+          <div class="sync-panel"><span class="sync-icon">✓</span><div><b>Official snapshot loaded</b><small>${data.meta.lastUpdated}</small></div><span class="sync-badge"><i></i> JSA</span></div>
           <div class="source-list">${data.meta.sources.map((source) => `<a href="${source.url}" target="_blank" rel="noreferrer"><span>${icons.source}</span><b>${source.label}</b><small>sumo.or.jp</small></a>`).join("")}</div>
           <button class="secondary-button" type="button" data-mock-sync>Check data now</button>
         </section>
-        <section class="settings-card reveal"><div class="settings-card-title"><span>⌁</span><div><h2>Local storage</h2><p>Preferences and draft rosters stay on this device.</p></div></div>
+        <section class="settings-card reveal"><div class="settings-card-title"><span>⌁</span><div><h2>Local draft layer</h2><p>Rosters and predictions stay on this device and never overwrite JSA data.</p></div></div>
           <div class="storage-meter"><div><span>Version 2 save</span><b>${storageKilobytes} KB</b></div><span><i style="--width:${Math.min(100, Number(storageKilobytes) * 4)}%"></i></span></div>
-          <button class="danger-button" type="button" data-reset-settings>Reset local settings</button>
+          <button class="danger-button" type="button" data-reset-draft>Reset current draft only</button>
+          <p class="microcopy">Keeps official basho data, previous drafts, history, player notes, display settings, and image cache.</p>
         </section>
       </div>
       ${appFooter()}
@@ -952,7 +1225,7 @@ function appFooter() {
   return `
     <footer class="app-footer">
       <div class="brand footer-brand"><span class="brand-mon"><span>相</span></span><span><strong>SUMO BATTLE</strong><small>Made for the rivalry, not for money.</small></span></div>
-      <p>Fantasy points are private and manually maintained. Tournament facts link back to the <a href="${data.meta.sources[0].url}" target="_blank" rel="noreferrer">Nihon Sumo Kyokai</a>.</p>
+      <p>Official results come from the <a href="${data.meta.sources[0].url}" target="_blank" rel="noreferrer">Nihon Sumo Kyokai</a>. Private draft data stays separate in this browser.</p>
       <span>v2.0 · ${data.meta.shortTournament}</span>
     </footer>`;
 }
@@ -1018,7 +1291,7 @@ function render() {
   };
   app.classList.add("route-leave");
   setTimeout(() => {
-    app.innerHTML = views[route]();
+    app.innerHTML = `${newBashoNotice()}${views[route]()}`;
     app.classList.remove("route-leave");
     app.dataset.route = route;
     window.scrollTo({ top: 0, behavior: state.reducedMotion ? "auto" : "smooth" });
@@ -1362,34 +1635,38 @@ function bindViewEvents() {
       showToast(`${player.name}'s legal roster is saved on this device.`);
     } else showToast(`${player.name}'s roster still breaks a pick rule.`);
   });
-  document.querySelector("[data-mock-sync]")?.addEventListener("click", (event) => {
+  document.querySelector("[data-mock-sync]")?.addEventListener("click", async (event) => {
     event.currentTarget.disabled = true;
-    event.currentTarget.textContent = "Checking official sources…";
-    setTimeout(() => {
+    event.currentTarget.textContent = "Checking deployed snapshot…";
+    try {
+      const response = await fetch(`data/official/basho.json?check=${Date.now()}`, { cache: "no-store" });
+      if (!response.ok) throw new Error("Snapshot unavailable");
+      const latest = await response.json();
+      const updateAvailable = latest.dataSignature && latest.dataSignature !== data.meta.dataSignature;
+      showToast(updateAvailable ? "New official data is available. Refresh this page to load it." : "This page has the latest deployed JSA snapshot.");
+    } catch {
+      showToast("Could not check the deployed snapshot. Your draft is unchanged.");
+    } finally {
       event.currentTarget.disabled = false;
       event.currentTarget.textContent = "Check data now";
-      showToast("No newer static data found.");
-    }, 900);
+    }
   });
-  document.querySelector("[data-reset-settings]")?.addEventListener("click", () => {
-    localStorage.removeItem(SETTINGS_STORAGE_KEY);
-    localStorage.removeItem(HISTORY_STORAGE_KEY);
-    window.RIKISHI_IMAGES?.clearCache();
-    state = readState();
-    pendingSwap = null;
-    historyEditMode = false;
-    activeHistoryId = state.history[0]?.id || null;
-    saveState();
-    setTheme();
+  document.querySelector("[data-reset-draft]")?.addEventListener("click", () => {
+    resetCurrentDraft();
     render();
-    showToast("Local preferences and draft were reset.");
+    showToast(`${selectedBasho().label} draft reset. Official data and history were preserved.`);
   });
   app.querySelectorAll("[data-bonus]").forEach((button) => button.addEventListener("click", () => {
-    getPlayerState().sidePrediction = button.dataset.bonus;
+    getDraftPlayer().sidePrediction = button.dataset.bonus;
     saveState();
     render();
     showToast(`${button.dataset.bonus} saved as ${getPlayerDefinition().name}'s 20-point bonus prediction.`);
   }));
+  document.querySelector("[data-start-new-draft]")?.addEventListener("click", () => {
+    startNewOfficialBashoDraft();
+    render();
+    showToast(`${selectedBasho().label} is ready for a new shared draft. Previous history was preserved.`);
+  });
   app.querySelectorAll("[data-player-field]").forEach((field) => field.addEventListener(field.tagName === "TEXTAREA" ? "input" : "change", () => {
     getPlayerState()[field.dataset.playerField] = field.value;
     saveState();

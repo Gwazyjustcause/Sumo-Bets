@@ -1128,3 +1128,38 @@ button.dashboard-pick-row:hover { border-color: var(--line-strong); background: 
   *::before,
   *::after { scroll-behavior: auto !important; animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
 }
+.new-basho-notice {
+  position: relative;
+  z-index: 4;
+  width: min(1180px, calc(100% - 36px));
+  margin: 18px auto 0;
+  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid rgba(245, 183, 72, 0.44);
+  border-radius: 16px;
+  background: linear-gradient(110deg, rgba(86, 51, 7, 0.96), rgba(25, 19, 35, 0.97));
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.28);
+}
+
+.new-basho-notice > span {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  color: #160e05;
+  background: #f5b748;
+  font: 800 1.35rem/1 serif;
+}
+
+.new-basho-notice small { color: #f5b748; letter-spacing: 0.12em; }
+.new-basho-notice b { display: block; margin-top: 2px; font-size: 1.05rem; }
+.new-basho-notice p { margin: 3px 0 0; color: var(--muted); }
+
+@media (max-width: 620px) {
+  .new-basho-notice { grid-template-columns: auto 1fr; width: calc(100% - 24px); }
+  .new-basho-notice .primary-button { grid-column: 1 / -1; width: 100%; }
+}
