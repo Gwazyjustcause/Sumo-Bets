@@ -157,6 +157,11 @@ assert(!tournamentOverview.includes("of 18 draft slots filled"), "Tournament mod
 assert.equal((tournamentOverview.match(/data-overview-day=/g) || []).length, 15, "The tournament hero must render all 15 basho days");
 assert(tournamentOverview.includes('data-overview-day="8"') && tournamentOverview.includes('current selected'), "The official current day must be highlighted in the hero");
 assert(tournamentOverview.includes('data-overview-day="9"') && tournamentOverview.includes('future" type="button" data-overview-day="9"'), "Future hero days must remain visible and disabled");
+const lockedBanzuke = vm.runInContext("banzukeView()", context);
+assert.equal((lockedBanzuke.match(/data-banzuke-id=/g) || []).length, 42, "The complete official Banzuke must remain visible after both drafts lock");
+assert(!lockedBanzuke.includes("Add to Main") && !lockedBanzuke.includes("Add to Subs"), "A locked Banzuke must remove drafting actions");
+assert(lockedBanzuke.includes("🔒 Gwazy") && lockedBanzuke.includes("🔒 Jake"), "A locked Banzuke must show read-only ownership for both players");
+assert(lockedBanzuke.includes("TOURNAMENT MODE · READ ONLY") && lockedBanzuke.includes("The complete official Banzuke remains visible"), "Locked tournament mode must explain that the Banzuke is browsable but not editable");
 vm.runInContext("state.selectedDay=3", context);
 const pastDayOverview = vm.runInContext("overviewView()", context);
 assert(pastDayOverview.includes("DAY SNAPSHOT") && pastDayOverview.includes("Day 3"), "Selecting a completed day must update Overview's day-dependent statistics");

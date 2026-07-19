@@ -790,6 +790,15 @@ button.dashboard-pick-row:hover { border-color: var(--line-strong); background: 
 .draft-pool-meter .jake { background: linear-gradient(90deg, #a87525, var(--gold-bright)); }
 
 .banzuke-builder { display: grid; margin-bottom: 14px; padding: 14px 16px; grid-template-columns: auto 1fr auto; align-items: center; gap: 20px; border: 1px solid color-mix(in srgb, var(--player-accent) 28%, var(--line)); border-radius: 14px; background: linear-gradient(90deg, var(--player-glow), var(--panel-soft)); }
+.banzuke-readonly-notice { display: flex; min-height: 70px; margin-bottom: 14px; padding: 14px 18px; align-items: center; gap: 14px; border: 1px solid rgba(230, 184, 92, 0.28); border-radius: 13px; background: linear-gradient(110deg, rgba(105, 72, 18, 0.12), var(--panel-soft)); }
+.banzuke-readonly-notice > span { font-size: 24px; }
+.banzuke-readonly-notice div { display: grid; gap: 3px; }
+.banzuke-readonly-notice small { color: var(--gold-bright); font-size: 7px; font-weight: 800; letter-spacing: 0.13em; }
+.banzuke-readonly-notice b { font-size: 11px; }
+.banzuke-readonly-notice p { margin: 0; color: var(--muted); font-size: 8px; }
+.banzuke-readonly-summary { display: flex; justify-content: flex-end; gap: 7px; }
+.banzuke-readonly-summary span { display: flex; min-height: 34px; padding: 0 10px; align-items: center; gap: 7px; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); font-size: 7px; font-weight: 800; }
+.banzuke-readonly-summary b { color: var(--text); font-size: 11px; }
 .banzuke-builder .validation-checklist { margin: 0; padding: 0; border: 0; }
 .builder-counts { display: flex; gap: 18px; }
 .builder-counts > span { display: grid; grid-template-columns: auto auto; align-items: baseline; gap: 2px 9px; }

@@ -114,6 +114,7 @@ for (const capability of ["bashoDayTimeline", "tournamentStarted", "tournamentFi
 for (const capability of ["TOURNAMENT PROGRESS", "DRAFT PROGRESS", "data-overview-day", "overviewSelectedDay", "progressDots"]) {
   assert(app.includes(capability), `Missing dynamic Overview hero capability: ${capability}`);
 }
+assert(app.includes('getPlayerDefinition().color') && app.includes('getPlayerDefinition().name'), "Locked Banzuke ownership actions must resolve the active player without an out-of-scope variable");
 for (const capability of ["validatePlayerDraft", "hasUnsavedPlayerChanges", "ownershipConflicts", "adoptLatestWhilePreservingPlayer", "latest.document", "attempt < 3", "just been drafted by"]) {
   assert(app.includes(capability), `Missing simultaneous player-save capability: ${capability}`);
 }

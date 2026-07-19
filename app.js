@@ -1691,7 +1691,7 @@ function banzukeRow(row) {
     let action;
     if (ownedByActivePlayer) {
       action = editingUnavailable
-        ? `<button class="pick-action locked ${player.color}" type="button" disabled><small>${location === "main" ? "YOUR MAIN PICK" : "YOUR SUBSTITUTE"}</small>🔒 ${player.name}</button>`
+        ? `<button class="pick-action locked ${getPlayerDefinition().color}" type="button" disabled><small>${location === "main" ? "YOUR MAIN PICK" : "YOUR SUBSTITUTE"}</small>🔒 ${getPlayerDefinition().name}</button>`
         : `<button class="pick-action remove" type="button" data-remove-pick="${rikishi.id}"><small>${location === "main" ? "YOUR MAIN PICK" : "YOUR SUBSTITUTE"}</small>Remove</button>`;
     } else if (lockedByOtherPlayer) {
       action = `<button class="pick-action locked ${owner.color}" type="button" disabled><small>DRAFTED</small>🔒 ${owner.name}</button>`;
@@ -1734,10 +1734,11 @@ function banzukeView() {
   const pool = draftPoolStats(basho);
   const rows = banzukeRankRows(basho);
   const rankOptions = [...new Set(basho.entries.map((entry) => entry.rank))];
+  const readOnly = tournamentStarted() || isPlayerDraftLocked(player.id);
   return `
     <section class="page-shell">
-      ${pageIntro(`${escapeHtml(basho.label.toUpperCase())} · TEAM BUILDER`, "Pick from the complete banzuke", `All ${basho.entries.length} official Makuuchi rikishi. Single-click a wrestler for their profile or double-click to edit ${player.name}'s roster.`, `<label class="search-field"><span>⌕</span><input id="banzuke-search" type="search" placeholder="Find a rikishi or stable" autocomplete="off" /></label>`)}
-      ${editingBanner(`Shared draft · currently editing ${player.name}. A rikishi drafted by either player is locked to the other.`)}
+      ${pageIntro(`${escapeHtml(basho.label.toUpperCase())} · ${readOnly ? "TOURNAMENT BANZUKE" : "TEAM BUILDER"}`, readOnly ? "Official banzuke and draft ownership" : "Pick from the complete banzuke", readOnly ? `All ${basho.entries.length} official Makuuchi rikishi remain available to browse. The locked draft is read-only for the rest of the tournament.` : `All ${basho.entries.length} official Makuuchi rikishi. Single-click a wrestler for their profile or double-click to edit ${player.name}'s roster.`, `<label class="search-field"><span>⌕</span><input id="banzuke-search" type="search" placeholder="Find a rikishi or stable" autocomplete="off" /></label>`)}
+      ${readOnly ? `<aside class="banzuke-readonly-notice reveal"><span>🔒</span><div><small>TOURNAMENT MODE · READ ONLY</small><b>The complete official Banzuke remains visible.</b><p>Ownership, records, profiles, search, and filters are available. Draft picks cannot be changed.</p></div></aside>` : editingBanner(`Shared draft · currently editing ${player.name}. A rikishi drafted by either player is locked to the other.`)}
       <section class="draft-pool-status reveal" data-draft-available="${pool.available}" data-draft-total="${pool.total}">
         <div class="draft-pool-stat available"><small>AVAILABLE</small><b>${pool.available}</b><span>of ${pool.total} rikishi</span></div>
         <div class="draft-pool-meter" aria-label="${pool.available} available, ${pool.counts.gwazy} drafted by Gwazy, ${pool.counts.jake} drafted by Jake">
@@ -1752,13 +1753,13 @@ function banzukeView() {
         </div>
         ${validationChecklist(check)}
         <a class="secondary-button" href="#roster">Manage roster</a>
-        <div class="random-draft-actions">
+        ${readOnly ? `<div class="banzuke-readonly-summary"><span>GWAZY <b>${pool.counts.gwazy}</b></span><span>JAKE <b>${pool.counts.jake}</b></span><span>AVAILABLE <b>${pool.available}</b></span></div>` : `<div class="random-draft-actions">
           <button class="random-draft-primary" type="button" data-random-draft ${draftEditingDisabled() ? "disabled" : ""}>🎲 Random Draft</button>
           <button type="button" data-random-pick="main" ${draftEditingDisabled() || roster.team.length >= 6 ? "disabled" : ""}>🎲 Random Main Pick</button>
           <button type="button" data-random-pick="sub" ${draftEditingDisabled() || roster.subs.length >= 3 ? "disabled" : ""}>🎲 Random Substitute</button>
           <button class="clear-draft" type="button" data-clear-player-draft ${draftEditingDisabled() || (!roster.team.length && !roster.subs.length) ? "disabled" : ""}>Clear Draft</button>
           <a href="#roster">Review &amp; Save</a>
-        </div>
+        </div>`}
       </section>
       <dialog class="random-draft-dialog" id="random-draft-dialog" aria-labelledby="random-draft-title">
         <form method="dialog">
