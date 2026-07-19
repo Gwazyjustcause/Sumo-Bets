@@ -182,6 +182,25 @@ assert.equal(vm.runInContext("draftOwner('onosato')", context), "jake", "First c
 assert(vm.runInContext("sharedDraftError.includes('just been drafted by Jake')", context), "The race loser must receive a clear ownership conflict message");
 vm.runInContext("state.drafts[state.selectedBashoId]=emptyDraftPlayers(); savedSharedDraft.players=emptyDraftPlayers();", context);
 
+vm.runInContext("state.activePlayer='gwazy'; getDraftPlayer('jake').mainPicks=['hoshoryu'];", context);
+for (let iteration = 0; iteration < 100; iteration += 1) {
+  const candidate = JSON.parse(vm.runInContext("JSON.stringify(randomDraftCandidate('gwazy'))", context));
+  assert(candidate, `Random Draft must find a valid roster whenever enough wrestlers remain available (pool: ${vm.runInContext("randomDraftPool('gwazy',true).length", context)})`);
+  assert.equal(candidate.mainPicks.length, 6, "Random Draft must generate six main picks");
+  assert.equal(candidate.substitutes.length, 3, "Random Draft must generate three substitutes");
+  assert(![...candidate.mainPicks, ...candidate.substitutes].includes("hoshoryu"), "Random Draft must exclude wrestlers owned by the opponent");
+  assert.equal(vm.runInContext(`mainPickRules(${JSON.stringify(candidate.mainPicks)}).valid`, context), true, "Random Draft main picks must obey all main-roster rules");
+  assert.equal(vm.runInContext(`substituteRules(${JSON.stringify(candidate.substitutes)}).valid`, context), true, "Random Draft substitutes must contain one Sanyaku and two Maegashira");
+}
+vm.runInContext("generateRandomDraft()", context);
+assert.equal(vm.runInContext("validatePlayerDraft('gwazy').valid", context), true, "Generated working copy must be immediately valid for the selected player");
+assert.equal(vm.runInContext("hasUnsavedPlayerChanges('gwazy')", context), true, "Generating must remain an unsaved working-copy change");
+vm.runInContext("clearPlayerWorkingDraft(); addRandomPick('main'); addRandomPick('sub');", context);
+assert.equal(vm.runInContext("getRoster('gwazy').team.length", context), 1, "Random Main Pick must fill only the next main slot");
+assert.equal(vm.runInContext("getRoster('gwazy').subs.length", context), 1, "Random Substitute must fill only the next valid substitute slot");
+assert.equal(vm.runInContext("getRoster('jake').team[0]", context), "hoshoryu", "Random and clear actions must never alter the opponent's roster");
+vm.runInContext("state.drafts[state.selectedBashoId]=emptyDraftPlayers(); savedSharedDraft.players=emptyDraftPlayers();", context);
+
 assert.equal(vm.runInContext("substituteRules(['onosato','takayasu','abi']).valid", context), true, "A legal substitute roster needs one Sanyaku and two Maegashira");
 assert.equal(vm.runInContext("substituteRules(['onosato','hoshoryu','abi']).valid", context), false, "A second Sanyaku substitute must be rejected");
 vm.runInContext(`state.activePlayer='gwazy'; state.drafts[state.selectedBashoId].gwazy={mainPicks:['wakatakakage','wakanosho'],substitutes:['onosato','takayasu','abi'],sidePrediction:null,substitutionEvents:[]}; saveState();`, context);

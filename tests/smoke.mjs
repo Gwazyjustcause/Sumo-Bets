@@ -120,6 +120,9 @@ for (const directControl of ["&rarr; Substitute", "&larr; Main", "&#128465; Remo
 for (const capability of ["data-overview-analytics", "data-overview-standings", "data-overview-forecast", "data-overview-momentum", "projectedPlayerScore", "forecastModel", "momentumChart"]) {
   assert(app.includes(capability), `Missing restored Overview analytics capability: ${capability}`);
 }
+for (const capability of ["data-random-draft", "data-clear-player-draft", "data-random-pick", "randomDraftCandidate", "generateRandomDraft", "addRandomPick", "random-draft-dialog"]) {
+  assert(app.includes(capability) || css.includes(capability), `Missing random draft capability: ${capability}`);
+}
 assert(!app.includes("FORM GUIDE"), "The obsolete Overview Form Guide card must remain removed");
 for (const capability of ["api.github.com/repos", "sessionStorage", "SHARED_DRAFT_API", "method: \"PUT\"", "sha"]) {
   assert(sharedDraftApi.includes(capability), `Missing shared draft transport capability: ${capability}`);

@@ -1272,6 +1272,102 @@ function mainPickRules(ids) {
   };
 }
 
+function shuffled(values) {
+  const result = [...values];
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+  }
+  return result;
+}
+
+function randomDraftPool(playerId = state.activePlayer, includeOwn = false) {
+  return data.rikishi.filter((rikishi) => {
+    if (rikishi.available === false) return false;
+    const ownerId = draftOwner(rikishi.id);
+    return !ownerId || (includeOwn && ownerId === playerId);
+  });
+}
+
+function randomDraftCandidate(playerId = state.activePlayer) {
+  const pool = shuffled(randomDraftPool(playerId, true));
+  const sanyakuOptions = shuffled(pool.filter(isSanyaku));
+  const maegashiraOptions = shuffled(pool.filter(isMaegashira));
+  for (const sanyakuSub of sanyakuOptions) {
+    for (let firstIndex = 0; firstIndex < maegashiraOptions.length - 1; firstIndex += 1) {
+      for (let secondIndex = firstIndex + 1; secondIndex < maegashiraOptions.length; secondIndex += 1) {
+        const maegashiraSubs = [maegashiraOptions[firstIndex], maegashiraOptions[secondIndex]];
+        const substituteIds = [sanyakuSub.id, ...maegashiraSubs.map((rikishi) => rikishi.id)];
+        const reserved = new Set(substituteIds);
+        const remaining = shuffled(pool.filter((rikishi) => !reserved.has(rikishi.id)));
+        const underdogs = shuffled(remaining.filter((rikishi) => /Maegashira (1[3-7])/.test(rikishi.rank)));
+        for (const underdog of underdogs) {
+          const main = [underdog.id];
+          let sanyakuMainCount = 0;
+          for (const rikishi of remaining) {
+            if (main.length === 6) break;
+            if (rikishi.id === underdog.id || /Maegashira (1[3-7])/.test(rikishi.rank)) continue;
+            if (isSanyaku(rikishi) && sanyakuMainCount >= 2) continue;
+            main.push(rikishi.id);
+            if (isSanyaku(rikishi)) sanyakuMainCount += 1;
+          }
+          if (main.length !== 6 || !mainPickRules(main).valid) continue;
+          return { mainPicks: shuffled(main), substitutes: shuffled(substituteIds) };
+        }
+      }
+    }
+  }
+  return null;
+}
+
+function generateRandomDraft() {
+  if (draftEditingDisabled()) return;
+  const player = getPlayerDefinition();
+  const candidate = randomDraftCandidate(player.id);
+  if (!candidate) {
+    showToast("There are not enough available wrestlers to generate a valid draft.");
+    return;
+  }
+  const draft = getDraftPlayer(player.id);
+  draft.mainPicks = candidate.mainPicks;
+  draft.substitutes = candidate.substitutes;
+  draft.substitutionEvents = [];
+  render();
+  showToast(`Random ${player.name} draft generated. Review it, then press Save Picks.`);
+}
+
+function addRandomPick(type) {
+  if (draftEditingDisabled()) return;
+  const player = getPlayerDefinition();
+  const roster = getRoster(player.id);
+  const isMain = type === "main";
+  const list = isMain ? roster.team : roster.subs;
+  const limit = isMain ? 6 : 3;
+  if (list.length >= limit) {
+    showToast(`${isMain ? "Main roster" : "Substitute roster"} is already full.`);
+    return;
+  }
+  const candidates = shuffled(randomDraftPool(player.id)).filter((rikishi) => {
+    const ids = [...list, rikishi.id];
+    return isMain ? mainPickRules(ids).valid : substituteRules(ids).valid;
+  });
+  if (!candidates.length) {
+    showToast(`No available wrestler can fill the next ${isMain ? "main" : "substitute"} slot legally.`);
+    return;
+  }
+  addPick(candidates[0].id, type);
+}
+
+function clearPlayerWorkingDraft() {
+  if (draftEditingDisabled()) return;
+  const draft = getDraftPlayer();
+  draft.mainPicks = [];
+  draft.substitutes = [];
+  draft.substitutionEvents = [];
+  render();
+  showToast(`${getPlayerDefinition().name}'s working roster cleared. Save Picks is still required.`);
+}
+
 function selectedBasho() {
   return data.banzuke.bashos.find((basho) => basho.id === state.selectedBashoId)
     || data.banzuke.bashos.find((basho) => basho.id === data.banzuke.currentBashoId)
@@ -1431,7 +1527,21 @@ function banzukeView() {
         </div>
         ${validationChecklist(check)}
         <a class="secondary-button" href="#roster">Manage roster</a>
+        <div class="random-draft-actions">
+          <button class="random-draft-primary" type="button" data-random-draft ${draftEditingDisabled() ? "disabled" : ""}>🎲 Random Draft</button>
+          <button type="button" data-random-pick="main" ${draftEditingDisabled() || roster.team.length >= 6 ? "disabled" : ""}>🎲 Random Main Pick</button>
+          <button type="button" data-random-pick="sub" ${draftEditingDisabled() || roster.subs.length >= 3 ? "disabled" : ""}>🎲 Random Substitute</button>
+          <button class="clear-draft" type="button" data-clear-player-draft ${draftEditingDisabled() || (!roster.team.length && !roster.subs.length) ? "disabled" : ""}>Clear Draft</button>
+          <a href="#roster">Review &amp; Save</a>
+        </div>
       </section>
+      <dialog class="random-draft-dialog" id="random-draft-dialog" aria-labelledby="random-draft-title">
+        <form method="dialog">
+          <span class="random-draft-icon">🎲</span>
+          <div><p class="eyebrow">RANDOM DRAFT</p><h2 id="random-draft-title">Generate a random draft?</h2><p>This will replace ${player.name}'s current unsaved roster with six valid main picks and three valid substitutes. Nothing is published until Save Picks.</p></div>
+          <div class="random-draft-dialog-actions"><button class="secondary-button" value="cancel">Cancel</button><button class="primary-button" type="button" data-confirm-random-draft>Generate</button></div>
+        </form>
+      </dialog>
       <section class="banzuke-tools reveal" aria-label="Banzuke filters">
         <label><small>BASHO</small><select id="basho-select">${data.banzuke.bashos.map((item) => `<option value="${item.id}" ${item.id === basho.id ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></label>
         <label><small>PICKS</small><select id="banzuke-pick-filter"><option value="all">All wrestlers</option><option value="available">Available</option><option value="mine">Only my picks</option><option value="gwazy">Only Gwazy's picks</option><option value="jake">Only Jake's picks</option></select></label>
@@ -2023,6 +2133,19 @@ function bindViewEvents() {
     event.stopPropagation();
     addPick(...button.dataset.addPick.split(":"));
   }));
+  app.querySelector("[data-random-draft]")?.addEventListener("click", () => {
+    const roster = getRoster();
+    if (roster.team.length || roster.subs.length) app.querySelector("#random-draft-dialog")?.showModal();
+    else generateRandomDraft();
+  });
+  app.querySelector("[data-confirm-random-draft]")?.addEventListener("click", () => {
+    app.querySelector("#random-draft-dialog")?.close();
+    generateRandomDraft();
+  });
+  app.querySelectorAll("[data-random-pick]").forEach((button) => button.addEventListener("click", () => addRandomPick(button.dataset.randomPick)));
+  app.querySelector("[data-clear-player-draft]")?.addEventListener("click", () => {
+    if (window.confirm(`Clear ${getPlayerDefinition().name}'s working roster? This will not publish until Save Picks.`)) clearPlayerWorkingDraft();
+  });
   app.querySelectorAll("[data-remove-pick]").forEach((button) => button.addEventListener("click", (event) => {
     event.stopPropagation();
     removePick(button.dataset.removePick);
