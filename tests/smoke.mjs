@@ -105,8 +105,11 @@ for (const capability of ["data-add-pick", "data-roster-move", "data-history-edi
 for (const capability of ["DRAFT_SCHEMA_VERSION", "normalizeDrafts", "draftOwner", "draftPoolStats", "data-draft-owner", "data-overview-roster", "draft-owner-gwazy", "draft-owner-jake"]) {
   assert(app.includes(capability) || css.includes(capability), `Missing shared-draft capability: ${capability}`);
 }
-for (const capability of ["data-save-draft", "validateSharedDraft", "hasUnsavedDraftChanges", "beforeunload", "lastSavedAt", "savedBy", "data-toggle-draft-lock", "applyRealtimeSharedDraft", "subscribeToSharedDraft"]) {
+for (const capability of ["data-save-draft", "validateSharedDraft", "hasUnsavedDraftChanges", "beforeunload", "lastSavedAt", "savedBy", "data-lock-my-draft", "lockMyDraft", "playerLocks", "applyRealtimeSharedDraft", "subscribeToSharedDraft"]) {
   assert(app.includes(capability), `Missing realtime shared-roster capability: ${capability}`);
+}
+for (const capability of ["bashoDayTimeline", "tournamentStarted", "tournamentFinished", "championOverviewView", "data-skip-basho", "Tournament Skipped"]) {
+  assert(app.includes(capability), `Missing tournament lifecycle capability: ${capability}`);
 }
 for (const capability of ["validatePlayerDraft", "hasUnsavedPlayerChanges", "ownershipConflicts", "adoptLatestWhilePreservingPlayer", "latest.document", "attempt < 3", "just been drafted by"]) {
   assert(app.includes(capability), `Missing simultaneous player-save capability: ${capability}`);

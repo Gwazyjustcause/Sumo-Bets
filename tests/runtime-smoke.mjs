@@ -113,13 +113,16 @@ vm.runInContext(load("image-resolver.js"), context, { filename: "image-resolver.
 vm.runInContext(load("app.js"), context, { filename: "app.js" });
 await new Promise((resolve) => setTimeout(resolve, 240));
 
-assert(app.innerHTML.includes("JAKE'S SIDE PREDICTION"), `Overview should preserve and render the selected player's prediction control. Browser errors: ${browserConsole.errors.join(" | ")}`);
+assert(!app.innerHTML.includes("JAKE'S SIDE PREDICTION"), `Overview must no longer contain the editable prediction control. Browser errors: ${browserConsole.errors.join(" | ")}`);
+assert(vm.runInContext("rosterView().includes(\"JAKE'S SIDE PREDICTION\")", context), "Roster must contain the selected player's prediction control");
 assert(app.innerHTML.includes("The draft has not started yet."), "A clean save must show the friendly pre-draft state");
-assert(app.innerHTML.includes("Current standings") && app.innerHTML.includes("Projected winner") && app.innerHTML.includes("Point progression"), "Overview must restore the standings, forecast, and momentum analytics row");
-const overviewOrder = [app.innerHTML.indexOf("score-duel"), app.innerHTML.indexOf("data-overview-analytics"), app.innerHTML.indexOf("data-overview-roster")];
-assert(overviewOrder[0] >= 0 && overviewOrder[0] < overviewOrder[1] && overviewOrder[1] < overviewOrder[2], "Overview must order score comparison, analytics, then shared rosters");
-assert.equal((app.innerHTML.match(/class="chart-line /g) || []).length, 2, "Momentum must render a separate point-total line for each player");
-assert(app.innerHTML.includes("D1") && app.innerHTML.includes("D15"), "Momentum must span the complete Day 1 to Day 15 axis");
+assert(app.innerHTML.includes("DRAFT MODE") && !app.innerHTML.includes("data-overview-analytics"), "Analytics must wait until both drafts are locked");
+assert(vm.runInContext("resultsView().includes('Daily results unlock with the tournament')", context), "Results and day navigation must wait until both drafts are locked");
+vm.runInContext("savedSharedDraft={schemaVersion:4,bashoId:state.selectedBashoId,revision:0,playerLocks:{gwazy:true,jake:false},locked:false,status:'draft',players:emptyDraftPlayers()}", context);
+assert.equal(vm.runInContext("draftEditingDisabled('gwazy')", context), true, "Gwazy's lock must make only Gwazy read-only");
+assert.equal(vm.runInContext("draftEditingDisabled('jake')", context), false, "Jake must remain editable while only Gwazy is locked");
+assert.equal(vm.runInContext("tournamentStarted()", context), false, "One player lock must not start the tournament");
+vm.runInContext("savedSharedDraft=null", context);
 assert.equal(playerSelect.value, "jake", "A storage migration must preserve the harmless active-player preference");
 const migratedSave = JSON.parse(storage.get("sumoBattleSettings"));
 assert.equal(migratedSave.appVersion, 3, "The first Version 3 run must write a new compatible preferences save");
@@ -135,17 +138,23 @@ playerSelect.value = "jake";
 playerSelect.listeners.change();
 await new Promise((resolve) => setTimeout(resolve, 120));
 assert.equal(JSON.parse(storage.get("sumoBattleSettings")).activePlayer, "jake", "Player selection should persist");
-assert(app.innerHTML.includes("JAKE'S SIDE PREDICTION"), "Switching player should redraw player-owned content");
+assert(vm.runInContext("rosterView().includes(\"JAKE'S SIDE PREDICTION\")", context), "Switching player should redraw player-owned roster content");
 
 const gwazyRosterBefore = vm.runInContext("JSON.stringify(getPlayerState('gwazy'))", context);
 assert.deepEqual(JSON.parse(vm.runInContext("JSON.stringify(getRoster('gwazy'))", context)), { team: [], subs: [] }, "A new basho must start with an empty Gwazy draft");
 assert.deepEqual(JSON.parse(vm.runInContext("JSON.stringify(getRoster('jake'))", context)), { team: [], subs: [] }, "A new basho must start with an empty Jake draft");
 assert.equal(vm.runInContext("draftPoolStats().available", context), 42, "Every rikishi must start available");
 
-vm.runInContext(`savedSharedDraft={schemaVersion:3,bashoId:state.selectedBashoId,revision:0,locked:false,lastSavedAt:null,savedBy:null,players:emptyDraftPlayers()}; state.drafts[state.selectedBashoId]={
+vm.runInContext(`savedSharedDraft={schemaVersion:4,bashoId:state.selectedBashoId,revision:0,locked:true,playerLocks:{gwazy:true,jake:true},status:'tournament',lastSavedAt:null,savedBy:null,players:emptyDraftPlayers()}; state.drafts[state.selectedBashoId]={
   gwazy:{mainPicks:['hoshoryu','kirishima','fujinokawa','gonoyama','hiradoumi','nishikifuji'],substitutes:['yoshinofuji','daieisho','ura'],sidePrediction:'East',substitutionEvents:[]},
   jake:{mainPicks:['onosato','kotozakura','takanosho','churanoumi','hakunofuji','takerufuji'],substitutes:['oho','ichiyamamoto','oshoma'],sidePrediction:'West',substitutionEvents:[]}
 };`, context);
+const tournamentOverview = vm.runInContext("overviewView()", context);
+assert(tournamentOverview.includes("Current standings") && tournamentOverview.includes("Projected winner") && tournamentOverview.includes("Point progression"), "Tournament mode must restore standings, forecast, and momentum");
+const overviewOrder = [tournamentOverview.indexOf("score-duel"), tournamentOverview.indexOf("data-overview-analytics"), tournamentOverview.indexOf("data-overview-roster")];
+assert(overviewOrder[0] >= 0 && overviewOrder[0] < overviewOrder[1] && overviewOrder[1] < overviewOrder[2], "Tournament Overview must order score comparison, analytics, then shared rosters");
+assert.equal((tournamentOverview.match(/class="chart-line /g) || []).length, 2, "Momentum must render a separate point-total line for each player");
+assert(tournamentOverview.includes("D1") && tournamentOverview.includes("D15"), "Momentum must span the complete Day 1 to Day 15 axis");
 assert.equal(vm.runInContext("validateSharedDraft().valid", context), true, "A complete two-player draft with legal substitute categories must save");
 assert.equal(vm.runInContext("hasUnsavedDraftChanges()", context), true, "Editing the working copy must raise the unsaved-changes state");
 const fantasyResult = JSON.parse(vm.runInContext("JSON.stringify(resultDraftImpact({east:'hoshoryu',west:'onosato',winner:'hoshoryu',completed:true,importance:5,technique:'yorikiri'}, state.selectedDay))", context));
@@ -161,8 +170,9 @@ assert(vm.runInContext("momentumChart().includes('D15') && (momentumChart().matc
 vm.runInContext("getDraftPlayer('jake').mainPicks[0]='hoshoryu'", context);
 assert(vm.runInContext("validateSharedDraft().errors.some((error)=>error.includes('appears more than once'))", context), "Cross-player duplicate ownership must block Save Picks");
 vm.runInContext(`getDraftPlayer('jake').mainPicks[0]='onosato'; state.activePlayer='gwazy';
+  savedSharedDraft.playerLocks={gwazy:false,jake:false};savedSharedDraft.locked=false;savedSharedDraft.status='draft';
   globalThis.__concurrentSaves=[]; globalThis.__putAttempts=0;
-  globalThis.__latestShared={schemaVersion:3,bashoId:state.selectedBashoId,revision:4,locked:false,lastSavedAt:null,savedBy:'Jake',players:{
+  globalThis.__latestShared={schemaVersion:4,bashoId:state.selectedBashoId,revision:4,locked:false,playerLocks:{gwazy:false,jake:false},status:'draft',lastSavedAt:null,savedBy:'Jake',players:{
     gwazy:{mainPicks:[],substitutes:[],sidePrediction:null,substitutionEvents:[]},
     jake:{mainPicks:['onosato'],substitutes:[],sidePrediction:'West',substitutionEvents:[]}
   }};
@@ -199,6 +209,7 @@ for (let iteration = 0; iteration < 100; iteration += 1) {
   assert.equal(vm.runInContext(`substituteRules(${JSON.stringify(candidate.substitutes)}).valid`, context), true, "Random Draft substitutes must contain one Sanyaku and two Maegashira");
 }
 vm.runInContext("generateRandomDraft()", context);
+vm.runInContext("getDraftPlayer('gwazy').sidePrediction='East'", context);
 assert.equal(vm.runInContext("validatePlayerDraft('gwazy').valid", context), true, "Generated working copy must be immediately valid for the selected player");
 assert.equal(vm.runInContext("hasUnsavedPlayerChanges('gwazy')", context), true, "Generating must remain an unsaved working-copy change");
 vm.runInContext("clearPlayerWorkingDraft(); addRandomPick('main'); addRandomPick('sub');", context);
@@ -209,7 +220,7 @@ vm.runInContext("state.drafts[state.selectedBashoId]=emptyDraftPlayers(); savedS
 
 assert.equal(vm.runInContext("substituteRules(['onosato','takayasu','abi']).valid", context), true, "A legal substitute roster needs one Sanyaku and two Maegashira");
 assert.equal(vm.runInContext("substituteRules(['onosato','hoshoryu','abi']).valid", context), false, "A second Sanyaku substitute must be rejected");
-vm.runInContext(`state.activePlayer='gwazy'; state.drafts[state.selectedBashoId].gwazy={mainPicks:['wakatakakage','wakanosho'],substitutes:['onosato','takayasu','abi'],sidePrediction:null,substitutionEvents:[]}; saveState();`, context);
+vm.runInContext(`state.activePlayer='gwazy'; savedSharedDraft.playerLocks={gwazy:true,jake:true};savedSharedDraft.locked=true;savedSharedDraft.status='tournament'; state.drafts[state.selectedBashoId].gwazy={mainPicks:['wakatakakage','wakanosho'],substitutes:['onosato','takayasu','abi'],sidePrediction:null,substitutionEvents:[]}; saveState();`, context);
 const liveSubstitutions = JSON.parse(vm.runInContext("JSON.stringify(substitutionTimeline('gwazy'))", context));
 assert(liveSubstitutions.assignments.some((entry) => entry.mainId === "wakatakakage" && entry.subId === "onosato"), "A Kyujo Sanyaku main pick must activate the Sanyaku substitute");
 assert(liveSubstitutions.assignments.some((entry) => entry.mainId === "wakanosho" && entry.subId === "takayasu"), "A Kyujo Maegashira main pick must activate the first Maegashira substitute");
@@ -235,7 +246,7 @@ vm.runInContext(`getRikishi('wakanosho').dailyResults[8].status='scheduled'; get
 const returnTimeline = JSON.parse(vm.runInContext("JSON.stringify(substitutionTimeline('gwazy',9))", context));
 assert(!returnTimeline.assignments.some((entry) => entry.mainId === "wakanosho"), "A returning main wrestler must automatically reclaim his position");
 assert(returnTimeline.events.some((event) => event.type === "returned" && event.mainId === "wakanosho"), "A return from Kyujo must be logged");
-vm.runInContext(`getRikishi('wakanosho').dailyResults[8].status=null; getRikishi('wakanosho').dailyResults[8].opponentId=null; resetCurrentDraft(); state.activePlayer='jake'; saveState();`, context);
+vm.runInContext(`getRikishi('wakanosho').dailyResults[8].status=null; getRikishi('wakanosho').dailyResults[8].opponentId=null; savedSharedDraft.playerLocks={gwazy:false,jake:false};savedSharedDraft.locked=false;savedSharedDraft.status='draft'; resetCurrentDraft(); state.activePlayer='jake'; saveState();`, context);
 
 vm.runInContext("addPick('hoshoryu');", context);
 await new Promise((resolve) => setTimeout(resolve, 120));

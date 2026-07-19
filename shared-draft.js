@@ -70,10 +70,15 @@
   function blankDocument(bashoId) {
     const emptyPlayer = () => ({ mainPicks: [], substitutes: [], sidePrediction: null, substitutionEvents: [] });
     return {
-      schemaVersion: 3,
+      schemaVersion: 4,
       bashoId,
       revision: 0,
       locked: false,
+      playerLocks: { gwazy: false, jake: false },
+      status: "draft",
+      startedAt: null,
+      completedAt: null,
+      history: [],
       lastSavedAt: null,
       savedBy: null,
       players: { gwazy: emptyPlayer(), jake: emptyPlayer() },

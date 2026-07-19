@@ -69,10 +69,12 @@ assert.deepEqual(JSON.parse(JSON.stringify(context.window.SHARED_DRAFT_API.setup
 }, "The setup check must report a complete browser configuration");
 
 const document = {
-  schemaVersion: 3,
+  schemaVersion: 4,
   bashoId: "nagoya-2026",
   revision: 4,
   locked: false,
+  playerLocks: { gwazy: false, jake: false },
+  status: "draft",
   lastSavedAt: "2026-07-19T14:32:00.000Z",
   savedBy: "Gwazy",
   players: {},

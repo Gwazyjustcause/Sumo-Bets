@@ -21,7 +21,7 @@ const icons = {
 };
 
 const APP_SAVE_VERSION = 3;
-const DRAFT_SCHEMA_VERSION = 3;
+const DRAFT_SCHEMA_VERSION = 4;
 const SETTINGS_STORAGE_KEY = "sumoBattleSettings";
 const HISTORY_STORAGE_KEY = "sumoBattleHistoryCache";
 
@@ -103,6 +103,7 @@ const defaults = {
   drafts: emptyDrafts(),
   history: JSON.parse(JSON.stringify(data.history)),
   officialBashoId: data.meta.bashoId || "",
+  pendingOfficialBasho: null,
   officialDataSignature: data.meta.dataSignature || "",
 };
 
@@ -255,8 +256,32 @@ function hasUnsavedDraftChanges() {
   return JSON.stringify(sharedComparable()) !== JSON.stringify(sharedComparable(savedSharedDraft.players));
 }
 
-function draftEditingDisabled() {
-  return sharedDraftLoading || sharedDraftSaving || Boolean(savedSharedDraft?.locked);
+function sharedPlayerLocks(document = savedSharedDraft) {
+  if (!document) return { gwazy: false, jake: false };
+  if (document.playerLocks) return Object.fromEntries(data.players.map((player) => [player.id, Boolean(document.playerLocks[player.id])]));
+  const legacyLocked = Boolean(document.locked);
+  return Object.fromEntries(data.players.map((player) => [player.id, legacyLocked]));
+}
+
+function isPlayerDraftLocked(playerId = state.activePlayer, document = savedSharedDraft) {
+  return Boolean(sharedPlayerLocks(document)[playerId]);
+}
+
+function bothDraftsLocked(document = savedSharedDraft) {
+  const locks = sharedPlayerLocks(document);
+  return data.players.every((player) => locks[player.id]);
+}
+
+function tournamentStarted(document = savedSharedDraft) {
+  return bothDraftsLocked(document) || ["tournament", "completed"].includes(document?.status);
+}
+
+function tournamentFinished() {
+  return tournamentStarted() && Number(data.meta.day) >= Number(data.meta.totalDays || 15) && data.meta.active === false;
+}
+
+function draftEditingDisabled(playerId = state.activePlayer) {
+  return sharedDraftLoading || sharedDraftSaving || isPlayerDraftLocked(playerId) || tournamentFinished();
 }
 
 function applySharedDraft(document, revision = Number(document.revision || 0)) {
@@ -265,7 +290,18 @@ function applySharedDraft(document, revision = Number(document.revision || 0)) {
   state.selectedBashoId = bashoId;
   const players = normalizedSharedPlayers(document.players);
   state.drafts[bashoId] = JSON.parse(JSON.stringify(players));
-  savedSharedDraft = { ...document, bashoId, players: JSON.parse(JSON.stringify(players)) };
+  const playerLocks = sharedPlayerLocks(document);
+  savedSharedDraft = {
+    ...document,
+    schemaVersion: DRAFT_SCHEMA_VERSION,
+    bashoId,
+    playerLocks,
+    locked: data.players.every((player) => playerLocks[player.id]),
+    status: document.status || (data.players.every((player) => playerLocks[player.id]) ? "tournament" : "draft"),
+    history: Array.isArray(document.history) ? document.history : [],
+    players: JSON.parse(JSON.stringify(players)),
+  };
+  if (Array.isArray(document.history) && (document.history.length || !state.history.length)) state.history = JSON.parse(JSON.stringify(document.history));
   sharedDraftRevision = Number(revision || document.revision || 0);
   sharedDraftError = null;
   sharedValidationErrors = [];
@@ -286,6 +322,7 @@ async function loadSharedDraft({ force = false } = {}) {
   try {
     const result = await window.SHARED_DRAFT_API.load(state.selectedBashoId);
     applySharedDraft(result.document, result.revision);
+    await archiveCompletedTournament();
     subscribeToSharedDraft();
   } catch (error) {
     sharedDraftError = error.message || "The shared draft could not be loaded.";
@@ -301,7 +338,7 @@ function applyRealtimeSharedDraft(result) {
   const preserveWorkingCopy = hasUnsavedPlayerChanges(playerId);
   const workingPlayer = preserveWorkingCopy ? JSON.parse(JSON.stringify(getDraftPlayer(playerId))) : null;
   applySharedDraft(result.document, result.revision);
-  if (workingPlayer) {
+  if (workingPlayer && !isPlayerDraftLocked(playerId)) {
     const conflicts = ownershipConflicts(playerId, workingPlayer, savedSharedDraft.players);
     const blocked = new Set(conflicts.map((conflict) => conflict.id));
     workingPlayer.mainPicks = workingPlayer.mainPicks.filter((id) => !blocked.has(id));
@@ -359,6 +396,7 @@ function validatePlayerDraft(playerId = state.activePlayer) {
   if (check.underdogs !== 1) errors.push(`${player.name} needs exactly 1 M13-M17 underdog.`);
   if (check.substituteSanyaku !== 1) errors.push(`${player.name} needs exactly 1 Sanyaku substitute.`);
   if (check.substituteMaegashira !== 2) errors.push(`${player.name} needs exactly 2 Maegashira substitutes.`);
+  if (!["East", "West"].includes(getSidePrediction(playerId))) errors.push(`${player.name} must choose an East or West side prediction.`);
   [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))]
     .forEach((id) => errors.push(`${getRikishi(id)?.name || id} appears more than once in ${player.name}'s roster.`));
   return { valid: errors.length === 0, errors };
@@ -391,7 +429,7 @@ function adoptLatestWhilePreservingPlayer(result, playerId, blockedIds = []) {
 }
 
 async function saveSharedDraft() {
-  if (sharedDraftSaving || savedSharedDraft?.locked) return;
+  if (sharedDraftSaving || isPlayerDraftLocked()) return;
   const player = getPlayerDefinition();
   const playerId = player.id;
   const validation = validatePlayerDraft(playerId);
@@ -411,7 +449,7 @@ async function saveSharedDraft() {
     for (let attempt = 0; attempt < 3 && !saved; attempt += 1) {
       const latest = await window.SHARED_DRAFT_API.load(state.selectedBashoId);
       if ((latest.document.bashoId || data.banzuke.currentBashoId) !== state.selectedBashoId) throw new Error("The shared draft changed to a different basho. Refresh before saving.");
-      if (latest.document.locked) throw new Error("The shared draft was locked on another device. Refresh before editing.");
+      if (isPlayerDraftLocked(playerId, latest.document)) throw new Error(`${player.name}'s draft was locked on another device and can no longer be edited.`);
       const latestPlayers = normalizedSharedPlayers(latest.document.players);
       const conflicts = ownershipConflicts(playerId, candidatePlayer, latestPlayers);
       if (conflicts.length) {
@@ -452,37 +490,56 @@ async function saveSharedDraft() {
   }
 }
 
-async function toggleSharedDraftLock() {
+async function lockMyDraft() {
   if (sharedDraftLoading || sharedDraftSaving || !savedSharedDraft) return;
-  const nextLocked = !Boolean(savedSharedDraft.locked);
-  if (hasUnsavedDraftChanges()) {
-    showToast("Save or discard the working copy before changing the draft lock.");
+  const player = getPlayerDefinition();
+  if (isPlayerDraftLocked(player.id)) return;
+  if (hasUnsavedPlayerChanges(player.id)) {
+    showToast("Save your picks before locking your draft.");
     return;
   }
-  if (nextLocked) {
-    const validation = validateSharedDraft();
-    sharedValidationErrors = validation.errors;
-    if (!validation.valid) {
-      render();
-      showToast("Only a complete, valid draft can be locked.");
-      return;
-    }
+  const validation = validatePlayerDraft(player.id);
+  sharedValidationErrors = validation.errors;
+  if (!validation.valid) {
+    render();
+    showToast(`Complete ${player.name}'s roster and prediction before locking.`);
+    return;
   }
   sharedDraftSaving = true;
   render();
   try {
+    const latest = await window.SHARED_DRAFT_API.load(state.selectedBashoId);
+    if (isPlayerDraftLocked(player.id, latest.document)) {
+      applySharedDraft(latest.document, latest.revision);
+      showToast(`${player.name}'s draft is already locked.`);
+      return;
+    }
+    const latestPlayers = normalizedSharedPlayers(latest.document.players);
+    if (JSON.stringify(sharedPlayerComparable(latestPlayers, player.id)) !== JSON.stringify(sharedPlayerComparable(savedSharedDraft.players, player.id))) {
+      applySharedDraft(latest.document, latest.revision);
+      throw new Error(`${player.name}'s saved draft changed on another device. Review it before locking.`);
+    }
+    const conflicts = ownershipConflicts(player.id, latestPlayers[player.id], latestPlayers);
+    if (conflicts.length) throw new Error("A saved wrestler now belongs to the other player. Refresh and choose another.");
+    const playerLocks = { ...sharedPlayerLocks(latest.document), [player.id]: true };
+    const allLocked = data.players.every((item) => playerLocks[item.id]);
     const document = {
+      ...latest.document,
       schemaVersion: DRAFT_SCHEMA_VERSION,
       bashoId: state.selectedBashoId,
-      revision: Number(savedSharedDraft.revision || 0) + 1,
-      locked: nextLocked,
+      revision: Number(latest.document.revision || 0) + 1,
+      playerLocks,
+      locked: allLocked,
+      status: allLocked ? "tournament" : "draft",
+      startedAt: allLocked ? (latest.document.startedAt || new Date().toISOString()) : null,
       lastSavedAt: new Date().toISOString(),
-      savedBy: getPlayerDefinition().name,
-      players: sharedPayloadPlayers(),
+      savedBy: player.name,
+      players: sharedPayloadPlayers(latestPlayers),
     };
-    const result = await window.SHARED_DRAFT_API.save(document, sharedDraftRevision);
+    const result = await window.SHARED_DRAFT_API.save(document, latest.revision);
     applySharedDraft(result.document, result.revision);
-    showToast(nextLocked ? "The shared draft is now locked." : "The shared draft is unlocked for editing.");
+    playBell();
+    showToast(allLocked ? "Both drafts are locked. The tournament has started!" : `${player.name}'s draft is permanently locked.`);
   } catch (error) {
     sharedDraftError = error.message || "The draft lock could not be changed.";
     showToast(sharedDraftError);
@@ -492,6 +549,20 @@ async function toggleSharedDraftLock() {
   }
 }
 
+function reconcilePendingOfficialBasho() {
+  if (!hasNewOfficialBasho()) {
+    state.pendingOfficialBasho = null;
+    return;
+  }
+  const current = { id: data.meta.bashoId, basho: data.meta.tournament };
+  const pending = state.pendingOfficialBasho;
+  if (pending?.id && pending.id !== current.id && !state.history.some((event) => event.id === pending.id)) {
+    state.history.unshift({ ...blankHistoryEvent(), id: pending.id, basho: pending.basho, status: "skipped", winner: null, gwazyScore: 0, jakeScore: 0, badge: "SKIPPED", skippedAt: new Date().toISOString() });
+  }
+  state.pendingOfficialBasho = current;
+}
+
+reconcilePendingOfficialBasho();
 // Persist clean local preferences immediately after any one-time migration.
 saveState();
 
@@ -646,6 +717,7 @@ function sideWinner(day = data.meta.day) {
 }
 
 function playerScore(id, day = data.meta.day) {
+  if (!tournamentStarted()) return 0;
   const timeline = substitutionTimeline(id, day);
   let pickPoints = 0;
   for (let currentDay = 1; currentDay <= day; currentDay += 1) {
@@ -679,26 +751,94 @@ function hasNewOfficialBasho() {
 }
 
 function newBashoNotice() {
-  if (!hasNewOfficialBasho()) return "";
-  return `<aside class="new-basho-notice" role="status"><span>新</span><div><small>OFFICIAL BASHO DETECTED</small><b>A new basho has begun.</b><p>The JSA layer is already updated. Your history and previous drafts are protected.</p></div><button class="primary-button" type="button" data-start-new-draft>Start a new draft</button></aside>`;
+  if (!hasNewOfficialBasho() || tournamentFinished()) return "";
+  return `<aside class="new-basho-notice" role="status"><span>新</span><div><small>OFFICIAL BASHO DETECTED</small><b>${escapeHtml(data.meta.tournament)} is available.</b><p>Choose whether to create a shared draft or record this tournament as skipped.</p></div><div><button class="primary-button" type="button" data-start-new-draft>Start New Draft</button><button class="secondary-button" type="button" data-skip-basho>Skip Tournament</button></div></aside>`;
 }
 
 function resetCurrentDraft() {
-  if (savedSharedDraft?.locked) return;
-  state.drafts[state.selectedBashoId] = emptyDraftPlayers();
+  if (isPlayerDraftLocked()) return;
+  state.drafts[state.selectedBashoId][state.activePlayer] = { mainPicks: [], substitutes: [], sidePrediction: null, substitutionEvents: [] };
   sharedValidationErrors = [];
 }
 
-function startNewOfficialBashoDraft() {
-  state.selectedBashoId = data.banzuke.currentBashoId;
-  state.drafts[state.selectedBashoId] = emptyDraftPlayers();
-  state.officialBashoId = data.meta.bashoId;
-  state.officialDataSignature = data.meta.dataSignature;
-  state.selectedDay = Math.max(1, data.meta.day);
-  savedSharedDraft = { schemaVersion: DRAFT_SCHEMA_VERSION, bashoId: state.selectedBashoId, revision: 0, locked: false, lastSavedAt: null, savedBy: null, players: emptyDraftPlayers() };
-  sharedDraftRevision = 0;
-  sharedValidationErrors = [];
-  subscribeToSharedDraft();
+function completedHistoryEntry(document = savedSharedDraft) {
+  const gwazyScore = playerScore("gwazy", data.meta.totalDays);
+  const jakeScore = playerScore("jake", data.meta.totalDays);
+  const winner = gwazyScore === jakeScore ? "Draw" : gwazyScore > jakeScore ? "Gwazy" : "Jake";
+  const rosterIds = data.players.flatMap((player) => [...getRoster(player.id).team, ...getRoster(player.id).subs]);
+  const mvp = rosterIds.map((id) => ({ id, points: getRikishi(id)?.points || 0 })).sort((a, b) => b.points - a.points)[0]?.id || "";
+  return {
+    ...blankHistoryEvent(), id: document?.bashoId || state.selectedBashoId, basho: selectedBasho().label,
+    status: "completed", winner, gwazyScore, jakeScore, margin: Math.abs(gwazyScore - jakeScore), mvp,
+    rosters: Object.fromEntries(data.players.map((player) => [player.id, [...getRoster(player.id).team, ...getRoster(player.id).subs]])),
+    predictions: Object.fromEntries(data.players.map((player) => [player.id, getSidePrediction(player.id)])),
+    completedAt: new Date().toISOString(), badge: "COMPLETED",
+  };
+}
+
+function historyWithCurrentCompletion() {
+  const history = [...(savedSharedDraft?.history || state.history || [])];
+  const entry = completedHistoryEntry();
+  const index = history.findIndex((item) => item.id === entry.id);
+  if (index >= 0) history[index] = entry;
+  else history.unshift(entry);
+  return history;
+}
+
+async function archiveCompletedTournament() {
+  if (!tournamentFinished() || !savedSharedDraft || savedSharedDraft.status === "completed") return;
+  const document = {
+    ...savedSharedDraft,
+    schemaVersion: DRAFT_SCHEMA_VERSION,
+    revision: Number(savedSharedDraft.revision || 0) + 1,
+    status: "completed",
+    completedAt: new Date().toISOString(),
+    history: historyWithCurrentCompletion(),
+  };
+  try {
+    const result = await window.SHARED_DRAFT_API.save(document, sharedDraftRevision);
+    applySharedDraft(result.document, result.revision);
+  } catch (error) {
+    if (error.status !== 409) throw error;
+    const latest = await window.SHARED_DRAFT_API.load(state.selectedBashoId);
+    applySharedDraft(latest.document, latest.revision);
+  }
+}
+
+async function startNewOfficialBashoDraft({ skipped = false } = {}) {
+  if (sharedDraftSaving) return;
+  const newBashoId = data.banzuke.currentBashoId;
+  const history = tournamentFinished() ? historyWithCurrentCompletion() : [...(savedSharedDraft?.history || state.history || [])];
+  if (skipped && !history.some((event) => event.id === newBashoId)) {
+    history.unshift({ ...blankHistoryEvent(), id: newBashoId, basho: data.meta.tournament, status: "skipped", winner: null, gwazyScore: 0, jakeScore: 0, badge: "SKIPPED", skippedAt: new Date().toISOString() });
+  }
+  sharedDraftSaving = true;
+  render();
+  try {
+    const latest = await window.SHARED_DRAFT_API.load(newBashoId);
+    const document = {
+      ...latest.document, schemaVersion: DRAFT_SCHEMA_VERSION, bashoId: newBashoId,
+      revision: Number(latest.document.revision || 0) + 1, locked: false,
+      playerLocks: { gwazy: false, jake: false }, status: skipped ? "skipped" : "draft",
+      startedAt: null, completedAt: null, history, lastSavedAt: new Date().toISOString(),
+      savedBy: getPlayerDefinition().name, players: emptyDraftPlayers(),
+    };
+    const result = await window.SHARED_DRAFT_API.save(document, latest.revision);
+    state.selectedBashoId = newBashoId;
+    state.officialBashoId = data.meta.bashoId;
+    state.pendingOfficialBasho = null;
+    state.officialDataSignature = data.meta.dataSignature;
+    state.selectedDay = Math.max(1, data.meta.day);
+    applySharedDraft(result.document, result.revision);
+    subscribeToSharedDraft();
+    showToast(skipped ? `${data.meta.tournament} recorded as skipped.` : `${data.meta.tournament} is ready for a new shared draft.`);
+  } catch (error) {
+    sharedDraftError = error.message || "The next basho could not be started.";
+    showToast(sharedDraftError);
+  } finally {
+    sharedDraftSaving = false;
+    render();
+  }
 }
 
 function draftOwner(rikishiId, bashoId = state.selectedBashoId) {
@@ -1010,6 +1150,7 @@ function rosterCard(rikishi, playerId, substitute = false, role = "active") {
   const isActiveSubstitute = role === "active-substitute";
   const isStandbySubstitute = role === "standby-substitute";
   const points = countedPointsForRikishi(playerId, rikishi.id);
+  const readOnly = draftEditingDisabled(playerId);
   const statusBadge = isKyujo
     ? '<span class="roster-status-badge kyujo">⚠ KYUJO · INACTIVE</span>'
     : isActiveSubstitute
@@ -1031,12 +1172,12 @@ function rosterCard(rikishi, playerId, substitute = false, role = "active") {
       </div>
       <div class="roster-points"><strong>${isStandbySubstitute ? 0 : points}</strong><small>${isKyujo ? "BANKED PTS" : isStandbySubstitute ? "INACTIVE" : "COUNTED PTS"}</small></div>
       ${rikishi.badge ? `<span class="clutch-badge">✦ ${rikishi.badge}</span>` : ""}
-      <div class="roster-card-actions">
-        ${substitute ? `<button class="move-section" type="button" data-roster-move="${rikishi.id}:main" ${draftEditingDisabled() ? "disabled" : ""}>&larr; Main</button>` : ""}
-        ${substitute ? `<button class="order-button" type="button" data-sub-reorder="${rikishi.id}:up" aria-label="Move ${rikishi.name} earlier" title="Move earlier" ${draftEditingDisabled() ? "disabled" : ""}>&uarr;</button><button class="order-button" type="button" data-sub-reorder="${rikishi.id}:down" aria-label="Move ${rikishi.name} later" title="Move later" ${draftEditingDisabled() ? "disabled" : ""}>&darr;</button>` : ""}
-        <button class="remove" type="button" data-remove-pick="${rikishi.id}" ${draftEditingDisabled() ? "disabled" : ""}>&#128465; Remove</button>
-        ${!substitute ? `<button class="move-section" type="button" data-roster-move="${rikishi.id}:subs" ${draftEditingDisabled() ? "disabled" : ""}>&rarr; Substitute</button>` : ""}
-      </div>
+      ${readOnly ? '<div class="roster-card-readonly">🔒 LOCKED</div>' : `<div class="roster-card-actions">
+        ${substitute ? `<button class="move-section" type="button" data-roster-move="${rikishi.id}:main">&larr; Main</button>` : ""}
+        ${substitute ? `<button class="order-button" type="button" data-sub-reorder="${rikishi.id}:up" aria-label="Move ${rikishi.name} earlier" title="Move earlier">&uarr;</button><button class="order-button" type="button" data-sub-reorder="${rikishi.id}:down" aria-label="Move ${rikishi.name} later" title="Move later">&darr;</button>` : ""}
+        <button class="remove" type="button" data-remove-pick="${rikishi.id}">&#128465; Remove</button>
+        ${!substitute ? `<button class="move-section" type="button" data-roster-move="${rikishi.id}:subs">&rarr; Substitute</button>` : ""}
+      </div>`}
     </article>`;
 }
 
@@ -1120,7 +1261,36 @@ function overviewRosterDashboard(player) {
     </article>`;
 }
 
+function draftWaitingOverview() {
+  const locks = sharedPlayerLocks();
+  return `<section class="overview-draft-mode reveal">
+    <div><p class="eyebrow">DRAFT MODE</p><h2>Tournament scoring is waiting for both players.</h2><p>Each player saves and permanently locks their own roster. The dashboard, forecast, momentum, and daily scoring activate together.</p></div>
+    <div class="overview-lock-grid">${data.players.map((player) => `<span class="${player.color} ${locks[player.id] ? "locked" : "open"}"><b>${locks[player.id] ? "🔒" : "○"} ${player.name}</b><small>${locks[player.id] ? "Draft locked" : "Building roster"}</small></span>`).join("")}</div>
+    <a class="primary-button" href="#roster">Review my draft</a>
+  </section>`;
+}
+
+function championOverviewView() {
+  const result = completedHistoryEntry();
+  const winner = result.winner === "Draw" ? null : data.players.find((player) => player.name === result.winner);
+  const mvp = getRikishi(result.mvp);
+  const seenKey = `sumoBattleChampionSeen:${result.id}`;
+  let celebrate = false;
+  try {
+    celebrate = !localStorage.getItem(seenKey);
+    if (celebrate) localStorage.setItem(seenKey, "1");
+  } catch { celebrate = false; }
+  const confetti = celebrate && !state.reducedMotion ? `<div class="champion-confetti" aria-hidden="true">${Array.from({ length: 28 }, (_, index) => `<i style="--i:${index}"></i>`).join("")}</div>` : "";
+  const nextCard = hasNewOfficialBasho() ? `<section class="next-basho-card reveal"><div><p class="eyebrow">THE NEXT BASHO IS AVAILABLE</p><h2>${escapeHtml(data.meta.tournament)}</h2><p>Archive this result, then choose whether to play the next official tournament.</p></div><div><button class="primary-button" type="button" data-start-new-draft>Start ${escapeHtml(data.meta.month || "Next")} Draft</button><button class="secondary-button" type="button" data-skip-basho>Skip ${escapeHtml(data.meta.month || "Tournament")}</button></div></section>` : `<section class="next-basho-card waiting reveal"><div><p class="eyebrow">OFF-SEASON</p><h2>The champion remains on top.</h2><p>The next-draft controls will appear when a new official banzuke is published.</p></div></section>`;
+  return `<section class="page-shell champion-page">
+    <section class="champion-hero ${winner?.color || "draw"} reveal">${confetti}<span class="champion-trophy">🏆</span><p class="eyebrow">${winner ? "BASHO CHAMPION" : "BASHO COMPLETE"}</p><h1>${winner?.name.toUpperCase() || "DRAW"}</h1><p>${escapeHtml(selectedBasho().label)}</p><div class="champion-score"><span><small>GWAZY</small><b>${result.gwazyScore}</b></span><i>–</i><span><small>JAKE</small><b>${result.jakeScore}</b></span></div><div class="champion-facts"><span><small>WINNING MARGIN</small><b>${result.margin} pts</b></span><span><small>MVP WRESTLER</small><b>${escapeHtml(mvp?.name || "—")}</b></span></div></section>
+    ${nextCard}
+    ${appFooter()}
+  </section>`;
+}
+
 function overviewView() {
+  if (tournamentFinished()) return championOverviewView();
   const basho = selectedBasho();
   const pool = draftPoolStats(basho);
   const draftStarted = pool.drafted > 0;
@@ -1143,13 +1313,12 @@ function overviewView() {
         </div>
       </div>
 
-      ${scoreDuel()}
-
-      <div class="overview-grid overview-analytics" data-overview-analytics>
-        ${currentStandingsCard()}
-        ${forecastCard()}
-        ${momentumCard()}
-      </div>
+      ${tournamentStarted() ? `${scoreDuel()}
+        <div class="overview-grid overview-analytics" data-overview-analytics>
+          ${currentStandingsCard()}
+          ${forecastCard()}
+          ${momentumCard()}
+        </div>` : draftWaitingOverview()}
 
       <section class="content-section picks-preview reveal">
         <div class="section-title spacious"><div><p class="eyebrow">SHARED DRAFT · ${escapeHtml(basho.label.toUpperCase())}</p><h2>Complete rosters</h2><p>Both players' main picks, substitutes, scores, predictions, and completion progress update here automatically.</p></div><a class="text-link" href="#banzuke">Open draft <span>${icons.arrow}</span></a></div>
@@ -1157,18 +1326,10 @@ function overviewView() {
         <div class="pick-preview-grid overview-rosters">${data.players.map(overviewRosterDashboard).join("")}</div>
       </section>
 
-      <section class="bonus-panel reveal">
+      <section class="bonus-panel scoring-only reveal">
         <div class="scoring-mini">
           <div class="section-title"><div><p class="eyebrow">QUICK REFERENCE</p><h2>Scoring system</h2></div><span class="spark-icon">♛</span></div>
           <div class="scoring-rows">${data.scoring.map((rule) => `<span><small>${rule.label}</small><b>${rule.value}</b></span>`).join("")}</div>
-        </div>
-        <div class="bonus-prediction ${getPlayerDefinition().color}">
-          <div><p class="eyebrow">${getPlayerDefinition().name.toUpperCase()}'S SIDE PREDICTION</p><h2>Which side wins more bouts?</h2><p>No prediction is selected by default. This choice belongs only to ${getPlayerDefinition().name}.</p></div>
-          <div class="side-choice" role="group" aria-label="Bonus side prediction">
-            <button type="button" class="east ${getSidePrediction() === "East" ? "active" : ""}" data-bonus="East"><span>東</span><b>EAST</b><small>${getSidePrediction() === "East" ? "PICKED" : "SELECT"}</small></button>
-            <span class="bonus-vs">VS<small>20 PTS</small></span>
-            <button type="button" class="west ${getSidePrediction() === "West" ? "active" : ""}" data-bonus="West"><span>西</span><b>WEST</b><small>${getSidePrediction() === "West" ? "PICKED" : "SELECT"}</small></button>
-          </div>
         </div>
       </section>
 
@@ -1192,7 +1353,7 @@ function validateRoster(playerId) {
   };
 }
 
-function validationChecklist(check) {
+function validationChecklist(check, playerId = state.activePlayer) {
   const item = (valid, label) => `<span class="${valid ? "ok" : "bad"}"><b>${valid ? "✓" : "×"}</b>${label}</span>`;
   return `
     <div class="validation-checklist">
@@ -1202,6 +1363,7 @@ function validationChecklist(check) {
       ${item(check.underdogs === 1, check.underdogs ? `${check.underdogs} Underdog` : "Missing Underdog")}
       ${item(check.substituteSanyaku === 1, `${check.substituteSanyaku} / 1 Sanyaku Sub`)}
       ${item(check.substituteMaegashira === 2, `${check.substituteMaegashira} / 2 Maegashira Subs`)}
+      ${item(["East", "West"].includes(getSidePrediction(playerId)), getSidePrediction(playerId) ? `${getSidePrediction(playerId)} Prediction` : "Missing Side Prediction")}
     </div>`;
 }
 
@@ -1218,6 +1380,27 @@ function formatSharedSaveTime(value) {
     day: sameUtcDay ? "Today" : date.toLocaleDateString("en-GB", { timeZone: "UTC", day: "2-digit", month: "short", year: "numeric" }),
     time: `${date.toLocaleTimeString("en-GB", { timeZone: "UTC", hour: "2-digit", minute: "2-digit", hour12: false })} UTC`,
   };
+}
+
+function sidePredictionBuilder(player, locked) {
+  const prediction = getSidePrediction(player.id);
+  return `<section class="roster-side-prediction ${player.color}">
+    <div><p class="eyebrow">${player.name.toUpperCase()}'S SIDE PREDICTION · 20 POINT BONUS</p><h3>Which side will win more bouts?</h3><p>This prediction belongs only to ${player.name} and becomes permanent when their draft is locked.</p></div>
+    <div class="side-choice" role="group" aria-label="${player.name}'s side prediction">
+      <button type="button" class="east ${prediction === "East" ? "active" : ""}" data-bonus="East" ${locked ? "disabled" : ""}><span>東</span><b>EAST</b><small>${prediction === "East" ? "PICKED" : "SELECT"}</small></button>
+      <span class="bonus-vs">VS<small>20 PTS</small></span>
+      <button type="button" class="west ${prediction === "West" ? "active" : ""}" data-bonus="West" ${locked ? "disabled" : ""}><span>西</span><b>WEST</b><small>${prediction === "West" ? "PICKED" : "SELECT"}</small></button>
+    </div>
+  </section>`;
+}
+
+function playerLockMessage(player) {
+  const locks = sharedPlayerLocks();
+  const opponent = data.players.find((item) => item.id !== player.id);
+  if (bothDraftsLocked()) return `<div class="draft-lock-message started"><b>✅ Both drafts locked</b><span>${escapeHtml(selectedBasho().label)} has officially started. Tournament scoring and daily results are now active.</span></div>`;
+  if (locks[player.id]) return `<div class="draft-lock-message waiting"><b>🔒 Your draft is locked.</b><span>Waiting for ${opponent.name} to lock their draft before the tournament begins…</span></div>`;
+  if (locks[opponent.id]) return `<div class="draft-lock-message opponent"><b>${opponent.name}'s draft is locked.</b><span>You can continue editing ${player.name}'s roster until you lock it.</span></div>`;
+  return "";
 }
 
 function rosterView() {
@@ -1246,7 +1429,8 @@ function rosterView() {
     : '<li class="empty"><span>LIVE</span><b>No substitutions have been required.</b></li>';
   const saveTime = formatSharedSaveTime(savedSharedDraft?.lastSavedAt);
   const unsaved = hasUnsavedPlayerChanges(player.id);
-  const locked = Boolean(savedSharedDraft?.locked);
+  const locked = isPlayerDraftLocked(player.id);
+  const allLocked = bothDraftsLocked();
   const validationErrors = sharedValidationErrors.length ? `<div class="shared-validation-errors" role="alert"><b>Draft cannot be saved</b><ul>${sharedValidationErrors.map((error) => `<li>${escapeHtml(error)}</li>`).join("")}</ul></div>` : "";
   return `
     <section class="page-shell">
@@ -1256,11 +1440,12 @@ function rosterView() {
         <span><b>6</b> starters</span><i></i><span><b>1</b> Sanyaku substitute</span><i></i><span><b>2</b> Maegashira substitutes</span><i></i><span><b>SUBS SCORE</b> only while activated</span>
       </div>
       <section class="shared-draft-bar reveal ${unsaved ? "dirty" : ""}">
-        <div><small>DRAFT STATUS</small><b>${sharedDraftLoading ? "Loading shared draft..." : sharedDraftError && !savedSharedDraft ? "Connection required" : locked ? "Draft locked" : unsaved ? "&#9679; Unsaved Changes" : "&#10003; Shared draft loaded"}</b></div>
+        <div><small>${player.name.toUpperCase()} DRAFT STATUS</small><b>${sharedDraftLoading ? "Loading shared draft..." : sharedDraftError && !savedSharedDraft ? "Connection required" : locked ? "🔒 Permanently locked" : unsaved ? "&#9679; Unsaved Changes" : "&#10003; Ready to edit"}</b></div>
         <div><small>LAST SAVED</small><b>${saveTime.day}</b><span>${saveTime.time}</span></div>
         <div><small>SAVED BY</small><b>${escapeHtml(savedSharedDraft?.savedBy || "No one yet")}</b><span>Revision ${Number(savedSharedDraft?.revision || 0)}</span></div>
-        <div class="shared-draft-actions"><button class="secondary-button" type="button" data-refresh-shared>Refresh</button><button class="secondary-button" type="button" data-toggle-draft-lock ${unsaved || sharedDraftLoading || sharedDraftSaving ? "disabled" : ""}>${locked ? "Unlock draft" : "Lock draft"}</button></div>
+        <div class="shared-draft-actions"><button class="secondary-button" type="button" data-refresh-shared>Refresh</button></div>
       </section>
+      ${playerLockMessage(player)}
       ${sharedDraftError ? `<div class="shared-draft-error" role="alert">${escapeHtml(sharedDraftError)}</div>` : ""}
       <section class="active-roster-workspace ${player.color} reveal">
         <div class="roster-owner">
@@ -1281,7 +1466,8 @@ function rosterView() {
         ${validationChecklist(check)}
         ${validationErrors}
         <section class="substitution-log"><div><p class="eyebrow">OFFICIAL JSA AUTOMATION</p><h3>Substitution log</h3></div><ol>${substitutionLog}</ol></section>
-        <div class="roster-save-row shared"><p><b>${unsaved ? `Unsaved ${player.name} working copy` : `${player.name}'s saved picks are up to date`}</b><span>Save validates and updates only ${player.name}. The opponent's latest roster is fetched and preserved.</span></p><button class="primary-button" type="button" data-save-draft ${draftEditingDisabled() || !unsaved ? "disabled" : ""}>${sharedDraftSaving ? "Saving..." : "Save Picks"}</button></div>
+        ${sidePredictionBuilder(player, locked || allLocked)}
+        <div class="roster-save-row shared"><p><b>${locked ? `${player.name}'s draft is permanently locked` : unsaved ? `Unsaved ${player.name} working copy` : `${player.name}'s saved picks are up to date`}</b><span>${locked ? "The roster, substitutes, and prediction are read-only." : `Save validates and updates only ${player.name}. The opponent's latest roster is preserved.`}</span></p><div class="roster-save-actions"><button class="primary-button" type="button" data-save-draft ${draftEditingDisabled() || !unsaved ? "disabled" : ""}>${sharedDraftSaving ? "Saving..." : "Save Picks"}</button>${locked ? "" : `<button class="lock-draft-button" type="button" data-lock-my-draft ${unsaved || sharedDraftLoading || sharedDraftSaving ? "disabled" : ""}>🔒 Lock My Draft</button>`}</div></div>
       </section>
       ${appFooter()}
     </section>`;
@@ -1500,7 +1686,9 @@ function banzukeRow(row) {
     const canAddToTarget = fillingMain ? canAddMain : canAddSub;
     let action;
     if (ownedByActivePlayer) {
-      action = `<button class="pick-action remove" type="button" data-remove-pick="${rikishi.id}"><small>${location === "main" ? "YOUR MAIN PICK" : "YOUR SUBSTITUTE"}</small>Remove</button>`;
+      action = editingUnavailable
+        ? `<button class="pick-action locked ${player.color}" type="button" disabled><small>${location === "main" ? "YOUR MAIN PICK" : "YOUR SUBSTITUTE"}</small>🔒 ${player.name}</button>`
+        : `<button class="pick-action remove" type="button" data-remove-pick="${rikishi.id}"><small>${location === "main" ? "YOUR MAIN PICK" : "YOUR SUBSTITUTE"}</small>Remove</button>`;
     } else if (lockedByOtherPlayer) {
       action = `<button class="pick-action locked ${owner.color}" type="button" disabled><small>DRAFTED</small>🔒 ${owner.name}</button>`;
     } else {
@@ -1588,7 +1776,7 @@ function banzukeView() {
         <div class="banzuke-integrity"><span class="status-dot"></span><b id="banzuke-render-count">Checking ${basho.expectedRikishi} official entries…</b><small>Every data-layer rikishi must render.</small></div>
         <div class="banzuke-rows">${rows.map(banzukeRow).join("")}</div>
       </section>
-      <p class="source-note"><a href="${basho.officialUrl}" target="_blank" rel="noreferrer">Official Japan Sumo Association banzuke ↗</a> · Records update from the read-only JSA snapshot. Picks save only to ${player.name}'s local draft.</p>
+      <p class="source-note"><a href="${basho.officialUrl}" target="_blank" rel="noreferrer">Official Japan Sumo Association banzuke ↗</a> · Records update from the read-only JSA snapshot. ${player.name}'s working copy publishes to the shared Supabase draft only when Save Picks is pressed.</p>
       ${appFooter()}
     </section>`;
 }
@@ -1718,7 +1906,17 @@ function applyResultsFilter() {
 }
 
 function resultsView() {
-  const day = Number(state.selectedDay);
+  const currentOfficialDay = Math.max(1, Number(data.meta.day || 1));
+  const day = Math.min(Number(state.selectedDay), currentOfficialDay);
+  if (!tournamentStarted()) {
+    const locks = sharedPlayerLocks();
+    const lockedNames = data.players.filter((player) => locks[player.id]).map((player) => player.name);
+    return `<section class="page-shell">
+      ${pageIntro(`${escapeHtml(selectedBasho().label.toUpperCase())} · DRAFT MODE`, "Daily results unlock with the tournament", "Both players must permanently lock their drafts before official bouts and draft scoring appear here.")}
+      <section class="results-locked-state reveal"><span>🔒</span><div><p class="eyebrow">WAITING FOR BOTH PLAYERS</p><h2>${lockedNames.length ? `${lockedNames.join(" and ")} locked` : "No drafts locked yet"}</h2><p>Complete and lock each roster from the Roster page. The Day 1–15 timeline will activate automatically when both are ready.</p></div><a class="primary-button" href="#roster">Open Roster</a></section>
+      ${appFooter()}
+    </section>`;
+  }
   const bouts = resultsForDay(day);
   const [gwazy, jake] = data.players;
   const gwazyToday = dailyDraftSummary(gwazy.id, day, bouts);
@@ -1729,7 +1927,7 @@ function resultsView() {
     <section class="page-shell">
       ${pageIntro(`${escapeHtml(selectedBasho().label.toUpperCase())} · DAY ${day}`, "Draft impact", "See ownership, scoring changes, and the bouts that moved the Gwazy vs Jake battle.")}
       <section class="daily-draft-scoreboard reveal" data-results-daily-stats>${playerSummary(gwazy, gwazyToday)}<span class="daily-draft-vs">VS</span>${playerSummary(jake, jakeToday)}</section>
-      <div class="day-selector reveal" role="tablist" aria-label="Tournament day">${Array.from({ length: 15 }, (_, index) => `<button type="button" role="tab" aria-selected="${day === index + 1}" class="${day === index + 1 ? "active" : ""}" data-day="${index + 1}"><small>DAY</small>${index + 1}</button>`).join("")}</div>
+      ${bashoDayTimeline(day)}
       <div class="results-filter-bar reveal" role="group" aria-label="Draft result filters">
         ${[["all", "All"], ["gwazy", "Gwazy"], ["jake", "Jake"], ["my", "My Draft"], ["important", "Important Bouts"]].map(([value, label]) => `<button type="button" class="${resultsFilter === value ? "active" : ""}" data-results-filter="${value}" aria-pressed="${String(resultsFilter === value)}">${label}</button>`).join("")}
         <output id="results-visible-count">${bouts.length} bouts</output>
@@ -1740,7 +1938,19 @@ function resultsView() {
     </section>`;
 }
 
+function bashoDayTimeline(selectedDay = state.selectedDay) {
+  const currentDay = Math.max(1, Math.min(Number(data.meta.totalDays || 15), Number(data.meta.day || 1)));
+  const officialDays = new Set((data.results?.days || []).map((item) => Number(item.day)));
+  return `<div class="day-selector reveal" role="tablist" aria-label="Tournament day">${Array.from({ length: Number(data.meta.totalDays || 15) }, (_, index) => {
+    const day = index + 1;
+    const selectable = day <= currentDay && officialDays.has(day);
+    const classes = [day === Number(selectedDay) ? "active" : "", day === currentDay ? "current" : "", day < currentDay ? "completed" : "", !selectable ? "future" : ""].filter(Boolean).join(" ");
+    return `<button type="button" role="tab" aria-selected="${day === Number(selectedDay)}" class="${classes}" data-day="${day}" ${selectable ? "" : "disabled"}><small>${day === currentDay ? "CURRENT" : day < currentDay ? "DONE" : "DAY"}</small>${day}</button>`;
+  }).join("")}</div>`;
+}
+
 function calculateHistoryStats(events = state.history) {
+  const completedEvents = events.filter((event) => event.status !== "skipped" && event.winner);
   const wins = { Gwazy: 0, Jake: 0 };
   const scores = { gwazy: 0, jake: 0 };
   const pickCounts = {};
@@ -1748,7 +1958,7 @@ function calculateHistoryStats(events = state.history) {
   let biggestVictory = null;
   let biggestComeback = null;
 
-  events.forEach((event) => {
+  completedEvents.forEach((event) => {
     if (wins[event.winner] !== undefined) wins[event.winner] += 1;
     scores.gwazy += Number(event.gwazyScore) || 0;
     scores.jake += Number(event.jakeScore) || 0;
@@ -1762,7 +1972,7 @@ function calculateHistoryStats(events = state.history) {
   let currentWinner = null;
   let currentRun = 0;
   let longestStreak = { winner: "—", count: 0 };
-  [...events].reverse().forEach((event) => {
+  [...completedEvents].reverse().forEach((event) => {
     if (event.winner === currentWinner) currentRun += 1;
     else {
       currentWinner = event.winner;
@@ -1780,7 +1990,8 @@ function calculateHistoryStats(events = state.history) {
     biggestComeback,
     longestStreak,
     mostPicked: mostPickedEntry ? { rikishi: getRikishi(mostPickedEntry[0]), count: mostPickedEntry[1] } : null,
-    average: events.length ? Math.round((scores.gwazy + scores.jake) / (events.length * 2)) : 0,
+    completedCount: completedEvents.length,
+    average: completedEvents.length ? Math.round((scores.gwazy + scores.jake) / (completedEvents.length * 2)) : 0,
   };
 }
 
@@ -1799,6 +2010,7 @@ function historyEditor() {
   const opponent = getPlayerDefinition(opponentId);
   const event = state.history.find((item) => item.id === activeHistoryId) || state.history[0];
   if (!event) return "";
+  if (event.status === "skipped") return `<section class="history-editor reveal"><div class="history-editor-heading"><div><p class="eyebrow">TOURNAMENT SKIPPED</p><h2>${escapeHtml(event.basho)}</h2></div><span>No draft was created, so there are no player results to edit.</span></div></section>`;
   activeHistoryId = event.id;
   const roster = event.rosters[playerId] || [];
   const available = data.rikishi.filter((rikishi) => !roster.includes(rikishi.id));
@@ -1857,7 +2069,7 @@ function historyView() {
   const stats = calculateHistoryStats();
   const player = getPlayerDefinition();
   const activeWins = stats.wins[player.name] || 0;
-  const winRate = state.history.length ? Math.round((activeWins / state.history.length) * 100) : 0;
+  const winRate = stats.completedCount ? Math.round((activeWins / stats.completedCount) * 100) : 0;
   return `
     <section class="page-shell">
       ${pageIntro("RIVALRY ARCHIVE", "Basho history", "The wins, the collapses, and the picks that still get mentioned.", `<button class="primary-button history-edit-toggle" type="button" data-history-edit>${historyEditMode ? "Finish editing" : "Edit history"}</button>`)}
@@ -1869,6 +2081,9 @@ function historyView() {
       <section class="history-list reveal">
         <div class="history-table-head"><span>BASHO</span><span>WINNER</span><span>FINAL SCORE</span><span>MARGIN</span><span>MVP</span><span>STORY</span></div>
         ${state.history.map((event) => {
+          if (event.status === "skipped") return `<button type="button" class="history-row skipped ${historyEditMode && activeHistoryId === event.id ? "selected" : ""}" data-history-select="${event.id}">
+            <span><span class="basho-mark">⏭</span><b>${escapeHtml(event.basho)}</b></span><span class="winner-name skipped">Tournament Skipped</span><strong>—</strong><span>—</span><span>—</span><span class="story-badge skipped">SKIPPED</span>
+          </button>`;
           const margin = Math.abs(event.gwazyScore - event.jakeScore);
           const mvp = getRikishi(event.mvp);
           return `<button type="button" class="history-row ${historyEditMode && activeHistoryId === event.id ? "selected" : ""}" data-history-select="${event.id}">
@@ -1882,7 +2097,7 @@ function historyView() {
         <article><small>MOST PICKED</small><strong>${stats.mostPicked?.rikishi?.name || "—"}</strong><span>${stats.mostPicked?.count || 0} roster appearances</span></article>
         <article><small>BIGGEST COMEBACK</small><strong>${stats.biggestComeback?.points || 0} pts</strong><span>${stats.biggestComeback?.event.basho || "—"}</span></article>
         <article><small>BIGGEST VICTORY</small><strong>${stats.biggestVictory?.event.winner || "—"}</strong><span>${stats.biggestVictory?.margin || 0} pts · ${stats.biggestVictory?.event.basho || "—"}</span></article>
-        <article><small>AVG. PLAYER SCORE</small><strong>${stats.average}</strong><span>across ${state.history.length} basho</span></article>
+        <article><small>AVG. PLAYER SCORE</small><strong>${stats.average}</strong><span>across ${stats.completedCount} completed basho</span></article>
       </section>
       ${appFooter()}
     </section>`;
@@ -2021,7 +2236,7 @@ function render() {
 
 function addPick(rikishiId, requestedTarget = null) {
   if (draftEditingDisabled()) {
-    showToast(savedSharedDraft?.locked ? "The shared draft is locked." : "Wait for the shared draft to finish loading.");
+    showToast(isPlayerDraftLocked() ? `${getPlayerDefinition().name}'s draft is permanently locked.` : "Wait for the shared draft to finish loading.");
     return;
   }
   const player = getPlayerDefinition();
@@ -2311,6 +2526,7 @@ function bindViewEvents() {
     reorderSubstitute(...button.dataset.subReorder.split(":"));
   }));
   app.querySelectorAll("[data-day]").forEach((button) => button.addEventListener("click", () => {
+    if (button.disabled) return;
     state.selectedDay = Number(button.dataset.day);
     saveState();
     render();
@@ -2351,7 +2567,7 @@ function bindViewEvents() {
     saveSharedDraft();
   });
   app.querySelectorAll("[data-refresh-shared]").forEach((button) => button.addEventListener("click", refreshSharedDraft));
-  app.querySelector("[data-toggle-draft-lock]")?.addEventListener("click", toggleSharedDraftLock);
+  app.querySelector("[data-lock-my-draft]")?.addEventListener("click", lockMyDraft);
   document.querySelector("[data-mock-sync]")?.addEventListener("click", async (event) => {
     event.currentTarget.disabled = true;
     event.currentTarget.textContent = "Checking deployed snapshot…";
@@ -2381,9 +2597,8 @@ function bindViewEvents() {
   }));
   document.querySelector("[data-start-new-draft]")?.addEventListener("click", () => {
     startNewOfficialBashoDraft();
-    render();
-    showToast(`${selectedBasho().label} is ready for a new shared draft. Previous history was preserved.`);
   });
+  document.querySelector("[data-skip-basho]")?.addEventListener("click", () => startNewOfficialBashoDraft({ skipped: true }));
   app.querySelectorAll("[data-player-field]").forEach((field) => field.addEventListener(field.tagName === "TEXTAREA" ? "input" : "change", () => {
     getPlayerState()[field.dataset.playerField] = field.value;
     saveState();
