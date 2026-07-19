@@ -36,6 +36,7 @@ const defaults = {
   reducedMotion: false,
   compact: false,
   activePlayer: "gwazy",
+  selectedBashoId: data.banzuke?.currentBashoId || "",
   selectedDay: data.meta.day,
   players: defaultPlayers,
   history: JSON.parse(JSON.stringify(data.history)),
@@ -74,7 +75,10 @@ const readState = () => {
       })
       : JSON.parse(JSON.stringify(defaults.history));
     const activePlayer = data.players.some((player) => player.id === saved.activePlayer) ? saved.activePlayer : defaults.activePlayer;
-    return { ...defaults, ...saved, activePlayer, players, history };
+    const selectedBashoId = data.banzuke?.bashos.some((basho) => basho.id === saved.selectedBashoId)
+      ? saved.selectedBashoId
+      : defaults.selectedBashoId;
+    return { ...defaults, ...saved, activePlayer, selectedBashoId, players, history };
   } catch {
     return JSON.parse(JSON.stringify(defaults));
   }
@@ -84,6 +88,7 @@ let state = readState();
 let pendingSwap = null;
 let historyEditMode = false;
 let activeHistoryId = state.history[0]?.id || null;
+let banzukeProfileTimer = null;
 
 function saveState() {
   try {
@@ -530,39 +535,75 @@ function mainPickRules(ids) {
   };
 }
 
-function banzukeRow(east, west, label) {
-  const cell = (rikishi, side) => {
-    if (!rikishi) return `<span></span>`;
+function selectedBasho() {
+  return data.banzuke.bashos.find((basho) => basho.id === state.selectedBashoId)
+    || data.banzuke.bashos.find((basho) => basho.id === data.banzuke.currentBashoId)
+    || data.banzuke.bashos[0];
+}
+
+function banzukeRankRows(basho = selectedBasho()) {
+  const rows = [];
+  const byPosition = new Map();
+  basho.entries.forEach((entry) => {
+    const position = entry.rankNumber ?? entry.rankSeat ?? 1;
+    const key = `${entry.rank}:${position}`;
+    if (!byPosition.has(key)) {
+      const row = { key, rank: entry.rank, position, East: null, West: null };
+      byPosition.set(key, row);
+      rows.push(row);
+    }
+    byPosition.get(key)[entry.side] = entry;
+  });
+  return rows;
+}
+
+function banzukeRow(row) {
+  const cell = (entry, side) => {
+    if (!entry) return `<span class="banzuke-vacancy" aria-hidden="true"></span>`;
+    const rikishi = getRikishi(entry.rikishiId);
+    if (!rikishi) return `<span class="banzuke-vacancy missing-data" data-missing-rikishi="${escapeHtml(entry.rikishiId)}"></span>`;
     const location = pickLocation(rikishi.id);
+    const unavailable = rikishi.available === false;
     const action = location
       ? `<button class="pick-action remove" type="button" data-remove-pick="${rikishi.id}"><small>${location === "main" ? "MAIN PICK" : "SUBSTITUTE"}</small>Remove</button>`
-      : `<button class="pick-action" type="button" data-add-pick="${rikishi.id}"><small>FOR ${getPlayerDefinition().name.toUpperCase()}</small>Add to Team</button>`;
+      : `<button class="pick-action" type="button" data-add-pick="${rikishi.id}" ${unavailable ? "disabled" : ""}><small>${unavailable ? "UNAVAILABLE" : `FOR ${getPlayerDefinition().name.toUpperCase()}`}</small>${unavailable ? "Absent" : "Add to Team"}</button>`;
+    const searchValue = `${rikishi.name} ${rikishi.fullName || ""} ${rikishi.stable} ${rikishi.rank} ${rikishi.side}`.toLowerCase();
     return `
-      <article class="banzuke-rikishi ${side} ${location ? "selected-pick" : ""}">
+      <article class="banzuke-rikishi ${side} ${location ? "selected-pick" : ""} ${unavailable ? "unavailable" : ""}"
+        data-banzuke-id="${rikishi.id}" data-rank="${escapeHtml(rikishi.rank)}" data-side="${rikishi.side}"
+        data-search-value="${escapeHtml(searchValue)}" data-available="${String(!unavailable)}"
+        data-picked-current="${String(Boolean(location))}" data-picked-jake="${String(Boolean(pickLocation(rikishi.id, "jake")))}">
         ${side === "east" ? wrestlerImage(rikishi) : action}
-        <button class="banzuke-profile" type="button" data-profile="${rikishi.id}">
-          <b>${rikishi.name}</b><small>${rikishi.stable} · ${rikishi.record}</small>
+        <button class="banzuke-profile" type="button" data-profile="${rikishi.id}" aria-label="Open ${escapeHtml(rikishi.name)} profile">
+          <span class="banzuke-name-line"><b>${escapeHtml(rikishi.name)}</b><i class="position-chip ${side}">${rikishi.side}</i></span>
+          <small>${escapeHtml(rikishi.stable)} stable</small>
+          <span class="banzuke-record"><strong>${escapeHtml(rikishi.record)}</strong><em><b>${rikishi.wins}</b> wins</em><em><b>${rikishi.losses}</b> losses</em></span>
         </button>
         ${side === "west" ? wrestlerImage(rikishi) : action}
+        <aside class="banzuke-quick-profile" aria-hidden="true">
+          <small>QUICK PROFILE</small><b>${escapeHtml(rikishi.fullName || rikishi.name)}</b>
+          <span>${escapeHtml(formatRank(rikishi))}</span><span>${escapeHtml(rikishi.stable)} · ${escapeHtml(rikishi.birthplace)}</span>
+          <em>Single-click for full profile · double-click to ${location ? "remove" : "add"}</em>
+        </aside>
       </article>`;
   };
-  return `<div class="banzuke-row">${cell(east, "east")}<div class="rank-seal"><b>${label}</b><small>${label.startsWith("M") ? "前頭" : "役力士"}</small></div>${cell(west, "west")}</div>`;
+  const label = row.rank.toUpperCase();
+  const isMaegashira = row.rank.startsWith("Maegashira");
+  const pairLabel = !isMaegashira && row.position > 1 ? `PAIR ${row.position} · ` : "";
+  return `<div class="banzuke-row" data-banzuke-row>${cell(row.East, "east")}<div class="rank-seal"><b>${escapeHtml(label)}</b><small>${pairLabel}${isMaegashira ? "前頭" : "役力士"}</small></div>${cell(row.West, "west")}</div>`;
 }
 
 function banzukeView() {
   const player = getPlayerDefinition();
   const roster = getRoster();
   const check = validateRoster(player.id);
-  const pairs = [
-    ["hoshoryu", "onosato", "YOKOZUNA"], ["kirishima", "kotozakura", "OZEKI"], ["atamifuji", "aonishiki", "SEKIWAKE"],
-    ["wakatakakage", null, "SEKIWAKE"], [null, "oho", "KOMUSUBI"], ["gonoyama", "hakunofuji", "M2"],
-    ["daieisho", null, "M4"], ["ura", null, "M5"], ["shodai", null, "M6"], ["kotoeiho", "takayasu", "M7"],
-    [null, "tobizaru", "M9"], [null, "abi", "M12"], ["nishikifuji", "takerufuji", "M13"], [null, "shishi", "M14"], ["onokatsu", null, "M15"],
-  ];
+  const basho = selectedBasho();
+  const rows = banzukeRankRows(basho);
+  const rankOptions = [...new Set(basho.entries.map((entry) => entry.rank))];
   return `
     <section class="page-shell">
-      ${pageIntro("JULY 2026 · TEAM BUILDER", "Pick from the banzuke", `Add rikishi directly to ${player.name}'s team. Empty main slots fill first, then substitutes.`, `<label class="search-field"><span>⌕</span><input id="banzuke-search" type="search" placeholder="Find a rikishi" autocomplete="off" /></label>`)}
-      ${editingBanner(`Every Add or Remove action below changes ${player.name}'s roster only.`)}
+      ${pageIntro(`${escapeHtml(basho.label.toUpperCase())} · TEAM BUILDER`, "Pick from the complete banzuke", `All ${basho.entries.length} official Makuuchi rikishi. Single-click a wrestler for their profile or double-click to edit ${player.name}'s roster.`, `<label class="search-field"><span>⌕</span><input id="banzuke-search" type="search" placeholder="Find a rikishi or stable" autocomplete="off" /></label>`)}
+      ${editingBanner(`Every roster action below changes ${player.name}'s team only.`)}
       <section class="banzuke-builder ${player.color} reveal">
         <div class="builder-counts">
           <span><small>MAIN PICKS</small><b>${roster.team.length} / 6</b><em>${Math.max(0, 6 - roster.team.length)} remaining</em></span>
@@ -571,11 +612,20 @@ function banzukeView() {
         ${validationChecklist(check)}
         <a class="secondary-button" href="#roster">Manage swaps</a>
       </section>
-      <section class="banzuke-board reveal">
-        <div class="banzuke-title"><span>東 <small>EAST</small></span><div><p>令和八年 七月場所</p><h2>幕内番付</h2><small>NAGOYA BASHO · MAKUUCHI DIVISION</small></div><span>西 <small>WEST</small></span></div>
-        <div class="banzuke-rows">${pairs.map(([east, west, label]) => banzukeRow(east && getRikishi(east), west && getRikishi(west), label)).join("")}</div>
+      <section class="banzuke-tools reveal" aria-label="Banzuke filters">
+        <label><small>BASHO</small><select id="basho-select">${data.banzuke.bashos.map((item) => `<option value="${item.id}" ${item.id === basho.id ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></label>
+        <label><small>PICKS</small><select id="banzuke-pick-filter"><option value="all">All wrestlers</option><option value="mine">Only my picks</option><option value="jake">Only Jake's picks</option></select></label>
+        <label><small>SIDE</small><select id="banzuke-side-filter"><option value="all">East & West</option><option value="East">East only</option><option value="West">West only</option></select></label>
+        <label><small>RANK</small><select id="banzuke-rank-filter"><option value="all">All ranks</option>${rankOptions.map((rank) => `<option value="${escapeHtml(rank)}">${escapeHtml(rank)}</option>`).join("")}</select></label>
+        <label class="availability-filter"><input id="banzuke-hide-unavailable" type="checkbox" /><span>Hide unavailable</span></label>
+        <output id="banzuke-visible-count"><b>${basho.entries.length}</b> shown</output>
       </section>
-      <p class="source-note">Ranks mirror the official July 2026 Makuuchi list. Picks save immediately for ${player.name} on this device.</p>
+      <section class="banzuke-board reveal">
+        <div class="banzuke-title"><span>東 <small>EAST</small></span><div><p>${escapeHtml(basho.japaneseTitle)}</p><h2>幕内番付</h2><small>${escapeHtml(basho.tournament.toUpperCase())} · ${escapeHtml(basho.division.toUpperCase())}</small></div><span>西 <small>WEST</small></span></div>
+        <div class="banzuke-integrity"><span class="status-dot"></span><b id="banzuke-render-count">Checking ${basho.expectedRikishi} official entries…</b><small>Every data-layer rikishi must render.</small></div>
+        <div class="banzuke-rows">${rows.map(banzukeRow).join("")}</div>
+      </section>
+      <p class="source-note"><a href="${basho.officialUrl}" target="_blank" rel="noreferrer">Official Japan Sumo Association banzuke ↗</a> · Records are current through Day ${data.meta.day}. Picks save immediately for ${player.name}.</p>
       ${appFooter()}
     </section>`;
 }
@@ -855,6 +905,7 @@ function render() {
     app.dataset.route = route;
     window.scrollTo({ top: 0, behavior: state.reducedMotion ? "auto" : "smooth" });
     bindViewEvents();
+    if (route === "banzuke") verifyBanzukeIntegrity();
     animateNumbers();
   }, state.reducedMotion ? 0 : 80);
 }
@@ -864,6 +915,10 @@ function addPick(rikishiId) {
   const roster = getRoster();
   const rikishi = getRikishi(rikishiId);
   if (!rikishi || pickLocation(rikishiId)) return;
+  if (rikishi.available === false) {
+    showToast(`${rikishi.name} is unavailable for roster selection.`);
+    return;
+  }
 
   let destination = null;
   if (roster.team.length < 6 && mainPickRules([...roster.team, rikishiId]).valid) {
@@ -968,6 +1023,54 @@ function chooseSwap(rikishiId, source) {
   showToast(`${getRikishi(subId).name} moved into the main team.`);
 }
 
+function verifyBanzukeIntegrity(basho = selectedBasho()) {
+  const rendered = [...app.querySelectorAll("[data-banzuke-id]")];
+  const renderedIds = new Set(rendered.map((element) => element.dataset.banzukeId));
+  const missing = basho.entries.filter((entry) => !renderedIds.has(entry.rikishiId));
+  const status = app.querySelector("#banzuke-render-count");
+  const integrity = status?.closest(".banzuke-integrity");
+  if (missing.length) {
+    console.warn(`${missing.length} rikishi missing from rendered banzuke.`);
+    if (status) status.textContent = `${missing.length} of ${basho.expectedRikishi} official rikishi are missing`;
+    integrity?.classList.add("bad");
+    return false;
+  }
+  if (status) status.textContent = `${renderedIds.size} / ${basho.expectedRikishi} official rikishi rendered`;
+  integrity?.classList.add("ok");
+  return renderedIds.size === basho.expectedRikishi;
+}
+
+function applyBanzukeFilters() {
+  const search = app.querySelector("#banzuke-search");
+  if (!search) return;
+  const term = search.value.toLowerCase().trim();
+  const pickFilter = app.querySelector("#banzuke-pick-filter")?.value || "all";
+  const sideFilter = app.querySelector("#banzuke-side-filter")?.value || "all";
+  const rankFilter = app.querySelector("#banzuke-rank-filter")?.value || "all";
+  const hideUnavailable = Boolean(app.querySelector("#banzuke-hide-unavailable")?.checked);
+  let visible = 0;
+
+  app.querySelectorAll("[data-banzuke-id]").forEach((card) => {
+    const matchesSearch = !term || card.dataset.searchValue.includes(term);
+    const matchesPicks = pickFilter === "all"
+      || (pickFilter === "mine" && card.dataset.pickedCurrent === "true")
+      || (pickFilter === "jake" && card.dataset.pickedJake === "true");
+    const matchesSide = sideFilter === "all" || card.dataset.side === sideFilter;
+    const matchesRank = rankFilter === "all" || card.dataset.rank === rankFilter;
+    const matchesAvailability = !hideUnavailable || card.dataset.available === "true";
+    const matches = matchesSearch && matchesPicks && matchesSide && matchesRank && matchesAvailability;
+    card.classList.toggle("filter-hidden", !matches);
+    if (matches) visible += 1;
+  });
+
+  app.querySelectorAll("[data-banzuke-row]").forEach((row) => {
+    const cards = [...row.querySelectorAll("[data-banzuke-id]")];
+    row.classList.toggle("filter-hidden", !cards.some((card) => !card.classList.contains("filter-hidden")));
+  });
+  const output = app.querySelector("#banzuke-visible-count");
+  if (output) output.innerHTML = `<b>${visible}</b> shown`;
+}
+
 function currentHistoryEvent() {
   return state.history.find((event) => event.id === activeHistoryId) || state.history[0];
 }
@@ -976,9 +1079,22 @@ function bindViewEvents() {
   app.querySelectorAll("[data-profile]").forEach((element) => {
     element.addEventListener("click", (event) => {
       if (event.target.closest("[data-add-pick], [data-remove-pick], [data-roster-move], [data-swap-pick]")) return;
-      openProfile(element.dataset.profile);
+      if (element.closest(".banzuke-rikishi")) {
+        clearTimeout(banzukeProfileTimer);
+        banzukeProfileTimer = setTimeout(() => openProfile(element.dataset.profile), 220);
+      } else openProfile(element.dataset.profile);
     });
   });
+  app.querySelectorAll("[data-banzuke-id]").forEach((card) => card.addEventListener("dblclick", (event) => {
+    if (event.target.closest("[data-add-pick], [data-remove-pick]")) return;
+    event.preventDefault();
+    clearTimeout(banzukeProfileTimer);
+    const rikishi = getRikishi(card.dataset.banzukeId);
+    if (!rikishi) return;
+    if (pickLocation(rikishi.id)) removePick(rikishi.id);
+    else if (rikishi.available === false) showToast(`${rikishi.name} is unavailable for roster selection.`);
+    else addPick(rikishi.id);
+  }));
   app.querySelectorAll("[data-add-pick]").forEach((button) => button.addEventListener("click", (event) => {
     event.stopPropagation();
     addPick(button.dataset.addPick);
@@ -1123,12 +1239,14 @@ function bindViewEvents() {
     saveState();
     render();
   });
-  const search = document.querySelector("#banzuke-search");
-  search?.addEventListener("input", () => {
-    const term = search.value.toLowerCase().trim();
-    document.querySelectorAll(".banzuke-rikishi").forEach((row) => {
-      row.classList.toggle("search-hidden", Boolean(term) && !row.textContent.toLowerCase().includes(term));
-    });
+  app.querySelector("#banzuke-search")?.addEventListener("input", applyBanzukeFilters);
+  ["#banzuke-pick-filter", "#banzuke-side-filter", "#banzuke-rank-filter", "#banzuke-hide-unavailable"].forEach((selector) => {
+    app.querySelector(selector)?.addEventListener("change", applyBanzukeFilters);
+  });
+  app.querySelector("#basho-select")?.addEventListener("change", (event) => {
+    state.selectedBashoId = event.target.value;
+    saveState();
+    render();
   });
 }
 

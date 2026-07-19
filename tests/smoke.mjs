@@ -9,8 +9,23 @@ const context = { window: {} };
 runInNewContext(load("data/sumo-data.js"), context);
 const data = context.window.SUMO_DATA;
 const ids = new Set(data.rikishi.map((rikishi) => rikishi.id));
+const currentBasho = data.banzuke.bashos.find((basho) => basho.id === data.banzuke.currentBashoId);
 
 assert.equal(ids.size, data.rikishi.length, "Rikishi IDs must be unique");
+assert(currentBasho, "The data layer needs a current banzuke");
+assert.equal(currentBasho.division, "Makuuchi", "The current banzuke must be Makuuchi");
+assert.equal(currentBasho.entries.length, currentBasho.expectedRikishi, "Every official entry must be present in the dataset");
+assert.equal(currentBasho.entries.length, 42, "Nagoya 2026 must contain all 42 Makuuchi rikishi");
+assert.deepEqual(
+  [...new Set(currentBasho.entries.map((entry) => entry.rikishiId))].sort(),
+  [...ids].sort(),
+  "The current Makuuchi dataset and rikishi layer must match exactly",
+);
+assert.equal(currentBasho.entries.filter((entry) => entry.side === "East").length, 21, "Every East position must be present");
+assert.equal(currentBasho.entries.filter((entry) => entry.side === "West").length, 21, "Every West position must be present");
+assert(currentBasho.entries.some((entry) => entry.rank === "Maegashira 16" && entry.side === "East"), "M16 East must render");
+assert(currentBasho.entries.some((entry) => entry.rank === "Maegashira 16" && entry.side === "West"), "M16 West must render");
+assert.equal(currentBasho.entries.filter((entry) => entry.rank === "Sekiwake").length, 4, "Variable Sekiwake seats must remain in the data");
 assert.equal(data.meta.totalDays, 15, "A basho has fifteen days");
 assert.equal(data.players.length, 2, "The league has exactly two players");
 assert.deepEqual([...data.players.map((player) => player.id)].sort(), ["gwazy", "jake"], "Only Gwazy and Jake may be players");
@@ -68,6 +83,11 @@ assert(app.includes('localStorage.setItem("sumoBattleSettings"'), "Player state 
 for (const capability of ["data-add-pick", "data-roster-move", "data-swap-pick", "data-history-edit", "calculateHistoryStats", "sidePrediction"]) {
   assert(app.includes(capability), `Missing player-system capability: ${capability}`);
 }
+for (const capability of ["banzukeRankRows", "data-banzuke-id", "applyBanzukeFilters", "verifyBanzukeIntegrity", "rikishi missing from rendered banzuke"]) {
+  assert(app.includes(capability), `Missing complete-banzuke capability: ${capability}`);
+}
+assert(!app.includes("const pairs = ["), "Banzuke rows must not be hardcoded in the view");
+assert(data.rikishi.every((rikishi) => rikishi.photo?.includes("sumo.or.jp/img/sumo_data/rikishi/")), "Every Makuuchi rikishi needs an official photo");
 
 for (const textFile of ["index.html", "styles.css", "app.js", "data/sumo-data.js"]) {
   const contents = load(textFile);

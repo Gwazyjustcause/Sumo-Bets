@@ -21,7 +21,16 @@ class FakeElement {
   setAttribute() {}
   removeAttribute() {}
   querySelector() { return null; }
-  querySelectorAll() { return []; }
+  querySelectorAll(selector) {
+    if (this.name === "app" && selector === "[data-banzuke-id]") {
+      return [...this.innerHTML.matchAll(/data-banzuke-id="([^"]+)"/g)].map((match) => {
+        const element = new FakeElement("banzuke-card");
+        element.dataset.banzukeId = match[1];
+        return element;
+      });
+    }
+    return [];
+  }
   closest() { return null; }
   close() {}
   showModal() {}
@@ -113,6 +122,11 @@ for (const route of ["roster", "banzuke", "results", "history", "settings"]) {
   window.listeners.hashchange();
   await new Promise((resolve) => setTimeout(resolve, 120));
   assert.equal(app.dataset.route, route, `${route} route should render without an exception`);
+  if (route === "banzuke") {
+    assert.equal((app.innerHTML.match(/data-banzuke-id=/g) || []).length, 42, "The view must render every current Makuuchi rikishi");
+    assert.equal(vm.runInContext("banzukeRankRows().length", context), 21, "The data layer must generate all 21 East/West rows");
+    assert(app.innerHTML.includes("Daiseizan") && app.innerHTML.includes("Asakoryu"), "The Banzuke must continue through M16 East and West");
+  }
 }
 
 location.hash = "#history";
