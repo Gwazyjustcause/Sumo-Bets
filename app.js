@@ -968,22 +968,25 @@ function editingBanner(copy = "All changes on this page are isolated to this pla
 }
 
 function progressDots() {
+  const currentDay = Math.max(1, Math.min(Number(data.meta.totalDays || 15), Number(data.meta.day || 1)));
+  const officialDays = new Set((data.results?.days || []).map((item) => Number(item.day)));
   return Array.from({ length: data.meta.totalDays }, (_, index) => {
     const day = index + 1;
-    const status = day < data.meta.day ? "done" : day === data.meta.day ? "current" : "";
-    return `<span class="day-dot ${status}" title="Day ${day}"><b>${day}</b></span>`;
+    const selectable = day <= currentDay && officialDays.has(day);
+    const status = [day < currentDay ? "done" : "", day === currentDay ? "current" : "", day === overviewSelectedDay() ? "selected" : "", !selectable ? "future" : ""].filter(Boolean).join(" ");
+    return `<button class="day-dot ${status}" type="button" data-overview-day="${day}" title="${selectable ? `View Day ${day} results` : `Day ${day} results are not available yet`}" ${selectable ? "" : "disabled"}><b>${day}</b></button>`;
   }).join("");
 }
 
-function scoreDuel() {
+function overviewSelectedDay() {
+  return Math.max(1, Math.min(Number(data.meta.day || 1), Number(state.selectedDay || data.meta.day || 1)));
+}
+
+function scoreDuel(day = overviewSelectedDay()) {
   const [gwazy, jake] = data.players;
-  const gwazyScore = playerScore(gwazy.id);
-  const jakeScore = playerScore(jake.id);
+  const gwazyScore = playerScore(gwazy.id, day);
+  const jakeScore = playerScore(jake.id, day);
   const lead = gwazyScore - jakeScore;
-  const filledSlots = data.players.reduce((total, player) => {
-    const roster = getRoster(player.id);
-    return total + roster.team.length + roster.subs.length;
-  }, 0);
   return `
     <article class="score-duel glass-card reveal" aria-label="Current score: ${gwazy.name} ${gwazyScore}, ${jake.name} ${jakeScore}">
       <div class="duel-player ${lead > 0 ? "leader" : ""}">
@@ -995,7 +998,7 @@ function scoreDuel() {
       </div>
       <div class="duel-center">
         <div class="lead-orb"><span>${lead ? `+${Math.abs(lead)}` : "0–0"}</span><small>${lead ? "LEAD" : "TIED"}</small></div>
-        <p><b>${filledSlots}</b> of 18 draft slots filled</p>
+        <p><b>Day ${day}</b> of ${data.meta.totalDays} · ${day === Number(data.meta.day) ? "Live standings" : "Selected snapshot"}</p>
       </div>
       <div class="duel-player right ${lead < 0 ? "leader" : ""}">
         <div>
@@ -1008,11 +1011,11 @@ function scoreDuel() {
     </article>`;
 }
 
-function currentStandingsCard() {
+function currentStandingsCard(day = overviewSelectedDay()) {
   const scores = data.players.map((player) => ({
     ...player,
-    score: playerScore(player.id),
-    today: playerDayScore(player.id),
+    score: playerScore(player.id, day),
+    today: playerDayScore(player.id, day),
   }));
   const maximum = Math.max(1, ...scores.map((player) => player.score));
   const [gwazy, jake] = scores;
@@ -1025,33 +1028,34 @@ function currentStandingsCard() {
     </div>`).join("");
   return `
     <section class="glass-card standings-card reveal" data-overview-standings>
-      <div class="section-title"><div><p class="eyebrow">LIVE SCORE</p><h2>Current standings</h2></div><span class="sync-badge"><i></i> Day ${data.meta.day}</span></div>
+      <div class="section-title"><div><p class="eyebrow">${day === Number(data.meta.day) ? "LIVE SCORE" : "DAY SNAPSHOT"}</p><h2>Current standings</h2></div><span class="sync-badge"><i></i> Day ${day}</span></div>
       ${rows}
       <div class="difference-row"><span>Current margin</span><strong>${marginCopy}</strong></div>
     </section>`;
 }
 
-function projectedPlayerScore(playerId) {
-  const currentDay = Math.max(0, Math.min(data.meta.totalDays, Number(data.meta.day) || 0));
+function projectedPlayerScore(playerId, day = overviewSelectedDay()) {
+  const currentDay = Math.max(0, Math.min(data.meta.totalDays, Number(day) || 0));
   const remainingDays = Math.max(0, data.meta.totalDays - currentDay);
   const timeline = substitutionTimeline(playerId, currentDay);
   const activeIds = currentDay > 0 ? timeline.activeIds : getRoster(playerId).team;
   const expectedDailyPoints = activeIds.reduce((total, id) => {
     const rikishi = getRikishi(id);
     if (!rikishi) return total;
-    const completed = Math.max(0, rikishi.wins + rikishi.losses);
-    const adjustedWinRate = (rikishi.wins + 2) / (completed + 4);
+    const completedResults = (rikishi.dailyResults || []).filter((result) => result.day <= currentDay && result.completed);
+    const wins = completedResults.filter((result) => result.result === "win").length;
+    const adjustedWinRate = (wins + 2) / (completedResults.length + 4);
     return total + adjustedWinRate;
   }, 0);
   const prediction = getSidePrediction(playerId);
   const sideTotals = data.meta.sideTotals || { East: 0, West: 0 };
   const leadingSide = sideTotals.East === sideTotals.West ? null : sideTotals.East > sideTotals.West ? "East" : "West";
   const expectedBonus = !prediction ? 0 : !leadingSide ? 10 : prediction === leadingSide ? 14 : 6;
-  return Math.round(playerScore(playerId) + (expectedDailyPoints * remainingDays) + expectedBonus);
+  return Math.round(playerScore(playerId, currentDay) + (expectedDailyPoints * remainingDays) + expectedBonus);
 }
 
-function forecastModel() {
-  const projections = Object.fromEntries(data.players.map((player) => [player.id, projectedPlayerScore(player.id)]));
+function forecastModel(day = overviewSelectedDay()) {
+  const projections = Object.fromEntries(data.players.map((player) => [player.id, projectedPlayerScore(player.id, day)]));
   const [gwazy, jake] = data.players;
   const margin = projections[gwazy.id] - projections[jake.id];
   const gwazyProbability = Math.round(100 / (1 + Math.exp(-margin / 5)));
@@ -1062,12 +1066,12 @@ function forecastModel() {
     winner,
     probability: Math.max(5, Math.min(95, winnerProbability)),
     margin: Math.abs(margin),
-    remainingDays: Math.max(0, data.meta.totalDays - data.meta.day),
+    remainingDays: Math.max(0, data.meta.totalDays - day),
   };
 }
 
-function forecastCard() {
-  const forecast = forecastModel();
+function forecastCard(day = overviewSelectedDay()) {
+  const forecast = forecastModel(day);
   const [gwazy, jake] = data.players;
   const winnerName = forecast.winner?.name || "Too close";
   return `
@@ -1080,14 +1084,14 @@ function forecastCard() {
     </section>`;
 }
 
-function momentumChart() {
+function momentumChart(day = overviewSelectedDay()) {
   const width = 640;
   const height = 170;
   const left = 42;
   const right = 624;
   const top = 16;
   const bottom = 142;
-  const observedDay = Math.max(1, Math.min(data.meta.totalDays, Number(data.meta.day) || 0));
+  const observedDay = Math.max(1, Math.min(data.meta.totalDays, Number(day) || 0));
   const series = data.players.map((player) => ({
     ...player,
     values: Array.from({ length: observedDay }, (_, index) => playerScore(player.id, index + 1)),
@@ -1112,11 +1116,11 @@ function momentumChart() {
     </div>`;
 }
 
-function momentumCard() {
+function momentumCard(day = overviewSelectedDay()) {
   return `
     <section class="glass-card timeline-card reveal" data-overview-momentum>
       <div class="section-title"><div><p class="eyebrow">MOMENTUM</p><h2>Point progression</h2></div><div class="chart-legend"><span class="violet">Gwazy</span><span class="gold">Jake</span></div></div>
-      ${momentumChart()}
+      ${momentumChart(day)}
     </section>`;
 }
 
@@ -1210,10 +1214,10 @@ function overviewRosterSlots(player, ids, type, limit) {
   return slots.join("");
 }
 
-function overviewPickRow(player, rikishiId, status, slot) {
+function overviewPickRow(player, rikishiId, status, slot, day = overviewSelectedDay()) {
   const rikishi = getRikishi(rikishiId);
   if (!rikishi) return "";
-  const points = countedPointsForRikishi(player.id, rikishi.id);
+  const points = countedPointsForRikishi(player.id, rikishi.id, day);
   const statusCopy = status === "kyujo" ? "Kyujo · inactive" : status === "active-substitute" ? "Active replacement" : status === "standby" ? "Standby · 0 points" : "Active main";
   return `<button class="dashboard-pick-row ${status}" type="button" data-profile="${rikishi.id}">
     <span class="dashboard-slot-number">${slot}</span>${wrestlerImage(rikishi)}
@@ -1229,18 +1233,18 @@ function overviewEmptySlot(player, type, index) {
   </div>`;
 }
 
-function overviewRosterDashboard(player) {
+function overviewRosterDashboard(player, day = overviewSelectedDay()) {
   const roster = getRoster(player.id);
-  const timeline = substitutionTimeline(player.id);
+  const timeline = substitutionTimeline(player.id, day);
   const prediction = getSidePrediction(player.id);
-  const score = playerScore(player.id);
+  const score = playerScore(player.id, day);
   const mainRows = Array.from({ length: 6 }, (_, index) => {
     const mainId = roster.team[index];
     if (!mainId) return overviewEmptySlot(player, "main", index + 1);
-    return overviewPickRow(player, mainId, timeline.inactiveMainIds.includes(mainId) ? "kyujo" : "active-main", index + 1);
+    return overviewPickRow(player, mainId, timeline.inactiveMainIds.includes(mainId) ? "kyujo" : "active-main", index + 1, day);
   }).join("");
-  const activeReplacementRows = timeline.assignments.map((assignment, index) => overviewPickRow(player, assignment.subId, "active-substitute", index + 1)).join("");
-  const standbyRows = timeline.standbySubIds.map((id, index) => overviewPickRow(player, id, timeline.unavailableSubIds.includes(id) ? "kyujo" : "standby", index + 1)).join("");
+  const activeReplacementRows = timeline.assignments.map((assignment, index) => overviewPickRow(player, assignment.subId, "active-substitute", index + 1, day)).join("");
+  const standbyRows = timeline.standbySubIds.map((id, index) => overviewPickRow(player, id, timeline.unavailableSubIds.includes(id) ? "kyujo" : "standby", index + 1, day)).join("");
   return `
     <article class="team-preview overview-roster-column ${player.color}" data-overview-roster="${player.id}">
       <div class="team-preview-head">
@@ -1294,6 +1298,10 @@ function overviewView() {
   const basho = selectedBasho();
   const pool = draftPoolStats(basho);
   const draftStarted = pool.drafted > 0;
+  const selectedDay = overviewSelectedDay();
+  const heroProgress = tournamentStarted()
+    ? `<div class="basho-day tournament-progress"><small>TOURNAMENT PROGRESS</small><strong>DAY ${data.meta.day}<span> / ${data.meta.totalDays}</span></strong><div class="day-progress" role="tablist" aria-label="Tournament day">${progressDots()}</div></div>`
+    : `<div class="basho-day draft-progress"><small>DRAFT PROGRESS</small><strong>${pool.drafted}<span> / 18 SLOTS FILLED</span></strong><div class="pre-basho-progress"><span style="--width:${(pool.drafted / 18) * 100}%"></span></div></div>`;
   return `
     <section class="overview-shell">
       <div class="hero-card reveal">
@@ -1305,25 +1313,21 @@ function overviewView() {
             <h1>${data.meta.tournament}</h1>
             <p class="hero-detail"><span>${icons.calendar}</span> ${data.meta.dateRange}<span>${icons.pin}</span> ${data.meta.venue}</p>
           </div>
-          <div class="basho-day">
-            <small>DRAFT PROGRESS</small>
-            <strong>${pool.drafted}<span> / 18 SLOTS</span></strong>
-            <div class="pre-basho-progress"><span style="--width:${(pool.drafted / 18) * 100}%"></span></div>
-          </div>
+          ${heroProgress}
         </div>
       </div>
 
-      ${tournamentStarted() ? `${scoreDuel()}
+      ${tournamentStarted() ? `${scoreDuel(selectedDay)}
         <div class="overview-grid overview-analytics" data-overview-analytics>
-          ${currentStandingsCard()}
-          ${forecastCard()}
-          ${momentumCard()}
+          ${currentStandingsCard(selectedDay)}
+          ${forecastCard(selectedDay)}
+          ${momentumCard(selectedDay)}
         </div>` : draftWaitingOverview()}
 
       <section class="content-section picks-preview reveal">
         <div class="section-title spacious"><div><p class="eyebrow">SHARED DRAFT · ${escapeHtml(basho.label.toUpperCase())}</p><h2>Complete rosters</h2><p>Both players' main picks, substitutes, scores, predictions, and completion progress update here automatically.</p></div><a class="text-link" href="#banzuke">Open draft <span>${icons.arrow}</span></a></div>
         ${!draftStarted ? `<div class="overview-roster-empty" data-overview-empty><b>The draft has not started yet.</b><span>Select wrestlers from the Banzuke to build each player's team. All ${pool.total} Makuuchi rikishi are available.</span></div>` : ""}
-        <div class="pick-preview-grid overview-rosters">${data.players.map(overviewRosterDashboard).join("")}</div>
+        <div class="pick-preview-grid overview-rosters">${data.players.map((player) => overviewRosterDashboard(player, selectedDay)).join("")}</div>
       </section>
 
       <section class="bonus-panel scoring-only reveal">
@@ -2524,6 +2528,12 @@ function bindViewEvents() {
   app.querySelectorAll("[data-sub-reorder]").forEach((button) => button.addEventListener("click", (event) => {
     event.stopPropagation();
     reorderSubstitute(...button.dataset.subReorder.split(":"));
+  }));
+  app.querySelectorAll("[data-overview-day]").forEach((button) => button.addEventListener("click", () => {
+    if (button.disabled) return;
+    state.selectedDay = Number(button.dataset.overviewDay);
+    saveState();
+    location.hash = "#results";
   }));
   app.querySelectorAll("[data-day]").forEach((button) => button.addEventListener("click", () => {
     if (button.disabled) return;

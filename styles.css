@@ -340,12 +340,16 @@ textarea:focus-visible { outline: 2px solid var(--player-accent); outline-offset
 .basho-day > strong { display: block; margin-top: 4px; color: var(--gold-bright); font-size: 22px; letter-spacing: 0.06em; }
 .basho-day > strong span { color: var(--muted); font-size: 14px; }
 .day-progress { display: grid; margin-top: 15px; grid-template-columns: repeat(15, 1fr); gap: 6px; }
-.day-dot { position: relative; display: block; height: 26px; border: 1px solid rgba(157, 170, 199, 0.14); border-radius: 5px; background: rgba(5, 10, 20, 0.55); }
+.day-dot { position: relative; display: block; height: 26px; padding: 0; border: 1px solid rgba(157, 170, 199, 0.14); border-radius: 5px; background: rgba(5, 10, 20, 0.55); cursor: pointer; }
 .day-dot b { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted-2); font-size: 8px; }
 .day-dot.done { border-color: rgba(161, 100, 254, 0.35); background: linear-gradient(180deg, rgba(166, 101, 255, 0.38), rgba(89, 38, 167, 0.28)); }
 .day-dot.done b { color: var(--violet-bright); }
 .day-dot.current { border-color: var(--gold); background: rgba(232, 181, 82, 0.22); box-shadow: 0 0 17px rgba(235, 182, 84, 0.22); }
 .day-dot.current b { color: var(--gold-bright); }
+.day-dot.selected { outline: 1px solid var(--violet-bright); outline-offset: 2px; }
+.day-dot.current.selected { outline-color: var(--gold-bright); }
+.day-dot.future, .day-dot:disabled { opacity: 0.34; cursor: not-allowed; }
+.day-dot:not(:disabled):hover { border-color: var(--violet-bright); transform: translateY(-1px); }
 
 .score-duel {
   position: relative;

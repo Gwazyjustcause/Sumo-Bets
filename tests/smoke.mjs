@@ -111,6 +111,9 @@ for (const capability of ["data-save-draft", "validateSharedDraft", "hasUnsavedD
 for (const capability of ["bashoDayTimeline", "tournamentStarted", "tournamentFinished", "championOverviewView", "data-skip-basho", "Tournament Skipped"]) {
   assert(app.includes(capability), `Missing tournament lifecycle capability: ${capability}`);
 }
+for (const capability of ["TOURNAMENT PROGRESS", "DRAFT PROGRESS", "data-overview-day", "overviewSelectedDay", "progressDots"]) {
+  assert(app.includes(capability), `Missing dynamic Overview hero capability: ${capability}`);
+}
 for (const capability of ["validatePlayerDraft", "hasUnsavedPlayerChanges", "ownershipConflicts", "adoptLatestWhilePreservingPlayer", "latest.document", "attempt < 3", "just been drafted by"]) {
   assert(app.includes(capability), `Missing simultaneous player-save capability: ${capability}`);
 }

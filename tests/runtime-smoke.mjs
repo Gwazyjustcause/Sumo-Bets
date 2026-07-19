@@ -117,6 +117,7 @@ assert(!app.innerHTML.includes("JAKE'S SIDE PREDICTION"), `Overview must no long
 assert(vm.runInContext("rosterView().includes(\"JAKE'S SIDE PREDICTION\")", context), "Roster must contain the selected player's prediction control");
 assert(app.innerHTML.includes("The draft has not started yet."), "A clean save must show the friendly pre-draft state");
 assert(app.innerHTML.includes("DRAFT MODE") && !app.innerHTML.includes("data-overview-analytics"), "Analytics must wait until both drafts are locked");
+assert(app.innerHTML.includes("DRAFT PROGRESS") && app.innerHTML.includes("draft-progress") && !app.innerHTML.includes("TOURNAMENT PROGRESS"), "The draft-phase hero must show only shared slot progress");
 assert(vm.runInContext("resultsView().includes('Daily results unlock with the tournament')", context), "Results and day navigation must wait until both drafts are locked");
 vm.runInContext("savedSharedDraft={schemaVersion:4,bashoId:state.selectedBashoId,revision:0,playerLocks:{gwazy:true,jake:false},locked:false,status:'draft',players:emptyDraftPlayers()}", context);
 assert.equal(vm.runInContext("draftEditingDisabled('gwazy')", context), true, "Gwazy's lock must make only Gwazy read-only");
@@ -151,6 +152,16 @@ vm.runInContext(`savedSharedDraft={schemaVersion:4,bashoId:state.selectedBashoId
 };`, context);
 const tournamentOverview = vm.runInContext("overviewView()", context);
 assert(tournamentOverview.includes("Current standings") && tournamentOverview.includes("Projected winner") && tournamentOverview.includes("Point progression"), "Tournament mode must restore standings, forecast, and momentum");
+assert(tournamentOverview.includes("TOURNAMENT PROGRESS") && tournamentOverview.includes("DAY 8") && !tournamentOverview.includes("draft-progress"), "The tournament hero must replace draft slots with official day progress");
+assert(!tournamentOverview.includes("of 18 draft slots filled"), "Tournament mode must not retain draft-progress copy in the score comparison");
+assert.equal((tournamentOverview.match(/data-overview-day=/g) || []).length, 15, "The tournament hero must render all 15 basho days");
+assert(tournamentOverview.includes('data-overview-day="8"') && tournamentOverview.includes('current selected'), "The official current day must be highlighted in the hero");
+assert(tournamentOverview.includes('data-overview-day="9"') && tournamentOverview.includes('future" type="button" data-overview-day="9"'), "Future hero days must remain visible and disabled");
+vm.runInContext("state.selectedDay=3", context);
+const pastDayOverview = vm.runInContext("overviewView()", context);
+assert(pastDayOverview.includes("DAY SNAPSHOT") && pastDayOverview.includes("Day 3"), "Selecting a completed day must update Overview's day-dependent statistics");
+assert(pastDayOverview.includes('data-overview-day="3"') && pastDayOverview.includes('done selected'), "The selected completed day must be distinct from the official current day");
+vm.runInContext("state.selectedDay=data.meta.day", context);
 const overviewOrder = [tournamentOverview.indexOf("score-duel"), tournamentOverview.indexOf("data-overview-analytics"), tournamentOverview.indexOf("data-overview-roster")];
 assert(overviewOrder[0] >= 0 && overviewOrder[0] < overviewOrder[1] && overviewOrder[1] < overviewOrder[2], "Tournament Overview must order score comparison, analytics, then shared rosters");
 assert.equal((tournamentOverview.match(/class="chart-line /g) || []).length, 2, "Momentum must render a separate point-total line for each player");
