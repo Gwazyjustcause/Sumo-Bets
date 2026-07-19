@@ -2,6 +2,13 @@
 
 A polished static companion app for Gwazy and Jake's private fantasy-sumo rivalry. There is no gambling and no money involved.
 
+## Player system
+
+- Persistent Gwazy/Jake selector with isolated rosters, side predictions, favourite wrestlers and notes
+- Banzuke team builder with automatic slot filling, live validation, removal, moves and swaps
+- Editable basho history with player-specific archived picks, predictions, bonuses and notes
+- Head-to-head, win rate, averages, biggest victory/comeback and streak statistics recalculate immediately
+
 ## Run locally
 
 Any static server works. A zero-dependency preview server is included:
@@ -31,4 +38,5 @@ The site is GitHub Pages-ready: it uses only relative paths and has no build ste
 ```powershell
 node --check app.js
 node tests/smoke.mjs
+node tests/runtime-smoke.mjs
 ```

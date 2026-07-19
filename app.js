@@ -6,6 +6,8 @@ const dialog = document.querySelector("#profile-dialog");
 const profileContent = document.querySelector("#profile-content");
 const toast = document.querySelector("#toast");
 const soundButton = document.querySelector("#sound-toggle");
+const playerSelect = document.querySelector("#active-player-select");
+const playerLabel = document.querySelector("#active-player-label");
 
 const icons = {
   spark: "✦",
@@ -18,39 +20,100 @@ const icons = {
   pulse: "⌁",
 };
 
+const defaultPlayers = Object.fromEntries(
+  data.players.map((player) => [player.id, {
+    mainPicks: [...player.team],
+    substitutes: [...player.subs],
+    sidePrediction: player.sidePrediction || null,
+    favouriteWrestler: player.favouriteWrestler || "",
+    notes: "",
+  }]),
+);
+
 const defaults = {
   theme: "midnight",
   sound: false,
   reducedMotion: false,
   compact: false,
-  bonusPrediction: null,
+  activePlayer: "gwazy",
   selectedDay: data.meta.day,
-  roster: Object.fromEntries(
-    data.players.map((player) => [player.id, { team: [...player.team], subs: [...player.subs] }]),
-  ),
+  players: defaultPlayers,
+  history: JSON.parse(JSON.stringify(data.history)),
 };
 
 const readState = () => {
   try {
     const saved = JSON.parse(localStorage.getItem("sumoBattleSettings") || "{}");
-    return { ...defaults, ...saved, roster: { ...defaults.roster, ...(saved.roster || {}) } };
+    const players = Object.fromEntries(data.players.map((player) => {
+      const legacy = saved.roster?.[player.id];
+      const stored = saved.players?.[player.id] || {};
+      const base = defaultPlayers[player.id];
+      return [player.id, {
+        ...base,
+        ...stored,
+        mainPicks: [...(stored.mainPicks || legacy?.team || base.mainPicks)],
+        substitutes: [...(stored.substitutes || legacy?.subs || base.substitutes)],
+      }];
+    }));
+    if (!saved.players && saved.bonusPrediction && players[saved.activePlayer || "gwazy"]) {
+      players[saved.activePlayer || "gwazy"].sidePrediction = saved.bonusPrediction;
+    }
+    const history = Array.isArray(saved.history) && saved.history.every((event) => Number.isFinite(event.gwazyScore))
+      ? saved.history.map((event) => {
+        const base = defaults.history.find((item) => item.id === event.id) || defaults.history[0];
+        return {
+          ...base,
+          ...event,
+          rosters: { ...base.rosters, ...(event.rosters || {}) },
+          predictions: { ...base.predictions, ...(event.predictions || {}) },
+          bonusPoints: { ...base.bonusPoints, ...(event.bonusPoints || {}) },
+          notes: { ...base.notes, ...(event.notes || {}) },
+          bestPicks: { ...base.bestPicks, ...(event.bestPicks || {}) },
+          worstPicks: { ...base.worstPicks, ...(event.worstPicks || {}) },
+        };
+      })
+      : JSON.parse(JSON.stringify(defaults.history));
+    const activePlayer = data.players.some((player) => player.id === saved.activePlayer) ? saved.activePlayer : defaults.activePlayer;
+    return { ...defaults, ...saved, activePlayer, players, history };
   } catch {
-    return { ...defaults };
+    return JSON.parse(JSON.stringify(defaults));
   }
 };
 
 let state = readState();
-
-try {
-  if (!localStorage.getItem("sumoBattleHistoryCache")) {
-    localStorage.setItem("sumoBattleHistoryCache", JSON.stringify({ updated: data.meta.lastUpdated, events: data.history }));
-  }
-} catch {
-  // The app remains usable when a browser disables local storage.
-}
+let pendingSwap = null;
+let historyEditMode = false;
+let activeHistoryId = state.history[0]?.id || null;
 
 function saveState() {
-  localStorage.setItem("sumoBattleSettings", JSON.stringify(state));
+  try {
+    localStorage.setItem("sumoBattleSettings", JSON.stringify(state));
+    localStorage.setItem("sumoBattleHistoryCache", JSON.stringify({ updated: new Date().toISOString(), events: state.history }));
+  } catch {
+    showToast("This browser is blocking local saves.");
+  }
+}
+
+function getPlayerDefinition(id = state.activePlayer) {
+  return data.players.find((player) => player.id === id);
+}
+
+function getPlayerState(id = state.activePlayer) {
+  return state.players[id];
+}
+
+function getRoster(id = state.activePlayer) {
+  const player = getPlayerState(id);
+  return { team: player.mainPicks, subs: player.substitutes };
+}
+
+function escapeHtml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 function getRikishi(id) {
@@ -105,11 +168,16 @@ function playBell() {
 }
 
 function setTheme() {
+  const player = getPlayerDefinition();
   document.documentElement.dataset.theme = state.theme;
+  document.documentElement.dataset.player = state.activePlayer;
   document.documentElement.classList.toggle("reduced-motion", state.reducedMotion);
   document.documentElement.classList.toggle("compact-mode", state.compact);
   soundButton.setAttribute("aria-pressed", String(state.sound));
   soundButton.classList.toggle("active", state.sound);
+  playerSelect.value = state.activePlayer;
+  playerLabel.textContent = player.name;
+  playerSelect.closest(".player-selector").dataset.player = state.activePlayer;
 }
 
 function routeName() {
@@ -138,6 +206,17 @@ function pageIntro(eyebrow, title, copy, actions = "") {
       </div>
       ${actions}
     </section>`;
+}
+
+function editingBanner(copy = "All changes on this page are isolated to this player.") {
+  const player = getPlayerDefinition();
+  return `
+    <aside class="editing-banner ${player.color} reveal" aria-label="Currently editing ${player.name}">
+      <span class="player-avatar ${player.color}">${player.initials}</span>
+      <span><small>CURRENTLY EDITING</small><b>${player.name.toUpperCase()}</b></span>
+      <p>${copy}</p>
+      <span class="editing-lock">● PLAYER-ONLY DATA</span>
+    </aside>`;
 }
 
 function progressDots() {
@@ -236,8 +315,10 @@ function boutCard(bout, compact = false) {
 
 function rosterCard(rikishi, playerId, substitute = false) {
   const heat = rikishi.form >= 75 ? "hot" : rikishi.form < 40 ? "cold" : "steady";
+  const isSwapSource = pendingSwap?.playerId === playerId && pendingSwap.rikishiId === rikishi.id;
+  const isSwapTarget = pendingSwap?.playerId === playerId && pendingSwap.substitute !== substitute;
   return `
-    <article class="roster-card ${heat}" data-profile="${rikishi.id}">
+    <article class="roster-card ${heat} ${isSwapSource ? "swap-source" : ""} ${isSwapTarget ? "swap-target" : ""}" data-profile="${rikishi.id}">
       ${wrestlerImage(rikishi, "medium")}
       <div class="roster-card-main">
         <div class="roster-card-title">
@@ -249,7 +330,11 @@ function rosterCard(rikishi, playerId, substitute = false) {
       </div>
       <div class="roster-points"><strong>${rikishi.points}</strong><small>PTS</small></div>
       ${rikishi.badge ? `<span class="clutch-badge">✦ ${rikishi.badge}</span>` : ""}
-      <button class="card-action" type="button" data-swap="${playerId}:${rikishi.id}:${substitute ? "promote" : "bench"}" aria-label="${substitute ? "Promote" : "Move to substitutes"} ${rikishi.name}">${substitute ? "↑" : "↓"}</button>
+      <div class="roster-card-actions">
+        <button type="button" data-roster-move="${rikishi.id}:${substitute ? "main" : "subs"}">${substitute ? "Move to main" : "Move to subs"}</button>
+        <button type="button" data-swap-pick="${rikishi.id}:${substitute ? "sub" : "main"}">${isSwapTarget ? "Swap here" : isSwapSource ? "Cancel swap" : "Swap"}</button>
+        <button class="remove" type="button" data-remove-pick="${rikishi.id}">Remove</button>
+      </div>
     </article>`;
 }
 
@@ -333,7 +418,7 @@ function overviewView() {
           ${data.players.map((player) => `
             <article class="team-preview ${player.color}">
               <div class="team-preview-head"><span class="player-avatar ${player.color}">${player.initials}</span><div><small>${player.name.toUpperCase()}'S TEAM</small><h3>${player.today} points today</h3></div><strong>${player.score}</strong></div>
-              <div class="pick-chip-grid">${state.roster[player.id].team.slice(0, 4).map((id) => compactPickCard(getRikishi(id))).join("")}</div>
+              <div class="pick-chip-grid">${getRoster(player.id).team.slice(0, 4).map((id) => compactPickCard(getRikishi(id))).join("")}</div>
             </article>`).join("")}
         </div>
       </section>
@@ -343,12 +428,12 @@ function overviewView() {
           <div class="section-title"><div><p class="eyebrow">QUICK REFERENCE</p><h2>Scoring system</h2></div><span class="spark-icon">♛</span></div>
           <div class="scoring-rows">${data.scoring.map((rule) => `<span><small>${rule.label}</small><b>${rule.value}</b></span>`).join("")}</div>
         </div>
-        <div class="bonus-prediction">
-          <div><p class="eyebrow">BONUS PREDICTION</p><h2>Which side wins more bouts?</h2><p>Lock a side before Day 1. A correct call is worth 20 points.</p></div>
+        <div class="bonus-prediction ${getPlayerDefinition().color}">
+          <div><p class="eyebrow">${getPlayerDefinition().name.toUpperCase()}'S BONUS PREDICTION</p><h2>Which side wins more bouts?</h2><p>This pick belongs only to ${getPlayerDefinition().name}. Switch players in the header to view the other prediction.</p></div>
           <div class="side-choice" role="group" aria-label="Bonus side prediction">
-            <button type="button" class="east ${state.bonusPrediction === "East" ? "active" : ""}" data-bonus="East"><span>東</span><b>EAST</b><small>${state.bonusPrediction === "East" ? "PICKED" : "SELECT"}</small></button>
+            <button type="button" class="east ${getPlayerState().sidePrediction === "East" ? "active" : ""}" data-bonus="East"><span>東</span><b>EAST</b><small>${getPlayerState().sidePrediction === "East" ? "PICKED" : "SELECT"}</small></button>
             <span class="bonus-vs">VS<small>20 PTS</small></span>
-            <button type="button" class="west ${state.bonusPrediction === "West" ? "active" : ""}" data-bonus="West"><span>西</span><b>WEST</b><small>${state.bonusPrediction === "West" ? "PICKED" : "SELECT"}</small></button>
+            <button type="button" class="west ${getPlayerState().sidePrediction === "West" ? "active" : ""}" data-bonus="West"><span>西</span><b>WEST</b><small>${getPlayerState().sidePrediction === "West" ? "PICKED" : "SELECT"}</small></button>
           </div>
         </div>
       </section>
@@ -364,7 +449,7 @@ function overviewView() {
 }
 
 function validateRoster(playerId) {
-  const roster = state.roster[playerId];
+  const roster = getRoster(playerId);
   const team = roster.team.map(getRikishi);
   const sanyaku = team.filter((rikishi) => ["Yokozuna", "Ozeki", "Sekiwake", "Komusubi"].includes(rikishi.rank)).length;
   const underdogs = team.filter((rikishi) => /Maegashira (1[3-7])/.test(rikishi.rank)).length;
@@ -377,51 +462,97 @@ function validateRoster(playerId) {
   };
 }
 
+function validationChecklist(check) {
+  const item = (valid, label) => `<span class="${valid ? "ok" : "bad"}"><b>${valid ? "✓" : "×"}</b>${label}</span>`;
+  return `
+    <div class="validation-checklist">
+      ${item(check.team === 6, `${check.team} / 6 Main Picks`)}
+      ${item(check.subs === 3, `${check.subs} / 3 Substitutes`)}
+      ${item(check.sanyaku <= 2, `${check.sanyaku} / 2 Komusubi+`)}
+      ${item(check.underdogs === 1, check.underdogs ? `${check.underdogs} Underdog` : "Missing Underdog")}
+    </div>`;
+}
+
+function emptyRosterSlots(count, type) {
+  return Array.from({ length: count }, (_, index) => `<div class="empty-roster-slot"><span>+</span><b>${type} slot ${index + 1}</b><small>Add from the Banzuke</small></div>`).join("");
+}
+
 function rosterView() {
+  const player = getPlayerDefinition();
+  const roster = getRoster();
+  const check = validateRoster(player.id);
   return `
     <section class="page-shell">
-      ${pageIntro("PICK BUILDER", "The rosters", "Six starters. Three substitutes. Every selection can change the basho.", `<button class="primary-button" type="button" data-save-draft>Save draft</button>`)}
+      ${pageIntro("TEAM WORKSPACE", `${player.name}'s roster`, "Review, remove, move, or swap picks without rebuilding the team.", `<a class="primary-button" href="#banzuke">Add from Banzuke</a>`)}
+      ${editingBanner(`This roster belongs only to ${player.name}. Use the header selector to edit the other player.`)}
       <div class="rules-strip reveal">
         <span><b>6</b> starters</span><i></i><span><b>3</b> substitutes</span><i></i><span><b>MAX 2</b> Komusubi+</span><i></i><span><b>EXACTLY 1</b> M13–M17 underdog</span>
       </div>
-      <div class="roster-columns">
-        ${data.players.map((player) => {
-          const roster = state.roster[player.id];
-          const check = validateRoster(player.id);
-          return `
-            <section class="roster-column ${player.color} reveal">
-              <div class="roster-owner">
-                <span class="player-avatar ${player.color}">${player.initials}</span>
-                <div><p class="eyebrow">${player.name.toUpperCase()}'S PICKS</p><h2>${player.score} points</h2></div>
-                <span class="legal-badge ${check.valid ? "valid" : "invalid"}">${check.valid ? "✓ LEGAL" : "! CHECK PICKS"}</span>
-              </div>
-              <p class="roster-label">STARTERS · ${roster.team.length}/6</p>
-              <div class="roster-list">${roster.team.map((id) => rosterCard(getRikishi(id), player.id)).join("")}</div>
-              <p class="roster-label subs">SUBSTITUTE ORDER</p>
-              <div class="roster-list substitute-list">${roster.subs.map((id, index) => `<div class="sub-order"><span>${index + 1}</span>${rosterCard(getRikishi(id), player.id, true)}</div>`).join("")}</div>
-              <div class="roster-validation">
-                <span class="${check.sanyaku <= 2 ? "ok" : "bad"}">${check.sanyaku}/2 Komusubi+</span>
-                <span class="${check.underdogs === 1 ? "ok" : "bad"}">${check.underdogs}/1 underdog</span>
-                <span class="${check.team === 6 && check.subs === 3 ? "ok" : "bad"}">${check.team + check.subs}/9 total</span>
-              </div>
-            </section>`;
-        }).join("")}
-      </div>
+      <section class="active-roster-workspace ${player.color} reveal">
+        <div class="roster-owner">
+          <span class="player-avatar ${player.color}">${player.initials}</span>
+          <div><p class="eyebrow">${player.name.toUpperCase()}'S PICKS</p><h2>${player.score} points</h2></div>
+          <span class="legal-badge ${check.valid ? "valid" : "invalid"}">${check.valid ? "✓ ROSTER LEGAL" : "! ROSTER INCOMPLETE"}</span>
+        </div>
+        ${pendingSwap ? `<div class="swap-notice"><b>Swap mode:</b> choose a pick in the other column to swap with ${getRikishi(pendingSwap.rikishiId).name}. <button type="button" data-cancel-swap>Cancel</button></div>` : ""}
+        <div class="active-roster-grid">
+          <section>
+            <div class="slot-heading"><span><small>MAIN PICKS</small><b>${roster.team.length} / 6</b></span><strong>${6 - roster.team.length} remaining</strong></div>
+            <div class="roster-list">${roster.team.map((id) => rosterCard(getRikishi(id), player.id)).join("")}${emptyRosterSlots(Math.max(0, 6 - roster.team.length), "Main")}</div>
+          </section>
+          <section>
+            <div class="slot-heading"><span><small>SUBSTITUTES</small><b>${roster.subs.length} / 3</b></span><strong>${3 - roster.subs.length} remaining</strong></div>
+            <div class="roster-list substitute-list">${roster.subs.map((id, index) => `<div class="sub-order"><span>${index + 1}</span>${rosterCard(getRikishi(id), player.id, true)}</div>`).join("")}${emptyRosterSlots(Math.max(0, 3 - roster.subs.length), "Substitute")}</div>
+          </section>
+        </div>
+        ${validationChecklist(check)}
+        <div class="roster-save-row"><p>Edits save automatically on this device.</p><button class="primary-button" type="button" data-save-draft ${check.valid ? "" : "disabled"}>Confirm ${player.name}'s roster</button></div>
+      </section>
       ${appFooter()}
     </section>`;
 }
 
+function pickLocation(rikishiId, playerId = state.activePlayer) {
+  const roster = getRoster(playerId);
+  if (roster.team.includes(rikishiId)) return "main";
+  if (roster.subs.includes(rikishiId)) return "sub";
+  return null;
+}
+
+function mainPickRules(ids) {
+  const picks = ids.map(getRikishi).filter(Boolean);
+  const sanyaku = picks.filter((rikishi) => ["Yokozuna", "Ozeki", "Sekiwake", "Komusubi"].includes(rikishi.rank)).length;
+  const underdogs = picks.filter((rikishi) => /Maegashira (1[3-7])/.test(rikishi.rank)).length;
+  return {
+    sanyaku,
+    underdogs,
+    valid: ids.length <= 6 && sanyaku <= 2 && underdogs <= 1 && (ids.length < 6 || underdogs === 1),
+  };
+}
+
 function banzukeRow(east, west, label) {
-  const cell = (rikishi, side) => rikishi ? `
-    <button class="banzuke-rikishi ${side}" type="button" data-profile="${rikishi.id}">
-      ${side === "east" ? wrestlerImage(rikishi) : ""}
-      <span><b>${rikishi.name}</b><small>${rikishi.stable} · ${rikishi.record}</small></span>
-      ${side === "west" ? wrestlerImage(rikishi) : ""}
-    </button>` : `<span></span>`;
+  const cell = (rikishi, side) => {
+    if (!rikishi) return `<span></span>`;
+    const location = pickLocation(rikishi.id);
+    const action = location
+      ? `<button class="pick-action remove" type="button" data-remove-pick="${rikishi.id}"><small>${location === "main" ? "MAIN PICK" : "SUBSTITUTE"}</small>Remove</button>`
+      : `<button class="pick-action" type="button" data-add-pick="${rikishi.id}"><small>FOR ${getPlayerDefinition().name.toUpperCase()}</small>Add to Team</button>`;
+    return `
+      <article class="banzuke-rikishi ${side} ${location ? "selected-pick" : ""}">
+        ${side === "east" ? wrestlerImage(rikishi) : action}
+        <button class="banzuke-profile" type="button" data-profile="${rikishi.id}">
+          <b>${rikishi.name}</b><small>${rikishi.stable} · ${rikishi.record}</small>
+        </button>
+        ${side === "west" ? wrestlerImage(rikishi) : action}
+      </article>`;
+  };
   return `<div class="banzuke-row">${cell(east, "east")}<div class="rank-seal"><b>${label}</b><small>${label.startsWith("M") ? "前頭" : "役力士"}</small></div>${cell(west, "west")}</div>`;
 }
 
 function banzukeView() {
+  const player = getPlayerDefinition();
+  const roster = getRoster();
+  const check = validateRoster(player.id);
   const pairs = [
     ["hoshoryu", "onosato", "YOKOZUNA"], ["kirishima", "kotozakura", "OZEKI"], ["atamifuji", "aonishiki", "SEKIWAKE"],
     ["wakatakakage", null, "SEKIWAKE"], [null, "oho", "KOMUSUBI"], ["gonoyama", "hakunofuji", "M2"],
@@ -430,12 +561,21 @@ function banzukeView() {
   ];
   return `
     <section class="page-shell">
-      ${pageIntro("JULY 2026 · MAKUUCHI", "The banzuke", "East and West, presented as a modern companion to the official ranking sheet.", `<label class="search-field"><span>⌕</span><input id="banzuke-search" type="search" placeholder="Find a rikishi" autocomplete="off" /></label>`)}
+      ${pageIntro("JULY 2026 · TEAM BUILDER", "Pick from the banzuke", `Add rikishi directly to ${player.name}'s team. Empty main slots fill first, then substitutes.`, `<label class="search-field"><span>⌕</span><input id="banzuke-search" type="search" placeholder="Find a rikishi" autocomplete="off" /></label>`)}
+      ${editingBanner(`Every Add or Remove action below changes ${player.name}'s roster only.`)}
+      <section class="banzuke-builder ${player.color} reveal">
+        <div class="builder-counts">
+          <span><small>MAIN PICKS</small><b>${roster.team.length} / 6</b><em>${Math.max(0, 6 - roster.team.length)} remaining</em></span>
+          <span><small>SUBSTITUTES</small><b>${roster.subs.length} / 3</b><em>${Math.max(0, 3 - roster.subs.length)} remaining</em></span>
+        </div>
+        ${validationChecklist(check)}
+        <a class="secondary-button" href="#roster">Manage swaps</a>
+      </section>
       <section class="banzuke-board reveal">
         <div class="banzuke-title"><span>東 <small>EAST</small></span><div><p>令和八年 七月場所</p><h2>幕内番付</h2><small>NAGOYA BASHO · MAKUUCHI DIVISION</small></div><span>西 <small>WEST</small></span></div>
         <div class="banzuke-rows">${pairs.map(([east, west, label]) => banzukeRow(east && getRikishi(east), west && getRikishi(west), label)).join("")}</div>
       </section>
-      <p class="source-note">Ranks mirror the official July 2026 Makuuchi list. Fantasy records and points are presented separately.</p>
+      <p class="source-note">Ranks mirror the official July 2026 Makuuchi list. Picks save immediately for ${player.name} on this device.</p>
       ${appFooter()}
     </section>`;
 }
@@ -466,30 +606,137 @@ function resultsView() {
     </section>`;
 }
 
+function calculateHistoryStats(events = state.history) {
+  const wins = { Gwazy: 0, Jake: 0 };
+  const scores = { gwazy: 0, jake: 0 };
+  const pickCounts = {};
+  let closest = null;
+  let biggestVictory = null;
+  let biggestComeback = null;
+
+  events.forEach((event) => {
+    if (wins[event.winner] !== undefined) wins[event.winner] += 1;
+    scores.gwazy += Number(event.gwazyScore) || 0;
+    scores.jake += Number(event.jakeScore) || 0;
+    const margin = Math.abs((Number(event.gwazyScore) || 0) - (Number(event.jakeScore) || 0));
+    if (!closest || margin < closest.margin) closest = { event, margin };
+    if (!biggestVictory || margin > biggestVictory.margin) biggestVictory = { event, margin };
+    if (!biggestComeback || (Number(event.comeback) || 0) > biggestComeback.points) biggestComeback = { event, points: Number(event.comeback) || 0 };
+    Object.values(event.rosters || {}).flat().forEach((id) => { pickCounts[id] = (pickCounts[id] || 0) + 1; });
+  });
+
+  let currentWinner = null;
+  let currentRun = 0;
+  let longestStreak = { winner: "—", count: 0 };
+  [...events].reverse().forEach((event) => {
+    if (event.winner === currentWinner) currentRun += 1;
+    else {
+      currentWinner = event.winner;
+      currentRun = 1;
+    }
+    if (currentRun > longestStreak.count) longestStreak = { winner: currentWinner, count: currentRun };
+  });
+
+  const mostPickedEntry = Object.entries(pickCounts).sort((a, b) => b[1] - a[1])[0];
+  return {
+    wins,
+    scores,
+    closest,
+    biggestVictory,
+    biggestComeback,
+    longestStreak,
+    mostPicked: mostPickedEntry ? { rikishi: getRikishi(mostPickedEntry[0]), count: mostPickedEntry[1] } : null,
+    average: events.length ? Math.round((scores.gwazy + scores.jake) / (events.length * 2)) : 0,
+  };
+}
+
+function rikishiOptions(selected = "", excluded = []) {
+  return data.rikishi
+    .filter((rikishi) => !excluded.includes(rikishi.id) || rikishi.id === selected)
+    .map((rikishi) => `<option value="${rikishi.id}" ${rikishi.id === selected ? "selected" : ""}>${rikishi.name} · ${rikishi.rank}</option>`)
+    .join("");
+}
+
+function historyEditor() {
+  const player = getPlayerDefinition();
+  const playerId = player.id;
+  const opponentId = playerId === "gwazy" ? "jake" : "gwazy";
+  const opponent = getPlayerDefinition(opponentId);
+  const event = state.history.find((item) => item.id === activeHistoryId) || state.history[0];
+  if (!event) return "";
+  activeHistoryId = event.id;
+  const roster = event.rosters[playerId] || [];
+  const available = data.rikishi.filter((rikishi) => !roster.includes(rikishi.id));
+  const playerScoreKey = `${playerId}Score`;
+  const opponentScoreKey = `${opponentId}Score`;
+  return `
+    ${editingBanner(`Player-owned history fields below belong only to ${player.name}. Shared result fields are clearly marked.`)}
+    <section class="history-editor ${player.color} reveal">
+      <div class="history-event-tabs" role="tablist" aria-label="Choose basho to edit">
+        ${state.history.map((item) => `<button type="button" role="tab" aria-selected="${item.id === event.id}" class="${item.id === event.id ? "active" : ""}" data-history-select="${item.id}">${item.basho}</button>`).join("")}
+      </div>
+      <div class="history-editor-heading">
+        <div><p class="eyebrow">EDITING ARCHIVED BASHO</p><h2>${event.basho}</h2></div>
+        <span>Changes save instantly and all rivalry statistics recalculate.</span>
+      </div>
+      <div class="history-form-grid">
+        <fieldset class="history-shared-panel">
+          <legend>Shared result</legend>
+          <p class="field-note">These facts describe the basho for both players.</p>
+          <label>Winner<select data-history-global="winner"><option value="Gwazy" ${event.winner === "Gwazy" ? "selected" : ""}>Gwazy</option><option value="Jake" ${event.winner === "Jake" ? "selected" : ""}>Jake</option></select></label>
+          <label>${player.name}'s final score<input type="number" min="0" value="${event[playerScoreKey]}" data-history-score="${playerScoreKey}" /></label>
+          <label>${opponent.name}'s final score<input type="number" value="${event[opponentScoreKey]}" readonly aria-describedby="score-switch-note" /></label>
+          <small id="score-switch-note">Switch to ${opponent.name} in the header to edit that score.</small>
+          <label>Biggest comeback<input type="number" min="0" value="${event.comeback || 0}" data-history-global="comeback" /></label>
+          <label>MVP<select data-history-global="mvp">${rikishiOptions(event.mvp)}</select></label>
+        </fieldset>
+        <fieldset class="history-player-panel">
+          <legend>${player.name}'s archive</legend>
+          <div class="history-prediction"><span>East / West prediction</span><div role="group" aria-label="${player.name}'s side prediction"><button type="button" class="${event.predictions[playerId] === "East" ? "active" : ""}" data-history-prediction="East">East</button><button type="button" class="${event.predictions[playerId] === "West" ? "active" : ""}" data-history-prediction="West">West</button></div></div>
+          <label>Bonus points<input type="number" min="0" value="${event.bonusPoints[playerId] || 0}" data-history-player-field="bonusPoints" /></label>
+          <label>Best pick<select data-history-player-field="bestPick">${rikishiOptions(event.bestPicks[playerId])}</select></label>
+          <label>Worst pick<select data-history-player-field="worstPick">${rikishiOptions(event.worstPicks[playerId])}</select></label>
+          <label class="wide-field">Notes<textarea rows="3" data-history-player-field="notes">${escapeHtml(event.notes[playerId])}</textarea></label>
+        </fieldset>
+      </div>
+      <section class="history-roster-editor">
+        <div><p class="eyebrow">${player.name.toUpperCase()}'S ROSTER</p><h3>${roster.length} / 9 picks</h3><small>Positions 1–6 are main picks; 7–9 are substitutes.</small></div>
+        <div class="history-roster-chips">${roster.map((id, index) => { const rikishi = getRikishi(id); return `<span><small>${index < 6 ? `M${index + 1}` : `S${index - 5}`}</small><b>${rikishi?.name || id}</b><button type="button" aria-label="Remove ${rikishi?.name || id}" data-history-remove="${id}">×</button></span>`; }).join("")}</div>
+        <div class="history-roster-add"><select id="history-roster-add" ${available.length && roster.length < 9 ? "" : "disabled"}>${available.map((rikishi) => `<option value="${rikishi.id}">${rikishi.name} · ${rikishi.rank}</option>`).join("")}</select><button class="secondary-button" type="button" data-history-add ${available.length && roster.length < 9 ? "" : "disabled"}>Add pick</button></div>
+      </section>
+    </section>`;
+}
+
 function historyView() {
-  const gwazyWins = data.history.filter((event) => event.winner === "Gwazy").length;
-  const jakeWins = data.history.length - gwazyWins;
+  const stats = calculateHistoryStats();
+  const player = getPlayerDefinition();
+  const activeWins = stats.wins[player.name] || 0;
+  const winRate = state.history.length ? Math.round((activeWins / state.history.length) * 100) : 0;
   return `
     <section class="page-shell">
-      ${pageIntro("RIVALRY ARCHIVE", "Basho history", "The wins, the collapses, and the picks that still get mentioned.")}
+      ${pageIntro("RIVALRY ARCHIVE", "Basho history", "The wins, the collapses, and the picks that still get mentioned.", `<button class="primary-button history-edit-toggle" type="button" data-history-edit>${historyEditMode ? "Finish editing" : "Edit history"}</button>`)}
+      ${historyEditMode ? historyEditor() : ""}
       <section class="history-hero reveal">
-        <div><p class="eyebrow">ALL-TIME HEAD TO HEAD</p><div class="history-score"><span><b>${gwazyWins}</b><small>GWAZY WINS</small></span><i>—</i><span><b>${jakeWins}</b><small>JAKE WINS</small></span></div></div>
-        <div class="history-stats"><span><small>WIN RATE</small><b>${Math.round((gwazyWins / data.history.length) * 100)}%</b></span><span><small>CLOSEST</small><b>3 pts</b></span><span><small>BIGGEST MARGIN</small><b>43 pts</b></span><span><small>LONGEST STREAK</small><b>3</b></span></div>
+        <div><p class="eyebrow">ALL-TIME HEAD TO HEAD</p><div class="history-score"><span><b>${stats.wins.Gwazy}</b><small>GWAZY WINS</small></span><i>—</i><span><b>${stats.wins.Jake}</b><small>JAKE WINS</small></span></div></div>
+        <div class="history-stats"><span><small>${player.name.toUpperCase()} WIN RATE</small><b>${winRate}%</b></span><span><small>CLOSEST</small><b>${stats.closest?.margin || 0} pts</b></span><span><small>BIGGEST VICTORY</small><b>${stats.biggestVictory?.margin || 0} pts</b></span><span><small>LONGEST STREAK</small><b>${stats.longestStreak.count} · ${stats.longestStreak.winner}</b></span></div>
       </section>
       <section class="history-list reveal">
-        <div class="history-table-head"><span>BASHO</span><span>WINNER</span><span>FINAL SCORE</span><span>MARGIN</span><span>BEST PICK</span><span>STORY</span></div>
-        ${data.history.map((event) => `
-          <article class="history-row">
-            <div><span class="basho-mark">${event.basho.slice(0, 1)}</span><b>${event.basho}</b></div>
+        <div class="history-table-head"><span>BASHO</span><span>WINNER</span><span>FINAL SCORE</span><span>MARGIN</span><span>MVP</span><span>STORY</span></div>
+        ${state.history.map((event) => {
+          const margin = Math.abs(event.gwazyScore - event.jakeScore);
+          const mvp = getRikishi(event.mvp);
+          return `<button type="button" class="history-row ${historyEditMode && activeHistoryId === event.id ? "selected" : ""}" data-history-select="${event.id}">
+            <span><span class="basho-mark">${event.basho.slice(0, 1)}</span><b>${event.basho}</b></span>
             <span class="winner-name ${event.winner.toLowerCase()}">${event.winner}</span>
-            <strong>${event.score}</strong><span>+${event.margin}</span><span>${event.best}</span><span class="story-badge">${event.badge}</span>
-          </article>`).join("")}
+            <strong>${event.gwazyScore}–${event.jakeScore}</strong><span>+${margin}</span><span>${mvp?.name || "—"}</span><span class="story-badge">${escapeHtml(event.badge || "ARCHIVE")}</span>
+          </button>`;
+        }).join("")}
       </section>
       <section class="stat-grid reveal">
-        <article><small>MOST PICKED</small><strong>Onosato</strong><span>9 basho</span></article>
-        <article><small>HIGHEST SCORER</small><strong>Aonishiki</strong><span>52 pts · current</span></article>
-        <article><small>BEST SUBSTITUTE</small><strong>Ura</strong><span>31 career sub pts</span></article>
-        <article><small>AVG. BASHO SCORE</small><strong>458</strong><span>across both players</span></article>
+        <article><small>MOST PICKED</small><strong>${stats.mostPicked?.rikishi?.name || "—"}</strong><span>${stats.mostPicked?.count || 0} roster appearances</span></article>
+        <article><small>BIGGEST COMEBACK</small><strong>${stats.biggestComeback?.points || 0} pts</strong><span>${stats.biggestComeback?.event.basho || "—"}</span></article>
+        <article><small>BIGGEST VICTORY</small><strong>${stats.biggestVictory?.event.winner || "—"}</strong><span>${stats.biggestVictory?.margin || 0} pts · ${stats.biggestVictory?.event.basho || "—"}</span></article>
+        <article><small>AVG. PLAYER SCORE</small><strong>${stats.average}</strong><span>across ${state.history.length} basho</span></article>
       </section>
       ${appFooter()}
     </section>`;
@@ -500,10 +747,17 @@ function toggleRow(id, title, copy, checked) {
 }
 
 function settingsView() {
+  const player = getPlayerDefinition();
+  const playerState = getPlayerState();
   return `
     <section class="page-shell settings-shell">
       ${pageIntro("PREFERENCES & DATA", "Settings", "Make the battle yours and keep its source data healthy.")}
+      ${editingBanner(`Favourite wrestler and notes are private to ${player.name}. Display and sound settings apply to this device.`)}
       <div class="settings-grid">
+        <section class="settings-card player-settings-card ${player.color} reveal"><div class="settings-card-title"><span class="player-avatar ${player.color}">${player.initials}</span><div><h2>${player.name}'s preferences</h2><p>Switch players above to load the other profile.</p></div></div>
+          <label class="setting-field">Favourite wrestler<select data-player-field="favouriteWrestler">${rikishiOptions(playerState.favouriteWrestler)}</select></label>
+          <label class="setting-field">Personal notes<textarea rows="5" data-player-field="notes" placeholder="Private notes for ${player.name}">${escapeHtml(playerState.notes)}</textarea></label>
+        </section>
         <section class="settings-card reveal"><div class="settings-card-title"><span>◐</span><div><h2>Appearance</h2><p>Choose a Japanese-inspired display theme.</p></div></div>
           <div class="theme-options">
             <button type="button" class="theme-option ${state.theme === "midnight" ? "active" : ""}" data-theme-choice="midnight"><span class="theme-preview midnight"><i></i></span><b>Midnight purple</b><small>Modern esports</small></button>
@@ -541,12 +795,13 @@ function appFooter() {
 }
 
 function profileMarkup(rikishi) {
-  const owner = data.players.find((player) => state.roster[player.id].team.includes(rikishi.id) || state.roster[player.id].subs.includes(rikishi.id));
+  const player = getPlayerDefinition();
+  const location = pickLocation(rikishi.id);
   return `
     <div class="profile-hero">
       ${wrestlerImage(rikishi, "large")}
       <div><p class="eyebrow">${formatRank(rikishi)}</p><h2 id="profile-name">${rikishi.fullName || rikishi.name}</h2><p>${rikishi.stable} stable · ${rikishi.birthplace}</p><div class="profile-record"><strong>${rikishi.record}</strong><span>${rikishi.wins} wins<br />${rikishi.losses} losses</span></div></div>
-      <div class="profile-owner"><small>FANTASY OWNER</small><span class="player-avatar ${owner?.color || "neutral"}">${owner?.initials || "—"}</span><b>${owner?.name || "Nobody"}</b></div>
+      <div class="profile-owner"><small>${player.name.toUpperCase()}'S TEAM</small><span class="player-avatar ${location ? player.color : "neutral"}">${location ? player.initials : "—"}</span><b>${location ? (location === "main" ? "Main pick" : "Substitute") : "Not selected"}</b></div>
     </div>
     <div class="profile-stats">
       <span><small>POINTS</small><b>${rikishi.points}</b></span><span><small>FORM</small><b>${rikishi.form}%</b></span><span><small>HEIGHT</small><b>${rikishi.height}</b></span><span><small>WEIGHT</small><b>${rikishi.weight}</b></span>
@@ -604,31 +859,143 @@ function render() {
   }, state.reducedMotion ? 0 : 80);
 }
 
-function swapRoster(playerId, rikishiId, action) {
-  const roster = state.roster[playerId];
-  const from = action === "bench" ? roster.team : roster.subs;
-  const to = action === "bench" ? roster.subs : roster.team;
-  const counterpart = to[0];
-  const index = from.indexOf(rikishiId);
-  if (index < 0 || !counterpart) return;
-  from.splice(index, 1, counterpart);
-  to.splice(0, 1, rikishiId);
+function addPick(rikishiId) {
+  const player = getPlayerDefinition();
+  const roster = getRoster();
+  const rikishi = getRikishi(rikishiId);
+  if (!rikishi || pickLocation(rikishiId)) return;
+
+  let destination = null;
+  if (roster.team.length < 6 && mainPickRules([...roster.team, rikishiId]).valid) {
+    roster.team.push(rikishiId);
+    destination = "main picks";
+  } else if (roster.subs.length < 3) {
+    roster.subs.push(rikishiId);
+    destination = "substitutes";
+  }
+
+  if (!destination) {
+    const rule = mainPickRules([...roster.team, rikishiId]);
+    const reason = roster.team.length >= 6 && roster.subs.length >= 3
+      ? `${player.name}'s roster is full. Remove or swap a pick first.`
+      : rule.sanyaku > 2
+        ? "Main picks can include at most two Komusubi or higher."
+        : rule.underdogs > 1
+          ? "Main picks can include exactly one M13–M17 underdog."
+          : "The last main slot must be filled by an M13–M17 underdog.";
+    showToast(reason);
+    return;
+  }
+
   saveState();
   render();
-  showToast(`${getRikishi(rikishiId).name} ${action === "bench" ? "moved to substitutes" : "promoted to the starting team"}.`);
+  showToast(`${rikishi.name} added to ${player.name}'s ${destination}.`);
+}
+
+function removePick(rikishiId) {
+  const player = getPlayerDefinition();
+  const roster = getRoster();
+  const location = pickLocation(rikishiId);
+  if (!location) return;
+  const list = location === "main" ? roster.team : roster.subs;
+  list.splice(list.indexOf(rikishiId), 1);
+  if (pendingSwap?.rikishiId === rikishiId) pendingSwap = null;
+  saveState();
+  render();
+  showToast(`${getRikishi(rikishiId).name} removed from ${player.name}'s roster.`);
+}
+
+function movePick(rikishiId, target) {
+  const player = getPlayerDefinition();
+  const roster = getRoster();
+  const from = target === "main" ? roster.subs : roster.team;
+  const to = target === "main" ? roster.team : roster.subs;
+  if (!from.includes(rikishiId)) return;
+  const limit = target === "main" ? 6 : 3;
+  if (to.length >= limit) {
+    showToast(`${target === "main" ? "Main picks" : "Substitutes"} are full. Use Swap instead.`);
+    return;
+  }
+  if (target === "main" && !mainPickRules([...roster.team, rikishiId]).valid) {
+    showToast("That move would break the Komusubi+ or underdog rule.");
+    return;
+  }
+  from.splice(from.indexOf(rikishiId), 1);
+  to.push(rikishiId);
+  pendingSwap = null;
+  saveState();
+  render();
+  showToast(`${getRikishi(rikishiId).name} moved to ${player.name}'s ${target === "main" ? "main picks" : "substitutes"}.`);
+}
+
+function chooseSwap(rikishiId, source) {
+  const playerId = state.activePlayer;
+  const sourceIsSub = source === "sub";
+  if (pendingSwap?.playerId !== playerId) pendingSwap = null;
+  if (!pendingSwap) {
+    pendingSwap = { playerId, rikishiId, substitute: sourceIsSub };
+    render();
+    return;
+  }
+  if (pendingSwap.rikishiId === rikishiId) {
+    pendingSwap = null;
+    render();
+    return;
+  }
+  if (pendingSwap.substitute === sourceIsSub) {
+    pendingSwap = { playerId, rikishiId, substitute: sourceIsSub };
+    render();
+    return;
+  }
+
+  const roster = getRoster();
+  const mainId = sourceIsSub ? pendingSwap.rikishiId : rikishiId;
+  const subId = sourceIsSub ? rikishiId : pendingSwap.rikishiId;
+  const mainIndex = roster.team.indexOf(mainId);
+  const subIndex = roster.subs.indexOf(subId);
+  if (mainIndex < 0 || subIndex < 0) return;
+  const candidateMain = [...roster.team];
+  candidateMain[mainIndex] = subId;
+  if (!mainPickRules(candidateMain).valid) {
+    showToast("That swap would break the Komusubi+ or underdog rule.");
+    return;
+  }
+  roster.team[mainIndex] = subId;
+  roster.subs[subIndex] = mainId;
+  pendingSwap = null;
+  saveState();
+  render();
+  showToast(`${getRikishi(subId).name} moved into the main team.`);
+}
+
+function currentHistoryEvent() {
+  return state.history.find((event) => event.id === activeHistoryId) || state.history[0];
 }
 
 function bindViewEvents() {
   app.querySelectorAll("[data-profile]").forEach((element) => {
     element.addEventListener("click", (event) => {
-      if (event.target.closest("[data-swap]")) return;
+      if (event.target.closest("[data-add-pick], [data-remove-pick], [data-roster-move], [data-swap-pick]")) return;
       openProfile(element.dataset.profile);
     });
   });
-  app.querySelectorAll("[data-swap]").forEach((button) => button.addEventListener("click", (event) => {
+  app.querySelectorAll("[data-add-pick]").forEach((button) => button.addEventListener("click", (event) => {
     event.stopPropagation();
-    swapRoster(...button.dataset.swap.split(":"));
+    addPick(button.dataset.addPick);
   }));
+  app.querySelectorAll("[data-remove-pick]").forEach((button) => button.addEventListener("click", (event) => {
+    event.stopPropagation();
+    removePick(button.dataset.removePick);
+  }));
+  app.querySelectorAll("[data-roster-move]").forEach((button) => button.addEventListener("click", (event) => {
+    event.stopPropagation();
+    movePick(...button.dataset.rosterMove.split(":"));
+  }));
+  app.querySelectorAll("[data-swap-pick]").forEach((button) => button.addEventListener("click", (event) => {
+    event.stopPropagation();
+    chooseSwap(...button.dataset.swapPick.split(":"));
+  }));
+  document.querySelector("[data-cancel-swap]")?.addEventListener("click", () => { pendingSwap = null; render(); });
   app.querySelectorAll("[data-day]").forEach((button) => button.addEventListener("click", () => {
     state.selectedDay = Number(button.dataset.day);
     saveState();
@@ -663,12 +1030,13 @@ function bindViewEvents() {
     showToast("Score cue played.");
   });
   document.querySelector("[data-save-draft]")?.addEventListener("click", () => {
-    const valid = data.players.every((player) => validateRoster(player.id).valid);
+    const player = getPlayerDefinition();
+    const valid = validateRoster(player.id).valid;
     if (valid) {
       saveState();
       playBell();
-      showToast("Both legal drafts are saved on this device.");
-    } else showToast("One roster still breaks the pick rules.");
+      showToast(`${player.name}'s legal roster is saved on this device.`);
+    } else showToast(`${player.name}'s roster still breaks a pick rule.`);
   });
   document.querySelector("[data-mock-sync]")?.addEventListener("click", (event) => {
     event.currentTarget.disabled = true;
@@ -683,16 +1051,78 @@ function bindViewEvents() {
     localStorage.removeItem("sumoBattleSettings");
     localStorage.removeItem("sumoBattleHistoryCache");
     state = readState();
+    pendingSwap = null;
+    historyEditMode = false;
+    activeHistoryId = state.history[0]?.id || null;
     setTheme();
     render();
     showToast("Local preferences and draft were reset.");
   });
   app.querySelectorAll("[data-bonus]").forEach((button) => button.addEventListener("click", () => {
-    state.bonusPrediction = button.dataset.bonus;
+    getPlayerState().sidePrediction = button.dataset.bonus;
     saveState();
     render();
-    showToast(`${state.bonusPrediction} saved as the 20-point bonus prediction.`);
+    showToast(`${button.dataset.bonus} saved as ${getPlayerDefinition().name}'s 20-point bonus prediction.`);
   }));
+  app.querySelectorAll("[data-player-field]").forEach((field) => field.addEventListener(field.tagName === "TEXTAREA" ? "input" : "change", () => {
+    getPlayerState()[field.dataset.playerField] = field.value;
+    saveState();
+  }));
+  document.querySelector("[data-history-edit]")?.addEventListener("click", () => {
+    historyEditMode = !historyEditMode;
+    render();
+  });
+  app.querySelectorAll("[data-history-select]").forEach((button) => button.addEventListener("click", () => {
+    activeHistoryId = button.dataset.historySelect;
+    if (historyEditMode) render();
+    else showToast("Enable Edit history to change this basho.");
+  }));
+  app.querySelectorAll("[data-history-global]").forEach((field) => field.addEventListener("change", () => {
+    const event = currentHistoryEvent();
+    const key = field.dataset.historyGlobal;
+    event[key] = field.type === "number" ? Number(field.value) : field.value;
+    saveState();
+    render();
+  }));
+  app.querySelectorAll("[data-history-score]").forEach((field) => field.addEventListener("change", () => {
+    const event = currentHistoryEvent();
+    event[field.dataset.historyScore] = Math.max(0, Number(field.value) || 0);
+    if (event.gwazyScore !== event.jakeScore) event.winner = event.gwazyScore > event.jakeScore ? "Gwazy" : "Jake";
+    saveState();
+    render();
+  }));
+  app.querySelectorAll("[data-history-prediction]").forEach((button) => button.addEventListener("click", () => {
+    const event = currentHistoryEvent();
+    event.predictions[state.activePlayer] = button.dataset.historyPrediction;
+    saveState();
+    render();
+  }));
+  app.querySelectorAll("[data-history-player-field]").forEach((field) => {
+    const eventName = field.tagName === "TEXTAREA" ? "input" : "change";
+    field.addEventListener(eventName, () => {
+      const event = currentHistoryEvent();
+      const key = field.dataset.historyPlayerField;
+      if (key === "bonusPoints") event.bonusPoints[state.activePlayer] = Math.max(0, Number(field.value) || 0);
+      if (key === "bestPick") event.bestPicks[state.activePlayer] = field.value;
+      if (key === "worstPick") event.worstPicks[state.activePlayer] = field.value;
+      if (key === "notes") event.notes[state.activePlayer] = field.value;
+      saveState();
+      if (key !== "notes") render();
+    });
+  });
+  app.querySelectorAll("[data-history-remove]").forEach((button) => button.addEventListener("click", () => {
+    const roster = currentHistoryEvent().rosters[state.activePlayer];
+    roster.splice(roster.indexOf(button.dataset.historyRemove), 1);
+    saveState();
+    render();
+  }));
+  document.querySelector("[data-history-add]")?.addEventListener("click", () => {
+    const select = document.querySelector("#history-roster-add");
+    const roster = currentHistoryEvent().rosters[state.activePlayer];
+    if (select?.value && roster.length < 9 && !roster.includes(select.value)) roster.push(select.value);
+    saveState();
+    render();
+  });
   const search = document.querySelector("#banzuke-search");
   search?.addEventListener("input", () => {
     const term = search.value.toLowerCase().trim();
@@ -718,6 +1148,15 @@ soundButton.addEventListener("click", () => {
   setTheme();
   if (state.sound) playBell();
   showToast(`Score sounds ${state.sound ? "on" : "off"}.`);
+});
+
+playerSelect.addEventListener("change", () => {
+  state.activePlayer = playerSelect.value;
+  pendingSwap = null;
+  saveState();
+  setTheme();
+  render();
+  showToast(`Now playing as ${getPlayerDefinition().name}. Player-only data has been switched.`);
 });
 
 window.addEventListener("hashchange", render);

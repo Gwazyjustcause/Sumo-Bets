@@ -39,11 +39,15 @@
         <button class="icon-button" id="sound-toggle" type="button" aria-label="Toggle score sounds" aria-pressed="false">
           <span aria-hidden="true">♫</span>
         </button>
-        <button class="season-pill" type="button" data-nav="settings">
-          <span class="status-dot"></span>
-          <span>July 2026</span>
-          <span aria-hidden="true">⌄</span>
-        </button>
+        <label class="player-selector" for="active-player-select">
+          <span class="player-selector-icon" aria-hidden="true">●</span>
+          <span class="player-selector-copy"><small>PLAYING AS</small><b id="active-player-label">Gwazy</b></span>
+          <select id="active-player-select" aria-label="Playing as">
+            <option value="gwazy">Gwazy</option>
+            <option value="jake">Jake</option>
+          </select>
+          <span class="player-selector-arrow" aria-hidden="true">⌄</span>
+        </label>
       </div>
     </header>
 
@@ -54,6 +58,7 @@
       <a href="#roster" data-route="roster"><span>♙</span>Roster</a>
       <a href="#banzuke" data-route="banzuke"><span>番</span>Banzuke</a>
       <a href="#results" data-route="results"><span>✓</span>Results</a>
+      <a href="#history" data-route="history"><span>↺</span>History</a>
       <a href="#settings" data-route="settings"><span>⚙</span>More</a>
     </nav>
 
