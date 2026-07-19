@@ -261,10 +261,27 @@ window.SUMO_DATA = {
     { id: "asakoryu", name: "Asakoryu", fullName: "Asakoryu Takuma", rank: "Maegashira 16", rankNumber: 16, rankSeat: 1, side: "West", record: "4–4", wins: 4, losses: 4, stable: "Takasago", birthplace: "Osaka", rikishiId: 4101, photoFile: "20210046.jpg" },
   ];
 
+  // Explicitly keyed lookup terms avoid deriving external identities from a
+  // display name. They can be corrected independently if a page is renamed.
+  const wikipediaById = Object.freeze({
+    hoshoryu: "Hōshōryū Tomokatsu", onosato: "Ōnosato Daiki", kirishima: "Kirishima Tetsuo", kotozakura: "Kotozakura Masakatsu",
+    atamifuji: "Atamifuji Sakutarō", kotoshoho: "Kotoshōhō Yoshinari", wakatakakage: "Wakatakakage Atsushi", aonishiki: "Aonishiki Arata",
+    yoshinofuji: "Yoshinofuji Naoya", oho: "Ōhō Kōnosuke", fujinokawa: "Fujinokawa Seigo", takanosho: "Takanoshō Nobuaki",
+    gonoyama: "Gōnoyama Tōki", churanoumi: "Churanoumi Yoshihisa", hiradoumi: "Hiradoumi Yūki", hakunofuji: "Hakunofuji Tetsuya",
+    daieisho: "Daieishō Hayato", ichiyamamoto: "Ichiyamamoto Daiki", ura: "Ura Kazuki", oshoma: "Ōshōma Degi",
+    shodai: "Shōdai Naoya", fujiseiun: "Fujiseiun Tatsuki", kotoeiho: "Kotoeihō Hiroki", takayasu: "Takayasu Akira",
+    wakamotoharu: "Wakamotoharu Minato", roga: "Rōga Tokiyoshi", fujiryoga: "Fujiryōga Masaharu", tobizaru: "Tobizaru Masaya",
+    asanoyama: "Asanoyama Hiroki", chiyoshoma: "Chiyoshōma Fujio", wakanosho: "Wakanoshō Eidō", mitakeumi: "Mitakeumi Hisashi",
+    asahakuryu: "Asahakuryū Tarō", abi: "Abi Masatora", nishikifuji: "Nishikifuji Ryūsei", takerufuji: "Takerufuji Mikiya",
+    kinbozan: "Kinbōzan Haruki", shishi: "Shishi Masaru", onokatsu: "Ōnokatsu Kazuhiro", kazuma: "Kazuma Torakaze",
+    daiseizan: "Daiseizan Daisuke", asakoryu: "Asakōryū Takuma",
+  });
+
   const existingById = new Map(window.SUMO_DATA.rikishi.map((rikishi) => [rikishi.id, rikishi]));
   window.SUMO_DATA.rikishi = officialMakuuchi.map((official) => {
     const existing = existingById.get(official.id) || {};
     const decidedBouts = official.wins + official.losses;
+    const jsaPortrait = `https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/${official.photoFile}`;
     return {
       height: "—",
       weight: "—",
@@ -273,11 +290,16 @@ window.SUMO_DATA = {
       points: official.wins * 6,
       ...existing,
       ...official,
+      shikona: official.name,
+      jsaId: String(official.rikishiId),
+      wikipedia: wikipediaById[official.id] || null,
+      image: null,
       absences: official.absences || 0,
       available: official.available !== false,
       form: decidedBouts ? Math.round((official.wins / decidedBouts) * 100) : 0,
       profile: `https://www.sumo.or.jp/EnSumoDataRikishi/profile/${official.rikishiId}/`,
-      photo: `https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/${official.photoFile}`,
+      jsaPortrait,
+      photo: jsaPortrait,
     };
   });
 

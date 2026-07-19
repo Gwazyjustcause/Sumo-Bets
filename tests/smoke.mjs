@@ -69,10 +69,12 @@ for (const event of data.history) {
 
 const html = load("index.html");
 const app = load("app.js");
+const imageResolver = load("image-resolver.js");
 const css = load("styles.css");
-for (const asset of ["styles.css", "data/sumo-data.js", "app.js"]) {
+for (const asset of ["styles.css", "data/sumo-data.js", "image-resolver.js", "app.js"]) {
   assert(html.includes(asset), `index.html must reference ${asset}`);
 }
+assert(existsSync(new URL("assets/rikishi-placeholder.svg", root)), "The silhouette fallback asset must exist");
 for (const match of [...app.matchAll(/assets\/[^"']+/g)]) {
   assert(existsSync(new URL(match[0], root)), `Missing app asset: ${match[0]}`);
 }
@@ -88,8 +90,18 @@ for (const capability of ["banzukeRankRows", "data-banzuke-id", "applyBanzukeFil
 }
 assert(!app.includes("const pairs = ["), "Banzuke rows must not be hardcoded in the view");
 assert(data.rikishi.every((rikishi) => rikishi.photo?.includes("sumo.or.jp/img/sumo_data/rikishi/")), "Every Makuuchi rikishi needs an official photo");
+assert(data.rikishi.every((rikishi) => rikishi.id && rikishi.shikona && rikishi.jsaId && rikishi.jsaPortrait && rikishi.wikipedia), "Every rikishi needs stable image-resolver metadata");
+assert(app.includes('loading="lazy"') && app.includes("data-rikishi-image"), "Rikishi images must use lazy resolver markup");
+assert(!app.includes("fallback-initials"), "The single-letter image fallback must be removed");
+const resolverStages = ["assets/rikishi/${rikishi.id}.webp", "rikishi.jsaPortrait", "lookupWikipediaPortrait(rikishi)", "PLACEHOLDER_PATH"];
+const resolverFlow = imageResolver.slice(imageResolver.indexOf("async function resolveUncached"), imageResolver.indexOf("function resolve(rikishi)"));
+for (let index = 1; index < resolverStages.length; index += 1) {
+  assert(resolverFlow.indexOf(resolverStages[index - 1]) < resolverFlow.indexOf(resolverStages[index]), "Image sources must remain in local, JSA, Wikipedia, placeholder order");
+}
+assert(imageResolver.includes('origin: "*"'), "Wikipedia API calls must support unauthenticated CORS");
+assert(imageResolver.includes("IntersectionObserver"), "Offscreen portraits must resolve lazily");
 
-for (const textFile of ["index.html", "styles.css", "app.js", "data/sumo-data.js"]) {
+for (const textFile of ["index.html", "styles.css", "app.js", "image-resolver.js", "data/sumo-data.js"]) {
   const contents = load(textFile);
   assert(!contents.includes("Ã"), `${textFile} contains likely mojibake`);
   assert(!contents.includes("â€“"), `${textFile} contains likely mojibake`);

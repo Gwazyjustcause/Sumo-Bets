@@ -437,14 +437,14 @@ textarea:focus-visible { outline: 2px solid var(--player-accent); outline-offset
 
 .rikishi-image { position: relative; display: inline-flex; width: 38px; height: 38px; align-items: flex-end; justify-content: center; flex: 0 0 auto; overflow: hidden; border: 1px solid rgba(165, 178, 205, 0.15); border-radius: 11px; background: radial-gradient(circle at 50% 20%, #26334a, #101827 66%); }
 .rikishi-image::before { position: absolute; right: 2px; bottom: 2px; left: 2px; height: 2px; border-radius: 2px; background: color-mix(in srgb, var(--green) var(--form), var(--red)); content: ""; opacity: 0.8; }
-.rikishi-image img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
-.fallback-initials { position: absolute; top: 50%; left: 50%; color: #b8c2d7; font-size: 10px; font-weight: 800; letter-spacing: 0.08em; transform: translate(-50%, -50%); }
+.rikishi-image img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: cover; object-position: 50% 14%; transition: opacity 180ms ease; }
+.rikishi-image.uses-placeholder img { padding: 6%; object-fit: contain; object-position: center; opacity: 0.76; }
+.rikishi-image.is-resolving img { opacity: 0.48; }
+.image-loading-sheen { position: absolute; z-index: 2; inset: 0; display: none; background: linear-gradient(105deg, transparent 25%, rgba(255, 255, 255, 0.12) 45%, transparent 65%); transform: translateX(-100%); pointer-events: none; }
+.rikishi-image.is-resolving .image-loading-sheen { display: block; animation: imageSheen 1.2s ease-in-out infinite; }
 .rikishi-image.medium { width: 64px; height: 73px; border-radius: 13px; }
-.rikishi-image.medium .fallback-initials { font-size: 14px; }
 .rikishi-image.large { width: 180px; height: 230px; border-radius: 22px 22px 10px 22px; }
-.rikishi-image.large .fallback-initials { font-size: 26px; }
-.image-fallback::after { position: absolute; bottom: -10px; width: 66%; height: 62%; border-radius: 50% 50% 15% 15%; background: linear-gradient(180deg, #313b50, #171e2e); content: ""; }
-.image-fallback .fallback-initials { z-index: 2; top: 40%; }
+@keyframes imageSheen { to { transform: translateX(100%); } }
 
 .content-section { margin-top: 25px; padding: 26px 28px 28px; border: 1px solid var(--line); border-radius: var(--radius-xl); background: rgba(9, 14, 26, 0.46); }
 .text-link { color: var(--violet-bright); font-size: 11px; font-weight: 700; }

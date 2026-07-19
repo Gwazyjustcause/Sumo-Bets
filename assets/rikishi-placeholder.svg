@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 480" role="img" aria-labelledby="title desc">
+  <title id="title">Rikishi portrait placeholder</title>
+  <desc id="desc">A neutral full-body silhouette of a sumo wrestler.</desc>
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#aab4c8"/>
+      <stop offset="1" stop-color="#66738d"/>
+    </linearGradient>
+    <linearGradient id="mawashi" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#4d5b76"/>
+      <stop offset="1" stop-color="#2e394f"/>
+    </linearGradient>
+  </defs>
+  <g fill="url(#body)">
+    <ellipse cx="160" cy="80" rx="48" ry="55"/>
+    <ellipse cx="112" cy="82" rx="10" ry="16"/>
+    <ellipse cx="208" cy="82" rx="10" ry="16"/>
+    <path d="M137 120h46l8 31-31 25-31-25z"/>
+    <path d="M88 156c18-18 45-27 72-27s54 9 72 27c22 22 28 73 16 125-7 31-29 55-52 66h-72c-23-11-45-35-52-66-12-52-6-103 16-125z"/>
+    <path d="M91 164c-23 13-39 34-48 64L16 344c-4 17 7 34 24 38 16 3 31-7 35-22l28-111 17-54z"/>
+    <path d="M229 164c23 13 39 34 48 64l27 116c4 17-7 34-24 38-16 3-31-7-35-22l-28-111-17-54z"/>
+    <path d="M102 325h57l-8 128c-1 17-15 30-32 30-18 0-32-15-31-33z"/>
+    <path d="M161 325h57l14 125c1 18-13 33-31 33-17 0-31-13-32-30z"/>
+  </g>
+  <path fill="url(#mawashi)" d="M93 286c43 14 91 14 134 0l-7 61c-39 14-81 14-120 0z"/>
+  <path fill="#c4ccda" opacity=".35" d="M119 41c14-15 29-23 47-21 16 2 29 10 38 23-24-9-55-10-85-2z"/>
+</svg>

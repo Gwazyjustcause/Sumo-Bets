@@ -125,19 +125,12 @@ function getRikishi(id) {
   return data.rikishi.find((rikishi) => rikishi.id === id);
 }
 
-function initials(name) {
-  return name
-    .split(/\s+/)
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join("");
-}
-
 function wrestlerImage(rikishi, size = "small") {
-  const photo = rikishi.photo
-      ? `<img src="${rikishi.photo}" alt="${rikishi.name}" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('image-fallback');this.remove()" />`
-    : "";
-  return `<span class="rikishi-image ${size}" style="--form:${rikishi.form}%">${photo}<span class="fallback-initials" aria-hidden="true">${initials(rikishi.name)}</span></span>`;
+  return `<span class="rikishi-image ${size} uses-placeholder is-resolving" style="--form:${rikishi.form}%">
+    <img src="assets/rikishi-placeholder.svg" alt="${escapeHtml(rikishi.name)} portrait" loading="lazy" decoding="async" referrerpolicy="no-referrer"
+      data-rikishi-image data-rikishi-id="${escapeHtml(rikishi.id)}" data-image-source="placeholder" data-image-state="queued" />
+    <span class="image-loading-sheen" aria-hidden="true"></span>
+  </span>`;
 }
 
 function sideBadge(rikishi) {
@@ -866,6 +859,7 @@ function openProfile(id) {
   if (!rikishi) return;
   profileContent.innerHTML = profileMarkup(rikishi);
   dialog.showModal();
+  window.RIKISHI_IMAGES?.bind(profileContent);
 }
 
 function animateNumbers() {
@@ -906,6 +900,7 @@ function render() {
     window.scrollTo({ top: 0, behavior: state.reducedMotion ? "auto" : "smooth" });
     bindViewEvents();
     if (route === "banzuke") verifyBanzukeIntegrity();
+    window.RIKISHI_IMAGES?.bind(app);
     animateNumbers();
   }, state.reducedMotion ? 0 : 80);
 }
@@ -1166,6 +1161,7 @@ function bindViewEvents() {
   document.querySelector("[data-reset-settings]")?.addEventListener("click", () => {
     localStorage.removeItem("sumoBattleSettings");
     localStorage.removeItem("sumoBattleHistoryCache");
+    window.RIKISHI_IMAGES?.clearCache();
     state = readState();
     pendingSwap = null;
     historyEditMode = false;

@@ -94,6 +94,7 @@ const context = vm.createContext({
 });
 
 vm.runInContext(load("data/sumo-data.js"), context, { filename: "data/sumo-data.js" });
+vm.runInContext(load("image-resolver.js"), context, { filename: "image-resolver.js" });
 vm.runInContext(load("app.js"), context, { filename: "app.js" });
 await new Promise((resolve) => setTimeout(resolve, 120));
 
