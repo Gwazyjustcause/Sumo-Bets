@@ -1,17 +1,22 @@
 {
-  "schemaVersion": 2,
-  "description": "Blank defaults only. Live drafts are stored per browser in localStorage.",
-  "drafts": {},
+  "schemaVersion": 3,
+  "bashoId": "nagoya-2026",
+  "revision": 0,
+  "locked": false,
+  "lastSavedAt": null,
+  "savedBy": null,
   "players": {
     "gwazy": {
       "mainPicks": [],
       "substitutes": [],
-      "sidePrediction": null
+      "sidePrediction": null,
+      "substitutionEvents": []
     },
     "jake": {
       "mainPicks": [],
       "substitutes": [],
-      "sidePrediction": null
+      "sidePrediction": null,
+      "substitutionEvents": []
     }
   }
 }

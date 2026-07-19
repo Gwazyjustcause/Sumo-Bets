@@ -2,7 +2,7 @@
 window.SUMO_DATA = {
   "meta": {
     "bashoId": "636",
-    "dataSignature": "fb23945c07d1824c480a89198d13ebea37452edf1721c516c56b12f501bef3cf",
+    "dataSignature": "6de77d8fe14fd9263e3cae67c9b87203b581f5abdc91e5a5fa73bf0a5ada0b72",
     "tournament": "Nagoya Basho 2026",
     "shortTournament": "July 2026",
     "day": 8,
@@ -10,7 +10,7 @@ window.SUMO_DATA = {
     "totalDays": 15,
     "dateRange": "12–26 July 2026",
     "venue": "IG Arena, Aichi",
-    "lastUpdated": "Day 8  July 19, 2026 · official snapshot 2026-07-19 12:23 UTC",
+    "lastUpdated": "Day 8  July 19, 2026 · official snapshot 2026-07-19 12:57 UTC",
     "status": "Day 8 official results",
     "active": true,
     "sideTotals": {
@@ -103,6 +103,8 @@ window.SUMO_DATA = {
       "wins": 6,
       "losses": 2,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -114,7 +116,9 @@ window.SUMO_DATA = {
           "opponentId": "oho",
           "opponent": "Oho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 72
         },
         {
@@ -123,7 +127,9 @@ window.SUMO_DATA = {
           "opponentId": "takanosho",
           "opponent": "Takanosho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 42
         },
         {
@@ -132,7 +138,9 @@ window.SUMO_DATA = {
           "opponentId": "fujinokawa",
           "opponent": "Fujinokawa",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -141,7 +149,9 @@ window.SUMO_DATA = {
           "opponentId": "churanoumi",
           "opponent": "Churanoumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -150,7 +160,9 @@ window.SUMO_DATA = {
           "opponentId": "gonoyama",
           "opponent": "Gonoyama",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 59
         },
         {
@@ -159,7 +171,9 @@ window.SUMO_DATA = {
           "opponentId": "hakunofuji",
           "opponent": "Hakunofuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 27
         },
         {
@@ -168,7 +182,9 @@ window.SUMO_DATA = {
           "opponentId": "hiradoumi",
           "opponent": "Hiradoumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 42
         },
         {
@@ -177,7 +193,9 @@ window.SUMO_DATA = {
           "opponentId": "daieisho",
           "opponent": "Daieisho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -186,7 +204,9 @@ window.SUMO_DATA = {
           "opponentId": "yoshinofuji",
           "opponent": "Yoshinofuji",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -195,7 +215,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -204,7 +226,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -213,7 +237,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -222,7 +248,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -231,7 +259,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -240,7 +270,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -275,6 +307,8 @@ window.SUMO_DATA = {
       "wins": 5,
       "losses": 3,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -286,7 +320,9 @@ window.SUMO_DATA = {
           "opponentId": "yoshinofuji",
           "opponent": "Yoshinofuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -295,7 +331,9 @@ window.SUMO_DATA = {
           "opponentId": "fujinokawa",
           "opponent": "Fujinokawa",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -304,7 +342,9 @@ window.SUMO_DATA = {
           "opponentId": "takanosho",
           "opponent": "Takanosho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -313,7 +353,9 @@ window.SUMO_DATA = {
           "opponentId": "gonoyama",
           "opponent": "Gonoyama",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -322,7 +364,9 @@ window.SUMO_DATA = {
           "opponentId": "churanoumi",
           "opponent": "Churanoumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -331,7 +375,9 @@ window.SUMO_DATA = {
           "opponentId": "hiradoumi",
           "opponent": "Hiradoumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -340,7 +386,9 @@ window.SUMO_DATA = {
           "opponentId": "hakunofuji",
           "opponent": "Hakunofuji",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -349,7 +397,9 @@ window.SUMO_DATA = {
           "opponentId": "oho",
           "opponent": "Oho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -358,7 +408,9 @@ window.SUMO_DATA = {
           "opponentId": "aonishiki",
           "opponent": "Aonishiki",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -367,7 +419,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -376,7 +430,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -385,7 +441,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -394,7 +452,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -403,7 +463,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -412,7 +474,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -447,6 +511,8 @@ window.SUMO_DATA = {
       "wins": 7,
       "losses": 1,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -458,7 +524,9 @@ window.SUMO_DATA = {
           "opponentId": "fujinokawa",
           "opponent": "Fujinokawa",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 17
         },
         {
@@ -467,7 +535,9 @@ window.SUMO_DATA = {
           "opponentId": "oho",
           "opponent": "Oho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 42
         },
         {
@@ -476,7 +546,9 @@ window.SUMO_DATA = {
           "opponentId": "gonoyama",
           "opponent": "Gonoyama",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -485,7 +557,9 @@ window.SUMO_DATA = {
           "opponentId": "takanosho",
           "opponent": "Takanosho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -494,7 +568,9 @@ window.SUMO_DATA = {
           "opponentId": "hiradoumi",
           "opponent": "Hiradoumi",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -503,7 +579,9 @@ window.SUMO_DATA = {
           "opponentId": "yoshinofuji",
           "opponent": "Yoshinofuji",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -512,7 +590,9 @@ window.SUMO_DATA = {
           "opponentId": "kotoshoho",
           "opponent": "Kotoshoho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 12
         },
         {
@@ -521,7 +601,9 @@ window.SUMO_DATA = {
           "opponentId": "atamifuji",
           "opponent": "Atamifuji",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -530,7 +612,9 @@ window.SUMO_DATA = {
           "opponentId": "churanoumi",
           "opponent": "Churanoumi",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -539,7 +623,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -548,7 +634,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -557,7 +645,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -566,7 +656,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -575,7 +667,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -584,7 +678,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -619,6 +715,8 @@ window.SUMO_DATA = {
       "wins": 4,
       "losses": 4,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -630,7 +728,9 @@ window.SUMO_DATA = {
           "opponentId": "takanosho",
           "opponent": "Takanosho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -639,7 +739,9 @@ window.SUMO_DATA = {
           "opponentId": "yoshinofuji",
           "opponent": "Yoshinofuji",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 16
         },
         {
@@ -648,7 +750,9 @@ window.SUMO_DATA = {
           "opponentId": "churanoumi",
           "opponent": "Churanoumi",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -657,7 +761,9 @@ window.SUMO_DATA = {
           "opponentId": "fujinokawa",
           "opponent": "Fujinokawa",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 62
         },
         {
@@ -666,7 +772,9 @@ window.SUMO_DATA = {
           "opponentId": "aonishiki",
           "opponent": "Aonishiki",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -675,7 +783,9 @@ window.SUMO_DATA = {
           "opponentId": "gonoyama",
           "opponent": "Gonoyama",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -684,7 +794,9 @@ window.SUMO_DATA = {
           "opponentId": "atamifuji",
           "opponent": "Atamifuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -693,7 +805,9 @@ window.SUMO_DATA = {
           "opponentId": "hiradoumi",
           "opponent": "Hiradoumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 64
         },
         {
@@ -702,7 +816,9 @@ window.SUMO_DATA = {
           "opponentId": "hakunofuji",
           "opponent": "Hakunofuji",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -711,7 +827,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -720,7 +838,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -729,7 +849,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -738,7 +860,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -747,7 +871,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -756,7 +882,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -791,6 +919,8 @@ window.SUMO_DATA = {
       "wins": 5,
       "losses": 3,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -802,7 +932,9 @@ window.SUMO_DATA = {
           "opponentId": "gonoyama",
           "opponent": "Gonoyama",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -811,7 +943,9 @@ window.SUMO_DATA = {
           "opponentId": "hiradoumi",
           "opponent": "Hiradoumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 42
         },
         {
@@ -820,7 +954,9 @@ window.SUMO_DATA = {
           "opponentId": "oho",
           "opponent": "Oho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 11
         },
         {
@@ -829,7 +965,9 @@ window.SUMO_DATA = {
           "opponentId": "daieisho",
           "opponent": "Daieisho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -838,7 +976,9 @@ window.SUMO_DATA = {
           "opponentId": "takanosho",
           "opponent": "Takanosho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -847,7 +987,9 @@ window.SUMO_DATA = {
           "opponentId": "fujinokawa",
           "opponent": "Fujinokawa",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -856,7 +998,9 @@ window.SUMO_DATA = {
           "opponentId": "kotozakura",
           "opponent": "Kotozakura",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -865,7 +1009,9 @@ window.SUMO_DATA = {
           "opponentId": "kirishima",
           "opponent": "Kirishima",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -874,7 +1020,9 @@ window.SUMO_DATA = {
           "opponentId": "ichiyamamoto",
           "opponent": "Ichiyamamoto",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -883,7 +1031,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -892,7 +1042,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -901,7 +1053,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -910,7 +1064,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -919,7 +1075,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -928,7 +1086,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -963,6 +1123,8 @@ window.SUMO_DATA = {
       "wins": 3,
       "losses": 5,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -974,7 +1136,9 @@ window.SUMO_DATA = {
           "opponentId": "churanoumi",
           "opponent": "Churanoumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -983,7 +1147,9 @@ window.SUMO_DATA = {
           "opponentId": "gonoyama",
           "opponent": "Gonoyama",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -992,7 +1158,9 @@ window.SUMO_DATA = {
           "opponentId": "yoshinofuji",
           "opponent": "Yoshinofuji",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -1001,7 +1169,9 @@ window.SUMO_DATA = {
           "opponentId": "oho",
           "opponent": "Oho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -1010,7 +1180,9 @@ window.SUMO_DATA = {
           "opponentId": "fujinokawa",
           "opponent": "Fujinokawa",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 64
         },
         {
@@ -1019,7 +1191,9 @@ window.SUMO_DATA = {
           "opponentId": "takanosho",
           "opponent": "Takanosho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 64
         },
         {
@@ -1028,7 +1202,9 @@ window.SUMO_DATA = {
           "opponentId": "kirishima",
           "opponent": "Kirishima",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 12
         },
         {
@@ -1037,7 +1213,9 @@ window.SUMO_DATA = {
           "opponentId": "hakunofuji",
           "opponent": "Hakunofuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -1046,7 +1224,9 @@ window.SUMO_DATA = {
           "opponentId": "hiradoumi",
           "opponent": "Hiradoumi",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -1055,7 +1235,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1064,7 +1246,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1073,7 +1257,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1082,7 +1268,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1091,7 +1279,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1100,7 +1290,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -1135,7 +1327,18 @@ window.SUMO_DATA = {
       "wins": 0,
       "losses": 0,
       "absences": 8,
-      "status": "Withdrawn / absent",
+      "kyujoDays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "currentKyujo": true,
+      "status": "Kyujo · injured / withdrawn",
       "available": false,
       "kinboshi": 0,
       "points": 0,
@@ -1146,7 +1349,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": true,
-          "result": "loss",
+          "status": "absent",
+          "result": null,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -1155,7 +1360,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": true,
-          "result": "loss",
+          "status": "absent",
+          "result": null,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -1164,7 +1371,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": true,
-          "result": "loss",
+          "status": "absent",
+          "result": null,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -1173,7 +1382,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": true,
-          "result": "loss",
+          "status": "absent",
+          "result": null,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -1182,7 +1393,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": true,
-          "result": "loss",
+          "status": "absent",
+          "result": null,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -1191,7 +1404,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": true,
-          "result": "loss",
+          "status": "absent",
+          "result": null,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -1200,7 +1415,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": true,
-          "result": "loss",
+          "status": "absent",
+          "result": null,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -1209,7 +1426,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": true,
-          "result": "loss",
+          "status": "absent",
+          "result": null,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -1218,7 +1437,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1227,7 +1448,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1236,7 +1459,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1245,7 +1470,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1254,7 +1481,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1263,7 +1492,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1272,7 +1503,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -1307,6 +1540,8 @@ window.SUMO_DATA = {
       "wins": 7,
       "losses": 1,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -1318,7 +1553,9 @@ window.SUMO_DATA = {
           "opponentId": "hiradoumi",
           "opponent": "Hiradoumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 12
         },
         {
@@ -1327,7 +1564,9 @@ window.SUMO_DATA = {
           "opponentId": "churanoumi",
           "opponent": "Churanoumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -1336,7 +1575,9 @@ window.SUMO_DATA = {
           "opponentId": "hakunofuji",
           "opponent": "Hakunofuji",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -1345,7 +1586,9 @@ window.SUMO_DATA = {
           "opponentId": "yoshinofuji",
           "opponent": "Yoshinofuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 12
         },
         {
@@ -1354,7 +1597,9 @@ window.SUMO_DATA = {
           "opponentId": "kotozakura",
           "opponent": "Kotozakura",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -1363,7 +1608,9 @@ window.SUMO_DATA = {
           "opponentId": "oho",
           "opponent": "Oho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 40
         },
         {
@@ -1372,7 +1619,9 @@ window.SUMO_DATA = {
           "opponentId": "fujinokawa",
           "opponent": "Fujinokawa",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -1381,7 +1630,9 @@ window.SUMO_DATA = {
           "opponentId": "takanosho",
           "opponent": "Takanosho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -1390,7 +1641,9 @@ window.SUMO_DATA = {
           "opponentId": "onosato",
           "opponent": "Onosato",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -1399,7 +1652,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1408,7 +1663,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1417,7 +1674,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1426,7 +1685,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1435,7 +1696,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1444,7 +1707,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -1479,6 +1744,8 @@ window.SUMO_DATA = {
       "wins": 4,
       "losses": 4,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -1490,7 +1757,9 @@ window.SUMO_DATA = {
           "opponentId": "onosato",
           "opponent": "Onosato",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -1499,7 +1768,9 @@ window.SUMO_DATA = {
           "opponentId": "kotozakura",
           "opponent": "Kotozakura",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 16
         },
         {
@@ -1508,7 +1779,9 @@ window.SUMO_DATA = {
           "opponentId": "kotoshoho",
           "opponent": "Kotoshoho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -1517,7 +1790,9 @@ window.SUMO_DATA = {
           "opponentId": "aonishiki",
           "opponent": "Aonishiki",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 12
         },
         {
@@ -1526,7 +1801,9 @@ window.SUMO_DATA = {
           "opponentId": "oho",
           "opponent": "Oho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -1535,7 +1812,9 @@ window.SUMO_DATA = {
           "opponentId": "kirishima",
           "opponent": "Kirishima",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -1544,7 +1823,9 @@ window.SUMO_DATA = {
           "opponentId": "takanosho",
           "opponent": "Takanosho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 3
         },
         {
@@ -1553,7 +1834,9 @@ window.SUMO_DATA = {
           "opponentId": "fujinokawa",
           "opponent": "Fujinokawa",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 46
         },
         {
@@ -1562,7 +1845,9 @@ window.SUMO_DATA = {
           "opponentId": "hoshoryu",
           "opponent": "Hoshoryu",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -1571,7 +1856,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1580,7 +1867,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1589,7 +1878,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1598,7 +1889,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1607,7 +1900,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1616,7 +1911,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -1651,6 +1948,8 @@ window.SUMO_DATA = {
       "wins": 1,
       "losses": 7,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -1662,7 +1961,9 @@ window.SUMO_DATA = {
           "opponentId": "hoshoryu",
           "opponent": "Hoshoryu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 72
         },
         {
@@ -1671,7 +1972,9 @@ window.SUMO_DATA = {
           "opponentId": "kirishima",
           "opponent": "Kirishima",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 42
         },
         {
@@ -1680,7 +1983,9 @@ window.SUMO_DATA = {
           "opponentId": "atamifuji",
           "opponent": "Atamifuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 11
         },
         {
@@ -1689,7 +1994,9 @@ window.SUMO_DATA = {
           "opponentId": "kotoshoho",
           "opponent": "Kotoshoho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -1698,7 +2005,9 @@ window.SUMO_DATA = {
           "opponentId": "yoshinofuji",
           "opponent": "Yoshinofuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -1707,7 +2016,9 @@ window.SUMO_DATA = {
           "opponentId": "aonishiki",
           "opponent": "Aonishiki",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 40
         },
         {
@@ -1716,7 +2027,9 @@ window.SUMO_DATA = {
           "opponentId": "gonoyama",
           "opponent": "Gonoyama",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -1725,7 +2038,9 @@ window.SUMO_DATA = {
           "opponentId": "onosato",
           "opponent": "Onosato",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -1734,7 +2049,9 @@ window.SUMO_DATA = {
           "opponentId": "fujinokawa",
           "opponent": "Fujinokawa",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -1743,7 +2060,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1752,7 +2071,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1761,7 +2082,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1770,7 +2093,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1779,7 +2104,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1788,7 +2115,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -1823,6 +2152,8 @@ window.SUMO_DATA = {
       "wins": 3,
       "losses": 5,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 2,
@@ -1834,7 +2165,9 @@ window.SUMO_DATA = {
           "opponentId": "kirishima",
           "opponent": "Kirishima",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 17
         },
         {
@@ -1843,7 +2176,9 @@ window.SUMO_DATA = {
           "opponentId": "onosato",
           "opponent": "Onosato",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -1852,7 +2187,9 @@ window.SUMO_DATA = {
           "opponentId": "hoshoryu",
           "opponent": "Hoshoryu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -1861,7 +2198,9 @@ window.SUMO_DATA = {
           "opponentId": "kotozakura",
           "opponent": "Kotozakura",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 62
         },
         {
@@ -1870,7 +2209,9 @@ window.SUMO_DATA = {
           "opponentId": "kotoshoho",
           "opponent": "Kotoshoho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 64
         },
         {
@@ -1879,7 +2220,9 @@ window.SUMO_DATA = {
           "opponentId": "atamifuji",
           "opponent": "Atamifuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -1888,7 +2231,9 @@ window.SUMO_DATA = {
           "opponentId": "aonishiki",
           "opponent": "Aonishiki",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -1897,7 +2242,9 @@ window.SUMO_DATA = {
           "opponentId": "yoshinofuji",
           "opponent": "Yoshinofuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 46
         },
         {
@@ -1906,7 +2253,9 @@ window.SUMO_DATA = {
           "opponentId": "oho",
           "opponent": "Oho",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -1915,7 +2264,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1924,7 +2275,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1933,7 +2286,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1942,7 +2297,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1951,7 +2308,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -1960,7 +2319,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -1995,6 +2356,8 @@ window.SUMO_DATA = {
       "wins": 3,
       "losses": 5,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -2006,7 +2369,9 @@ window.SUMO_DATA = {
           "opponentId": "kotozakura",
           "opponent": "Kotozakura",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -2015,7 +2380,9 @@ window.SUMO_DATA = {
           "opponentId": "hoshoryu",
           "opponent": "Hoshoryu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 42
         },
         {
@@ -2024,7 +2391,9 @@ window.SUMO_DATA = {
           "opponentId": "onosato",
           "opponent": "Onosato",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2033,7 +2402,9 @@ window.SUMO_DATA = {
           "opponentId": "kirishima",
           "opponent": "Kirishima",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2042,7 +2413,9 @@ window.SUMO_DATA = {
           "opponentId": "atamifuji",
           "opponent": "Atamifuji",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2051,7 +2424,9 @@ window.SUMO_DATA = {
           "opponentId": "kotoshoho",
           "opponent": "Kotoshoho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 64
         },
         {
@@ -2060,7 +2435,9 @@ window.SUMO_DATA = {
           "opponentId": "yoshinofuji",
           "opponent": "Yoshinofuji",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 3
         },
         {
@@ -2069,7 +2446,9 @@ window.SUMO_DATA = {
           "opponentId": "aonishiki",
           "opponent": "Aonishiki",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2078,7 +2457,9 @@ window.SUMO_DATA = {
           "opponentId": "gonoyama",
           "opponent": "Gonoyama",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -2087,7 +2468,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2096,7 +2479,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2105,7 +2490,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2114,7 +2501,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2123,7 +2512,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2132,7 +2523,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -2167,6 +2560,8 @@ window.SUMO_DATA = {
       "wins": 3,
       "losses": 5,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 1,
@@ -2178,7 +2573,9 @@ window.SUMO_DATA = {
           "opponentId": "atamifuji",
           "opponent": "Atamifuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2187,7 +2584,9 @@ window.SUMO_DATA = {
           "opponentId": "kotoshoho",
           "opponent": "Kotoshoho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -2196,7 +2595,9 @@ window.SUMO_DATA = {
           "opponentId": "kirishima",
           "opponent": "Kirishima",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2205,7 +2606,9 @@ window.SUMO_DATA = {
           "opponentId": "onosato",
           "opponent": "Onosato",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2214,7 +2617,9 @@ window.SUMO_DATA = {
           "opponentId": "hoshoryu",
           "opponent": "Hoshoryu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 59
         },
         {
@@ -2223,7 +2628,9 @@ window.SUMO_DATA = {
           "opponentId": "kotozakura",
           "opponent": "Kotozakura",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2232,7 +2639,9 @@ window.SUMO_DATA = {
           "opponentId": "oho",
           "opponent": "Oho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -2241,7 +2650,9 @@ window.SUMO_DATA = {
           "opponentId": "churanoumi",
           "opponent": "Churanoumi",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2250,7 +2661,9 @@ window.SUMO_DATA = {
           "opponentId": "takanosho",
           "opponent": "Takanosho",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -2259,7 +2672,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2268,7 +2683,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2277,7 +2694,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2286,7 +2705,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2295,7 +2716,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2304,7 +2727,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -2339,6 +2764,8 @@ window.SUMO_DATA = {
       "wins": 2,
       "losses": 6,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -2350,7 +2777,9 @@ window.SUMO_DATA = {
           "opponentId": "kotoshoho",
           "opponent": "Kotoshoho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2359,7 +2788,9 @@ window.SUMO_DATA = {
           "opponentId": "aonishiki",
           "opponent": "Aonishiki",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -2368,7 +2799,9 @@ window.SUMO_DATA = {
           "opponentId": "kotozakura",
           "opponent": "Kotozakura",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2377,7 +2810,9 @@ window.SUMO_DATA = {
           "opponentId": "hoshoryu",
           "opponent": "Hoshoryu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -2386,7 +2821,9 @@ window.SUMO_DATA = {
           "opponentId": "onosato",
           "opponent": "Onosato",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2395,7 +2832,9 @@ window.SUMO_DATA = {
           "opponentId": "daieisho",
           "opponent": "Daieisho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 16
         },
         {
@@ -2404,7 +2843,9 @@ window.SUMO_DATA = {
           "opponentId": "ichiyamamoto",
           "opponent": "Ichiyamamoto",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 17
         },
         {
@@ -2413,7 +2854,9 @@ window.SUMO_DATA = {
           "opponentId": "gonoyama",
           "opponent": "Gonoyama",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2422,7 +2865,9 @@ window.SUMO_DATA = {
           "opponentId": "kirishima",
           "opponent": "Kirishima",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -2431,7 +2876,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2440,7 +2887,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2449,7 +2898,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2458,7 +2909,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2467,7 +2920,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2476,7 +2931,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -2511,6 +2968,8 @@ window.SUMO_DATA = {
       "wins": 1,
       "losses": 7,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -2522,7 +2981,9 @@ window.SUMO_DATA = {
           "opponentId": "aonishiki",
           "opponent": "Aonishiki",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 12
         },
         {
@@ -2531,7 +2992,9 @@ window.SUMO_DATA = {
           "opponentId": "atamifuji",
           "opponent": "Atamifuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 42
         },
         {
@@ -2540,7 +3003,9 @@ window.SUMO_DATA = {
           "opponentId": "daieisho",
           "opponent": "Daieisho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 64
         },
         {
@@ -2549,7 +3014,9 @@ window.SUMO_DATA = {
           "opponentId": "hakunofuji",
           "opponent": "Hakunofuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 62
         },
         {
@@ -2558,7 +3025,9 @@ window.SUMO_DATA = {
           "opponentId": "kirishima",
           "opponent": "Kirishima",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2567,7 +3036,9 @@ window.SUMO_DATA = {
           "opponentId": "onosato",
           "opponent": "Onosato",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -2576,7 +3047,9 @@ window.SUMO_DATA = {
           "opponentId": "hoshoryu",
           "opponent": "Hoshoryu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 42
         },
         {
@@ -2585,7 +3058,9 @@ window.SUMO_DATA = {
           "opponentId": "kotozakura",
           "opponent": "Kotozakura",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 64
         },
         {
@@ -2594,7 +3069,9 @@ window.SUMO_DATA = {
           "opponentId": "kotoshoho",
           "opponent": "Kotoshoho",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -2603,7 +3080,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2612,7 +3091,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2621,7 +3102,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2630,7 +3113,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2639,7 +3124,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2648,7 +3135,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -2683,6 +3172,8 @@ window.SUMO_DATA = {
       "wins": 6,
       "losses": 2,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 1,
@@ -2694,7 +3185,9 @@ window.SUMO_DATA = {
           "opponentId": "daieisho",
           "opponent": "Daieisho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2703,7 +3196,9 @@ window.SUMO_DATA = {
           "opponentId": "ichiyamamoto",
           "opponent": "Ichiyamamoto",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2712,7 +3207,9 @@ window.SUMO_DATA = {
           "opponentId": "aonishiki",
           "opponent": "Aonishiki",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -2721,7 +3218,9 @@ window.SUMO_DATA = {
           "opponentId": "hiradoumi",
           "opponent": "Hiradoumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 62
         },
         {
@@ -2730,7 +3229,9 @@ window.SUMO_DATA = {
           "opponentId": "ura",
           "opponent": "Ura",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 42
         },
         {
@@ -2739,7 +3240,9 @@ window.SUMO_DATA = {
           "opponentId": "hoshoryu",
           "opponent": "Hoshoryu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 27
         },
         {
@@ -2748,7 +3251,9 @@ window.SUMO_DATA = {
           "opponentId": "onosato",
           "opponent": "Onosato",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -2757,7 +3262,9 @@ window.SUMO_DATA = {
           "opponentId": "kotoshoho",
           "opponent": "Kotoshoho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -2766,7 +3273,9 @@ window.SUMO_DATA = {
           "opponentId": "kotozakura",
           "opponent": "Kotozakura",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -2775,7 +3284,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2784,7 +3295,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2793,7 +3306,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2802,7 +3317,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2811,7 +3328,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2820,7 +3339,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -2855,6 +3376,8 @@ window.SUMO_DATA = {
       "wins": 5,
       "losses": 3,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -2866,7 +3389,9 @@ window.SUMO_DATA = {
           "opponentId": "hakunofuji",
           "opponent": "Hakunofuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2875,7 +3400,9 @@ window.SUMO_DATA = {
           "opponentId": "ura",
           "opponent": "Ura",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 34
         },
         {
@@ -2884,7 +3411,9 @@ window.SUMO_DATA = {
           "opponentId": "hiradoumi",
           "opponent": "Hiradoumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 64
         },
         {
@@ -2893,7 +3422,9 @@ window.SUMO_DATA = {
           "opponentId": "atamifuji",
           "opponent": "Atamifuji",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -2902,7 +3433,9 @@ window.SUMO_DATA = {
           "opponentId": "ichiyamamoto",
           "opponent": "Ichiyamamoto",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2911,7 +3444,9 @@ window.SUMO_DATA = {
           "opponentId": "churanoumi",
           "opponent": "Churanoumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 16
         },
         {
@@ -2920,7 +3455,9 @@ window.SUMO_DATA = {
           "opponentId": "oshoma",
           "opponent": "Oshoma",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2929,7 +3466,9 @@ window.SUMO_DATA = {
           "opponentId": "hoshoryu",
           "opponent": "Hoshoryu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -2938,7 +3477,9 @@ window.SUMO_DATA = {
           "opponentId": "shodai",
           "opponent": "Shodai",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -2947,7 +3488,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2956,7 +3499,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2965,7 +3510,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2974,7 +3521,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2983,7 +3532,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -2992,7 +3543,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -3027,6 +3580,8 @@ window.SUMO_DATA = {
       "wins": 4,
       "losses": 4,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -3038,7 +3593,9 @@ window.SUMO_DATA = {
           "opponentId": "ura",
           "opponent": "Ura",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 64
         },
         {
@@ -3047,7 +3604,9 @@ window.SUMO_DATA = {
           "opponentId": "hakunofuji",
           "opponent": "Hakunofuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3056,7 +3615,9 @@ window.SUMO_DATA = {
           "opponentId": "oshoma",
           "opponent": "Oshoma",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3065,7 +3626,9 @@ window.SUMO_DATA = {
           "opponentId": "shodai",
           "opponent": "Shodai",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3074,7 +3637,9 @@ window.SUMO_DATA = {
           "opponentId": "daieisho",
           "opponent": "Daieisho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3083,7 +3648,9 @@ window.SUMO_DATA = {
           "opponentId": "fujiseiun",
           "opponent": "Fujiseiun",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3092,7 +3659,9 @@ window.SUMO_DATA = {
           "opponentId": "churanoumi",
           "opponent": "Churanoumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 17
         },
         {
@@ -3101,7 +3670,9 @@ window.SUMO_DATA = {
           "opponentId": "kotoeiho",
           "opponent": "Kotoeiho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3110,7 +3681,9 @@ window.SUMO_DATA = {
           "opponentId": "atamifuji",
           "opponent": "Atamifuji",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -3119,7 +3692,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3128,7 +3703,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3137,7 +3714,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3146,7 +3725,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3155,7 +3736,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3164,7 +3747,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -3199,6 +3784,8 @@ window.SUMO_DATA = {
       "wins": 2,
       "losses": 6,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -3210,7 +3797,9 @@ window.SUMO_DATA = {
           "opponentId": "ichiyamamoto",
           "opponent": "Ichiyamamoto",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 64
         },
         {
@@ -3219,7 +3808,9 @@ window.SUMO_DATA = {
           "opponentId": "daieisho",
           "opponent": "Daieisho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 34
         },
         {
@@ -3228,7 +3819,9 @@ window.SUMO_DATA = {
           "opponentId": "shodai",
           "opponent": "Shodai",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 71
         },
         {
@@ -3237,7 +3830,9 @@ window.SUMO_DATA = {
           "opponentId": "oshoma",
           "opponent": "Oshoma",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 11
         },
         {
@@ -3246,7 +3841,9 @@ window.SUMO_DATA = {
           "opponentId": "hakunofuji",
           "opponent": "Hakunofuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 42
         },
         {
@@ -3255,7 +3852,9 @@ window.SUMO_DATA = {
           "opponentId": "kotoeiho",
           "opponent": "Kotoeiho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 34
         },
         {
@@ -3264,7 +3863,9 @@ window.SUMO_DATA = {
           "opponentId": "fujiseiun",
           "opponent": "Fujiseiun",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 71
         },
         {
@@ -3273,7 +3874,9 @@ window.SUMO_DATA = {
           "opponentId": "takayasu",
           "opponent": "Takayasu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3282,7 +3885,9 @@ window.SUMO_DATA = {
           "opponentId": "wakamotoharu",
           "opponent": "Wakamotoharu",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -3291,7 +3896,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3300,7 +3907,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3309,7 +3918,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3318,7 +3929,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3327,7 +3940,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3336,7 +3951,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -3371,6 +3988,8 @@ window.SUMO_DATA = {
       "wins": 3,
       "losses": 5,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -3382,7 +4001,9 @@ window.SUMO_DATA = {
           "opponentId": "shodai",
           "opponent": "Shodai",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3391,7 +4012,9 @@ window.SUMO_DATA = {
           "opponentId": "fujiseiun",
           "opponent": "Fujiseiun",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -3400,7 +4023,9 @@ window.SUMO_DATA = {
           "opponentId": "ichiyamamoto",
           "opponent": "Ichiyamamoto",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3409,7 +4034,9 @@ window.SUMO_DATA = {
           "opponentId": "ura",
           "opponent": "Ura",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 11
         },
         {
@@ -3418,7 +4045,9 @@ window.SUMO_DATA = {
           "opponentId": "kotoeiho",
           "opponent": "Kotoeiho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -3427,7 +4056,9 @@ window.SUMO_DATA = {
           "opponentId": "takayasu",
           "opponent": "Takayasu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -3436,7 +4067,9 @@ window.SUMO_DATA = {
           "opponentId": "daieisho",
           "opponent": "Daieisho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3445,7 +4078,9 @@ window.SUMO_DATA = {
           "opponentId": "wakamotoharu",
           "opponent": "Wakamotoharu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3454,7 +4089,9 @@ window.SUMO_DATA = {
           "opponentId": "roga",
           "opponent": "Roga",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -3463,7 +4100,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3472,7 +4111,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3481,7 +4122,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3490,7 +4133,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3499,7 +4144,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3508,7 +4155,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -3543,6 +4192,8 @@ window.SUMO_DATA = {
       "wins": 4,
       "losses": 4,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -3554,7 +4205,9 @@ window.SUMO_DATA = {
           "opponentId": "oshoma",
           "opponent": "Oshoma",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3563,7 +4216,9 @@ window.SUMO_DATA = {
           "opponentId": "kotoeiho",
           "opponent": "Kotoeiho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3572,7 +4227,9 @@ window.SUMO_DATA = {
           "opponentId": "ura",
           "opponent": "Ura",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 71
         },
         {
@@ -3581,7 +4238,9 @@ window.SUMO_DATA = {
           "opponentId": "ichiyamamoto",
           "opponent": "Ichiyamamoto",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3590,7 +4249,9 @@ window.SUMO_DATA = {
           "opponentId": "fujiseiun",
           "opponent": "Fujiseiun",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 64
         },
         {
@@ -3599,7 +4260,9 @@ window.SUMO_DATA = {
           "opponentId": "wakamotoharu",
           "opponent": "Wakamotoharu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3608,7 +4271,9 @@ window.SUMO_DATA = {
           "opponentId": "takayasu",
           "opponent": "Takayasu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3617,7 +4282,9 @@ window.SUMO_DATA = {
           "opponentId": "fujiryoga",
           "opponent": "Fujiryoga",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 12
         },
         {
@@ -3626,7 +4293,9 @@ window.SUMO_DATA = {
           "opponentId": "daieisho",
           "opponent": "Daieisho",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -3635,7 +4304,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3644,7 +4315,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3653,7 +4326,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3662,7 +4337,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3671,7 +4348,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3680,7 +4359,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -3715,6 +4396,8 @@ window.SUMO_DATA = {
       "wins": 4,
       "losses": 4,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -3726,7 +4409,9 @@ window.SUMO_DATA = {
           "opponentId": "kotoeiho",
           "opponent": "Kotoeiho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 46
         },
         {
@@ -3735,7 +4420,9 @@ window.SUMO_DATA = {
           "opponentId": "oshoma",
           "opponent": "Oshoma",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -3744,7 +4431,9 @@ window.SUMO_DATA = {
           "opponentId": "takayasu",
           "opponent": "Takayasu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 62
         },
         {
@@ -3753,7 +4442,9 @@ window.SUMO_DATA = {
           "opponentId": "wakamotoharu",
           "opponent": "Wakamotoharu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -3762,7 +4453,9 @@ window.SUMO_DATA = {
           "opponentId": "shodai",
           "opponent": "Shodai",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 64
         },
         {
@@ -3771,7 +4464,9 @@ window.SUMO_DATA = {
           "opponentId": "ichiyamamoto",
           "opponent": "Ichiyamamoto",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3780,7 +4475,9 @@ window.SUMO_DATA = {
           "opponentId": "ura",
           "opponent": "Ura",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 71
         },
         {
@@ -3789,7 +4486,9 @@ window.SUMO_DATA = {
           "opponentId": "roga",
           "opponent": "Roga",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 12
         },
         {
@@ -3798,7 +4497,9 @@ window.SUMO_DATA = {
           "opponentId": "tobizaru",
           "opponent": "Tobizaru",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -3807,7 +4508,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3816,7 +4519,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3825,7 +4530,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3834,7 +4541,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3843,7 +4552,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3852,7 +4563,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -3887,6 +4600,8 @@ window.SUMO_DATA = {
       "wins": 7,
       "losses": 1,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -3898,7 +4613,9 @@ window.SUMO_DATA = {
           "opponentId": "fujiseiun",
           "opponent": "Fujiseiun",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 46
         },
         {
@@ -3907,7 +4624,9 @@ window.SUMO_DATA = {
           "opponentId": "shodai",
           "opponent": "Shodai",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3916,7 +4635,9 @@ window.SUMO_DATA = {
           "opponentId": "wakamotoharu",
           "opponent": "Wakamotoharu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -3925,7 +4646,9 @@ window.SUMO_DATA = {
           "opponentId": "takayasu",
           "opponent": "Takayasu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -3934,7 +4657,9 @@ window.SUMO_DATA = {
           "opponentId": "oshoma",
           "opponent": "Oshoma",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -3943,7 +4668,9 @@ window.SUMO_DATA = {
           "opponentId": "ura",
           "opponent": "Ura",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 34
         },
         {
@@ -3952,7 +4679,9 @@ window.SUMO_DATA = {
           "opponentId": "roga",
           "opponent": "Roga",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -3961,7 +4690,9 @@ window.SUMO_DATA = {
           "opponentId": "ichiyamamoto",
           "opponent": "Ichiyamamoto",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -3970,7 +4701,9 @@ window.SUMO_DATA = {
           "opponentId": "fujiryoga",
           "opponent": "Fujiryoga",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -3979,7 +4712,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3988,7 +4723,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -3997,7 +4734,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4006,7 +4745,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4015,7 +4756,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4024,7 +4767,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -4059,6 +4804,8 @@ window.SUMO_DATA = {
       "wins": 6,
       "losses": 2,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -4070,7 +4817,9 @@ window.SUMO_DATA = {
           "opponentId": "wakamotoharu",
           "opponent": "Wakamotoharu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 62
         },
         {
@@ -4079,7 +4828,9 @@ window.SUMO_DATA = {
           "opponentId": "roga",
           "opponent": "Roga",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 12
         },
         {
@@ -4088,7 +4839,9 @@ window.SUMO_DATA = {
           "opponentId": "fujiseiun",
           "opponent": "Fujiseiun",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 62
         },
         {
@@ -4097,7 +4850,9 @@ window.SUMO_DATA = {
           "opponentId": "kotoeiho",
           "opponent": "Kotoeiho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -4106,7 +4861,9 @@ window.SUMO_DATA = {
           "opponentId": "fujiryoga",
           "opponent": "Fujiryoga",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 62
         },
         {
@@ -4115,7 +4872,9 @@ window.SUMO_DATA = {
           "opponentId": "oshoma",
           "opponent": "Oshoma",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -4124,7 +4883,9 @@ window.SUMO_DATA = {
           "opponentId": "shodai",
           "opponent": "Shodai",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -4133,7 +4894,9 @@ window.SUMO_DATA = {
           "opponentId": "ura",
           "opponent": "Ura",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -4142,7 +4905,9 @@ window.SUMO_DATA = {
           "opponentId": "nishikifuji",
           "opponent": "Nishikifuji",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -4151,7 +4916,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4160,7 +4927,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4169,7 +4938,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4178,7 +4949,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4187,7 +4960,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4196,7 +4971,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -4231,6 +5008,8 @@ window.SUMO_DATA = {
       "wins": 3,
       "losses": 5,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -4242,7 +5021,9 @@ window.SUMO_DATA = {
           "opponentId": "takayasu",
           "opponent": "Takayasu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 62
         },
         {
@@ -4251,7 +5032,9 @@ window.SUMO_DATA = {
           "opponentId": "fujiryoga",
           "opponent": "Fujiryoga",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -4260,7 +5043,9 @@ window.SUMO_DATA = {
           "opponentId": "kotoeiho",
           "opponent": "Kotoeiho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -4269,7 +5054,9 @@ window.SUMO_DATA = {
           "opponentId": "fujiseiun",
           "opponent": "Fujiseiun",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -4278,7 +5065,9 @@ window.SUMO_DATA = {
           "opponentId": "roga",
           "opponent": "Roga",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 71
         },
         {
@@ -4287,7 +5076,9 @@ window.SUMO_DATA = {
           "opponentId": "shodai",
           "opponent": "Shodai",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -4296,7 +5087,9 @@ window.SUMO_DATA = {
           "opponentId": "tobizaru",
           "opponent": "Tobizaru",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -4305,7 +5098,9 @@ window.SUMO_DATA = {
           "opponentId": "oshoma",
           "opponent": "Oshoma",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -4314,7 +5109,9 @@ window.SUMO_DATA = {
           "opponentId": "ura",
           "opponent": "Ura",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -4323,7 +5120,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4332,7 +5131,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4341,7 +5142,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4350,7 +5153,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4359,7 +5164,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4368,7 +5175,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -4403,6 +5212,8 @@ window.SUMO_DATA = {
       "wins": 3,
       "losses": 5,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -4414,7 +5225,9 @@ window.SUMO_DATA = {
           "opponentId": "fujiryoga",
           "opponent": "Fujiryoga",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -4423,7 +5236,9 @@ window.SUMO_DATA = {
           "opponentId": "takayasu",
           "opponent": "Takayasu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 12
         },
         {
@@ -4432,7 +5247,9 @@ window.SUMO_DATA = {
           "opponentId": "tobizaru",
           "opponent": "Tobizaru",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -4441,7 +5258,9 @@ window.SUMO_DATA = {
           "opponentId": "asanoyama",
           "opponent": "Asanoyama",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -4450,7 +5269,9 @@ window.SUMO_DATA = {
           "opponentId": "wakamotoharu",
           "opponent": "Wakamotoharu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 71
         },
         {
@@ -4459,7 +5280,9 @@ window.SUMO_DATA = {
           "opponentId": "chiyoshoma",
           "opponent": "Chiyoshoma",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 62
         },
         {
@@ -4468,7 +5291,9 @@ window.SUMO_DATA = {
           "opponentId": "kotoeiho",
           "opponent": "Kotoeiho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -4477,7 +5302,9 @@ window.SUMO_DATA = {
           "opponentId": "fujiseiun",
           "opponent": "Fujiseiun",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 12
         },
         {
@@ -4486,7 +5313,9 @@ window.SUMO_DATA = {
           "opponentId": "oshoma",
           "opponent": "Oshoma",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -4495,7 +5324,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4504,7 +5335,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4513,7 +5346,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4522,7 +5357,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4531,7 +5368,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4540,7 +5379,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -4575,6 +5416,8 @@ window.SUMO_DATA = {
       "wins": 5,
       "losses": 3,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -4586,7 +5429,9 @@ window.SUMO_DATA = {
           "opponentId": "roga",
           "opponent": "Roga",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -4595,7 +5440,9 @@ window.SUMO_DATA = {
           "opponentId": "wakamotoharu",
           "opponent": "Wakamotoharu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -4604,7 +5451,9 @@ window.SUMO_DATA = {
           "opponentId": "asanoyama",
           "opponent": "Asanoyama",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 17
         },
         {
@@ -4613,7 +5462,9 @@ window.SUMO_DATA = {
           "opponentId": "tobizaru",
           "opponent": "Tobizaru",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -4622,7 +5473,9 @@ window.SUMO_DATA = {
           "opponentId": "takayasu",
           "opponent": "Takayasu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 62
         },
         {
@@ -4631,7 +5484,9 @@ window.SUMO_DATA = {
           "opponentId": "wakanosho",
           "opponent": "Wakanosho",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 17
         },
         {
@@ -4640,7 +5495,9 @@ window.SUMO_DATA = {
           "opponentId": "chiyoshoma",
           "opponent": "Chiyoshoma",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -4649,7 +5506,9 @@ window.SUMO_DATA = {
           "opponentId": "shodai",
           "opponent": "Shodai",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 12
         },
         {
@@ -4658,7 +5517,9 @@ window.SUMO_DATA = {
           "opponentId": "kotoeiho",
           "opponent": "Kotoeiho",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -4667,7 +5528,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4676,7 +5539,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4685,7 +5550,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4694,7 +5561,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4703,7 +5572,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4712,7 +5583,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -4747,6 +5620,8 @@ window.SUMO_DATA = {
       "wins": 3,
       "losses": 5,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -4758,7 +5633,9 @@ window.SUMO_DATA = {
           "opponentId": "asanoyama",
           "opponent": "Asanoyama",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 54
         },
         {
@@ -4767,7 +5644,9 @@ window.SUMO_DATA = {
           "opponentId": "chiyoshoma",
           "opponent": "Chiyoshoma",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -4776,7 +5655,9 @@ window.SUMO_DATA = {
           "opponentId": "roga",
           "opponent": "Roga",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -4785,7 +5666,9 @@ window.SUMO_DATA = {
           "opponentId": "fujiryoga",
           "opponent": "Fujiryoga",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -4794,7 +5677,9 @@ window.SUMO_DATA = {
           "opponentId": "wakanosho",
           "opponent": "Wakanosho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 55
         },
         {
@@ -4803,7 +5688,9 @@ window.SUMO_DATA = {
           "opponentId": "mitakeumi",
           "opponent": "Mitakeumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -4812,7 +5699,9 @@ window.SUMO_DATA = {
           "opponentId": "wakamotoharu",
           "opponent": "Wakamotoharu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -4821,7 +5710,9 @@ window.SUMO_DATA = {
           "opponentId": "asahakuryu",
           "opponent": "Asahakuryu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 30
         },
         {
@@ -4830,7 +5721,9 @@ window.SUMO_DATA = {
           "opponentId": "fujiseiun",
           "opponent": "Fujiseiun",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -4839,7 +5732,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4848,7 +5743,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4857,7 +5754,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4866,7 +5765,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4875,7 +5776,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -4884,7 +5787,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -4919,6 +5824,8 @@ window.SUMO_DATA = {
       "wins": 6,
       "losses": 2,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -4930,7 +5837,9 @@ window.SUMO_DATA = {
           "opponentId": "tobizaru",
           "opponent": "Tobizaru",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 54
         },
         {
@@ -4939,7 +5848,9 @@ window.SUMO_DATA = {
           "opponentId": "wakanosho",
           "opponent": "Wakanosho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 71
         },
         {
@@ -4948,7 +5859,9 @@ window.SUMO_DATA = {
           "opponentId": "fujiryoga",
           "opponent": "Fujiryoga",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 17
         },
         {
@@ -4957,7 +5870,9 @@ window.SUMO_DATA = {
           "opponentId": "roga",
           "opponent": "Roga",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -4966,7 +5881,9 @@ window.SUMO_DATA = {
           "opponentId": "chiyoshoma",
           "opponent": "Chiyoshoma",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -4975,7 +5892,9 @@ window.SUMO_DATA = {
           "opponentId": "abi",
           "opponent": "Abi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -4984,7 +5903,9 @@ window.SUMO_DATA = {
           "opponentId": "mitakeumi",
           "opponent": "Mitakeumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 12
         },
         {
@@ -4993,7 +5914,9 @@ window.SUMO_DATA = {
           "opponentId": "onokatsu",
           "opponent": "Onokatsu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -5002,7 +5925,9 @@ window.SUMO_DATA = {
           "opponentId": "daiseizan",
           "opponent": "Daiseizan",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -5011,7 +5936,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5020,7 +5947,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5029,7 +5958,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5038,7 +5969,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5047,7 +5980,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5056,7 +5991,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -5091,6 +6028,8 @@ window.SUMO_DATA = {
       "wins": 2,
       "losses": 6,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -5102,7 +6041,9 @@ window.SUMO_DATA = {
           "opponentId": "wakanosho",
           "opponent": "Wakanosho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 55
         },
         {
@@ -5111,7 +6052,9 @@ window.SUMO_DATA = {
           "opponentId": "tobizaru",
           "opponent": "Tobizaru",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -5120,7 +6063,9 @@ window.SUMO_DATA = {
           "opponentId": "mitakeumi",
           "opponent": "Mitakeumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -5129,7 +6074,9 @@ window.SUMO_DATA = {
           "opponentId": "asahakuryu",
           "opponent": "Asahakuryu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -5138,7 +6085,9 @@ window.SUMO_DATA = {
           "opponentId": "asanoyama",
           "opponent": "Asanoyama",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -5147,7 +6096,9 @@ window.SUMO_DATA = {
           "opponentId": "roga",
           "opponent": "Roga",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 62
         },
         {
@@ -5156,7 +6107,9 @@ window.SUMO_DATA = {
           "opponentId": "fujiryoga",
           "opponent": "Fujiryoga",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -5165,7 +6118,9 @@ window.SUMO_DATA = {
           "opponentId": "abi",
           "opponent": "Abi",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -5174,7 +6129,9 @@ window.SUMO_DATA = {
           "opponentId": "kazuma",
           "opponent": "Kazuma",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -5183,7 +6140,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5192,7 +6151,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5201,7 +6162,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5210,7 +6173,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5219,7 +6184,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5228,7 +6195,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -5263,7 +6232,12 @@ window.SUMO_DATA = {
       "wins": 5,
       "losses": 2,
       "absences": 1,
-      "status": "Withdrawn / absent",
+      "kyujoDays": [
+        7,
+        8
+      ],
+      "currentKyujo": true,
+      "status": "Kyujo · injured / withdrawn",
       "available": false,
       "kinboshi": 0,
       "points": 5,
@@ -5274,7 +6248,9 @@ window.SUMO_DATA = {
           "opponentId": "chiyoshoma",
           "opponent": "Chiyoshoma",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 55
         },
         {
@@ -5283,7 +6259,9 @@ window.SUMO_DATA = {
           "opponentId": "asanoyama",
           "opponent": "Asanoyama",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 71
         },
         {
@@ -5292,7 +6270,9 @@ window.SUMO_DATA = {
           "opponentId": "asahakuryu",
           "opponent": "Asahakuryu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 16
         },
         {
@@ -5301,7 +6281,9 @@ window.SUMO_DATA = {
           "opponentId": "mitakeumi",
           "opponent": "Mitakeumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 55
         },
         {
@@ -5310,7 +6292,9 @@ window.SUMO_DATA = {
           "opponentId": "tobizaru",
           "opponent": "Tobizaru",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 55
         },
         {
@@ -5319,7 +6303,9 @@ window.SUMO_DATA = {
           "opponentId": "fujiryoga",
           "opponent": "Fujiryoga",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 17
         },
         {
@@ -5328,7 +6314,9 @@ window.SUMO_DATA = {
           "opponentId": "kinbozan",
           "opponent": "Kinbozan",
           "completed": true,
+          "status": "forfeit-loss",
           "result": "loss",
+          "kyujo": true,
           "techniqueId": 74
         },
         {
@@ -5337,7 +6325,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": true,
-          "result": "loss",
+          "status": "absent",
+          "result": null,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -5346,7 +6336,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5355,7 +6347,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5364,7 +6358,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5373,7 +6369,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5382,7 +6380,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5391,7 +6391,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5400,7 +6402,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -5435,6 +6439,8 @@ window.SUMO_DATA = {
       "wins": 1,
       "losses": 7,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -5446,7 +6452,9 @@ window.SUMO_DATA = {
           "opponentId": "asahakuryu",
           "opponent": "Asahakuryu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -5455,7 +6463,9 @@ window.SUMO_DATA = {
           "opponentId": "abi",
           "opponent": "Abi",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -5464,7 +6474,9 @@ window.SUMO_DATA = {
           "opponentId": "chiyoshoma",
           "opponent": "Chiyoshoma",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -5473,7 +6485,9 @@ window.SUMO_DATA = {
           "opponentId": "wakanosho",
           "opponent": "Wakanosho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 55
         },
         {
@@ -5482,7 +6496,9 @@ window.SUMO_DATA = {
           "opponentId": "nishikifuji",
           "opponent": "Nishikifuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 11
         },
         {
@@ -5491,7 +6507,9 @@ window.SUMO_DATA = {
           "opponentId": "tobizaru",
           "opponent": "Tobizaru",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -5500,7 +6518,9 @@ window.SUMO_DATA = {
           "opponentId": "asanoyama",
           "opponent": "Asanoyama",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 12
         },
         {
@@ -5509,7 +6529,9 @@ window.SUMO_DATA = {
           "opponentId": "takerufuji",
           "opponent": "Takerufuji",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -5518,7 +6540,9 @@ window.SUMO_DATA = {
           "opponentId": "onokatsu",
           "opponent": "Onokatsu",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -5527,7 +6551,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5536,7 +6562,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5545,7 +6573,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5554,7 +6584,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5563,7 +6595,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5572,7 +6606,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -5607,6 +6643,8 @@ window.SUMO_DATA = {
       "wins": 2,
       "losses": 6,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -5618,7 +6656,9 @@ window.SUMO_DATA = {
           "opponentId": "mitakeumi",
           "opponent": "Mitakeumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -5627,7 +6667,9 @@ window.SUMO_DATA = {
           "opponentId": "nishikifuji",
           "opponent": "Nishikifuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -5636,7 +6678,9 @@ window.SUMO_DATA = {
           "opponentId": "wakanosho",
           "opponent": "Wakanosho",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 16
         },
         {
@@ -5645,7 +6689,9 @@ window.SUMO_DATA = {
           "opponentId": "chiyoshoma",
           "opponent": "Chiyoshoma",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -5654,7 +6700,9 @@ window.SUMO_DATA = {
           "opponentId": "abi",
           "opponent": "Abi",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 38
         },
         {
@@ -5663,7 +6711,9 @@ window.SUMO_DATA = {
           "opponentId": "takerufuji",
           "opponent": "Takerufuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -5672,7 +6722,9 @@ window.SUMO_DATA = {
           "opponentId": "daiseizan",
           "opponent": "Daiseizan",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -5681,7 +6733,9 @@ window.SUMO_DATA = {
           "opponentId": "tobizaru",
           "opponent": "Tobizaru",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 30
         },
         {
@@ -5690,7 +6744,9 @@ window.SUMO_DATA = {
           "opponentId": "kinbozan",
           "opponent": "Kinbozan",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -5699,7 +6755,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5708,7 +6766,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5717,7 +6777,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5726,7 +6788,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5735,7 +6799,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5744,7 +6810,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -5779,6 +6847,8 @@ window.SUMO_DATA = {
       "wins": 5,
       "losses": 3,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -5790,7 +6860,9 @@ window.SUMO_DATA = {
           "opponentId": "nishikifuji",
           "opponent": "Nishikifuji",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -5799,7 +6871,9 @@ window.SUMO_DATA = {
           "opponentId": "mitakeumi",
           "opponent": "Mitakeumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -5808,7 +6882,9 @@ window.SUMO_DATA = {
           "opponentId": "takerufuji",
           "opponent": "Takerufuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 17
         },
         {
@@ -5817,7 +6893,9 @@ window.SUMO_DATA = {
           "opponentId": "kinbozan",
           "opponent": "Kinbozan",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -5826,7 +6904,9 @@ window.SUMO_DATA = {
           "opponentId": "asahakuryu",
           "opponent": "Asahakuryu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 38
         },
         {
@@ -5835,7 +6915,9 @@ window.SUMO_DATA = {
           "opponentId": "asanoyama",
           "opponent": "Asanoyama",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -5844,7 +6926,9 @@ window.SUMO_DATA = {
           "opponentId": "kazuma",
           "opponent": "Kazuma",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 55
         },
         {
@@ -5853,7 +6937,9 @@ window.SUMO_DATA = {
           "opponentId": "chiyoshoma",
           "opponent": "Chiyoshoma",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -5862,7 +6948,9 @@ window.SUMO_DATA = {
           "opponentId": "shishi",
           "opponent": "Shishi",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -5871,7 +6959,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5880,7 +6970,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5889,7 +6981,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5898,7 +6992,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5907,7 +7003,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -5916,7 +7014,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -5951,6 +7051,8 @@ window.SUMO_DATA = {
       "wins": 6,
       "losses": 2,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -5962,7 +7064,9 @@ window.SUMO_DATA = {
           "opponentId": "abi",
           "opponent": "Abi",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -5971,7 +7075,9 @@ window.SUMO_DATA = {
           "opponentId": "asahakuryu",
           "opponent": "Asahakuryu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -5980,7 +7086,9 @@ window.SUMO_DATA = {
           "opponentId": "kinbozan",
           "opponent": "Kinbozan",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -5989,7 +7097,9 @@ window.SUMO_DATA = {
           "opponentId": "asakoryu",
           "opponent": "Asakoryu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -5998,7 +7108,9 @@ window.SUMO_DATA = {
           "opponentId": "mitakeumi",
           "opponent": "Mitakeumi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 11
         },
         {
@@ -6007,7 +7119,9 @@ window.SUMO_DATA = {
           "opponentId": "daiseizan",
           "opponent": "Daiseizan",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 71
         },
         {
@@ -6016,7 +7130,9 @@ window.SUMO_DATA = {
           "opponentId": "shishi",
           "opponent": "Shishi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 16
         },
         {
@@ -6025,7 +7141,9 @@ window.SUMO_DATA = {
           "opponentId": "kazuma",
           "opponent": "Kazuma",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -6034,7 +7152,9 @@ window.SUMO_DATA = {
           "opponentId": "takayasu",
           "opponent": "Takayasu",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -6043,7 +7163,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6052,7 +7174,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6061,7 +7185,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6070,7 +7196,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6079,7 +7207,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6088,7 +7218,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -6123,6 +7255,8 @@ window.SUMO_DATA = {
       "wins": 6,
       "losses": 2,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -6134,7 +7268,9 @@ window.SUMO_DATA = {
           "opponentId": "kinbozan",
           "opponent": "Kinbozan",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6143,7 +7279,9 @@ window.SUMO_DATA = {
           "opponentId": "shishi",
           "opponent": "Shishi",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 62
         },
         {
@@ -6152,7 +7290,9 @@ window.SUMO_DATA = {
           "opponentId": "abi",
           "opponent": "Abi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 17
         },
         {
@@ -6161,7 +7301,9 @@ window.SUMO_DATA = {
           "opponentId": "daiseizan",
           "opponent": "Daiseizan",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6170,7 +7312,9 @@ window.SUMO_DATA = {
           "opponentId": "kazuma",
           "opponent": "Kazuma",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 42
         },
         {
@@ -6179,7 +7323,9 @@ window.SUMO_DATA = {
           "opponentId": "asahakuryu",
           "opponent": "Asahakuryu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6188,7 +7334,9 @@ window.SUMO_DATA = {
           "opponentId": "onokatsu",
           "opponent": "Onokatsu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -6197,7 +7345,9 @@ window.SUMO_DATA = {
           "opponentId": "mitakeumi",
           "opponent": "Mitakeumi",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -6206,7 +7356,9 @@ window.SUMO_DATA = {
           "opponentId": "asakoryu",
           "opponent": "Asakoryu",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -6215,7 +7367,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6224,7 +7378,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6233,7 +7389,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6242,7 +7400,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6251,7 +7411,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6260,7 +7422,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -6295,6 +7459,8 @@ window.SUMO_DATA = {
       "wins": 5,
       "losses": 3,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -6306,7 +7472,9 @@ window.SUMO_DATA = {
           "opponentId": "takerufuji",
           "opponent": "Takerufuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6315,7 +7483,9 @@ window.SUMO_DATA = {
           "opponentId": "onokatsu",
           "opponent": "Onokatsu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6324,7 +7494,9 @@ window.SUMO_DATA = {
           "opponentId": "nishikifuji",
           "opponent": "Nishikifuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6333,7 +7505,9 @@ window.SUMO_DATA = {
           "opponentId": "abi",
           "opponent": "Abi",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6342,7 +7516,9 @@ window.SUMO_DATA = {
           "opponentId": "asakoryu",
           "opponent": "Asakoryu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6351,7 +7527,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": "Dewanoryu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6360,7 +7538,9 @@ window.SUMO_DATA = {
           "opponentId": "wakanosho",
           "opponent": "Wakanosho",
           "completed": true,
-          "result": "loss",
+          "status": "forfeit-win",
+          "result": "win",
+          "kyujo": false,
           "techniqueId": 74
         },
         {
@@ -6369,7 +7549,9 @@ window.SUMO_DATA = {
           "opponentId": "shishi",
           "opponent": "Shishi",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6378,7 +7560,9 @@ window.SUMO_DATA = {
           "opponentId": "asahakuryu",
           "opponent": "Asahakuryu",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -6387,7 +7571,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6396,7 +7582,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6405,7 +7593,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6414,7 +7604,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6423,7 +7615,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6432,7 +7626,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -6467,6 +7663,8 @@ window.SUMO_DATA = {
       "wins": 7,
       "losses": 1,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -6478,7 +7676,9 @@ window.SUMO_DATA = {
           "opponentId": "onokatsu",
           "opponent": "Onokatsu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6487,7 +7687,9 @@ window.SUMO_DATA = {
           "opponentId": "takerufuji",
           "opponent": "Takerufuji",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 62
         },
         {
@@ -6496,7 +7698,9 @@ window.SUMO_DATA = {
           "opponentId": "daiseizan",
           "opponent": "Daiseizan",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6505,7 +7709,9 @@ window.SUMO_DATA = {
           "opponentId": "kazuma",
           "opponent": "Kazuma",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6514,7 +7720,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": "Ryuden",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 42
         },
         {
@@ -6523,7 +7731,9 @@ window.SUMO_DATA = {
           "opponentId": "asakoryu",
           "opponent": "Asakoryu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -6532,7 +7742,9 @@ window.SUMO_DATA = {
           "opponentId": "nishikifuji",
           "opponent": "Nishikifuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 16
         },
         {
@@ -6541,7 +7753,9 @@ window.SUMO_DATA = {
           "opponentId": "kinbozan",
           "opponent": "Kinbozan",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6550,7 +7764,9 @@ window.SUMO_DATA = {
           "opponentId": "abi",
           "opponent": "Abi",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -6559,7 +7775,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6568,7 +7786,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6577,7 +7797,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6586,7 +7808,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6595,7 +7819,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6604,7 +7830,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -6639,6 +7867,8 @@ window.SUMO_DATA = {
       "wins": 1,
       "losses": 7,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -6650,7 +7880,9 @@ window.SUMO_DATA = {
           "opponentId": "shishi",
           "opponent": "Shishi",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6659,7 +7891,9 @@ window.SUMO_DATA = {
           "opponentId": "kinbozan",
           "opponent": "Kinbozan",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6668,7 +7902,9 @@ window.SUMO_DATA = {
           "opponentId": "asakoryu",
           "opponent": "Asakoryu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6677,7 +7913,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": "Sadanoumi",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6686,7 +7924,9 @@ window.SUMO_DATA = {
           "opponentId": "daiseizan",
           "opponent": "Daiseizan",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 71
         },
         {
@@ -6695,7 +7935,9 @@ window.SUMO_DATA = {
           "opponentId": "kazuma",
           "opponent": "Kazuma",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6704,7 +7946,9 @@ window.SUMO_DATA = {
           "opponentId": "takerufuji",
           "opponent": "Takerufuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -6713,7 +7957,9 @@ window.SUMO_DATA = {
           "opponentId": "asanoyama",
           "opponent": "Asanoyama",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6722,7 +7968,9 @@ window.SUMO_DATA = {
           "opponentId": "mitakeumi",
           "opponent": "Mitakeumi",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -6731,7 +7979,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6740,7 +7990,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6749,7 +8001,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6758,7 +8012,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6767,7 +8023,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6776,7 +8034,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -6811,6 +8071,8 @@ window.SUMO_DATA = {
       "wins": 3,
       "losses": 5,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -6822,7 +8084,9 @@ window.SUMO_DATA = {
           "opponentId": "daiseizan",
           "opponent": "Daiseizan",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 39
         },
         {
@@ -6831,7 +8095,9 @@ window.SUMO_DATA = {
           "opponentId": "asakoryu",
           "opponent": "Asakoryu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6840,7 +8106,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": "Tokihayate",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6849,7 +8117,9 @@ window.SUMO_DATA = {
           "opponentId": "shishi",
           "opponent": "Shishi",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6858,7 +8128,9 @@ window.SUMO_DATA = {
           "opponentId": "takerufuji",
           "opponent": "Takerufuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 42
         },
         {
@@ -6867,7 +8139,9 @@ window.SUMO_DATA = {
           "opponentId": "onokatsu",
           "opponent": "Onokatsu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -6876,7 +8150,9 @@ window.SUMO_DATA = {
           "opponentId": "abi",
           "opponent": "Abi",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 55
         },
         {
@@ -6885,7 +8161,9 @@ window.SUMO_DATA = {
           "opponentId": "nishikifuji",
           "opponent": "Nishikifuji",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 53
         },
         {
@@ -6894,7 +8172,9 @@ window.SUMO_DATA = {
           "opponentId": "chiyoshoma",
           "opponent": "Chiyoshoma",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -6903,7 +8183,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6912,7 +8194,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6921,7 +8205,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6930,7 +8216,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6939,7 +8227,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -6948,7 +8238,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -6983,6 +8275,8 @@ window.SUMO_DATA = {
       "wins": 3,
       "losses": 5,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -6994,7 +8288,9 @@ window.SUMO_DATA = {
           "opponentId": "kazuma",
           "opponent": "Kazuma",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 39
         },
         {
@@ -7003,7 +8299,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": "Asasuiryu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 62
         },
         {
@@ -7012,7 +8310,9 @@ window.SUMO_DATA = {
           "opponentId": "shishi",
           "opponent": "Shishi",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -7021,7 +8321,9 @@ window.SUMO_DATA = {
           "opponentId": "takerufuji",
           "opponent": "Takerufuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -7030,7 +8332,9 @@ window.SUMO_DATA = {
           "opponentId": "onokatsu",
           "opponent": "Onokatsu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 71
         },
         {
@@ -7039,7 +8343,9 @@ window.SUMO_DATA = {
           "opponentId": "nishikifuji",
           "opponent": "Nishikifuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 71
         },
         {
@@ -7048,7 +8354,9 @@ window.SUMO_DATA = {
           "opponentId": "asahakuryu",
           "opponent": "Asahakuryu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -7057,7 +8365,9 @@ window.SUMO_DATA = {
           "opponentId": "asakoryu",
           "opponent": "Asakoryu",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 39
         },
         {
@@ -7066,7 +8376,9 @@ window.SUMO_DATA = {
           "opponentId": "asanoyama",
           "opponent": "Asanoyama",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -7075,7 +8387,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -7084,7 +8398,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -7093,7 +8409,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -7102,7 +8420,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -7111,7 +8431,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -7120,7 +8442,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -7155,6 +8479,8 @@ window.SUMO_DATA = {
       "wins": 4,
       "losses": 4,
       "absences": 0,
+      "kyujoDays": [],
+      "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
@@ -7166,7 +8492,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": "Kyokukaiyu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 34
         },
         {
@@ -7175,7 +8503,9 @@ window.SUMO_DATA = {
           "opponentId": "kazuma",
           "opponent": "Kazuma",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -7184,7 +8514,9 @@ window.SUMO_DATA = {
           "opponentId": "onokatsu",
           "opponent": "Onokatsu",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -7193,7 +8525,9 @@ window.SUMO_DATA = {
           "opponentId": "nishikifuji",
           "opponent": "Nishikifuji",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -7202,7 +8536,9 @@ window.SUMO_DATA = {
           "opponentId": "kinbozan",
           "opponent": "Kinbozan",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 70
         },
         {
@@ -7211,7 +8547,9 @@ window.SUMO_DATA = {
           "opponentId": "shishi",
           "opponent": "Shishi",
           "completed": true,
+          "status": "loss",
           "result": "loss",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -7220,7 +8558,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": "Tomokaze",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 18
         },
         {
@@ -7229,7 +8569,9 @@ window.SUMO_DATA = {
           "opponentId": "daiseizan",
           "opponent": "Daiseizan",
           "completed": true,
+          "status": "win",
           "result": "win",
+          "kyujo": false,
           "techniqueId": 39
         },
         {
@@ -7238,7 +8580,9 @@ window.SUMO_DATA = {
           "opponentId": "takerufuji",
           "opponent": "Takerufuji",
           "completed": false,
+          "status": "scheduled",
           "result": null,
+          "kyujo": false,
           "techniqueId": -1
         },
         {
@@ -7247,7 +8591,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -7256,7 +8602,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -7265,7 +8613,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -7274,7 +8624,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -7283,7 +8635,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         },
         {
@@ -7292,7 +8646,9 @@ window.SUMO_DATA = {
           "opponentId": null,
           "opponent": null,
           "completed": false,
+          "status": null,
           "result": null,
+          "kyujo": false,
           "techniqueId": null
         }
       ],
@@ -7687,14 +9043,28 @@ window.SUMO_DATA = {
         "jsaId": "3761",
         "name": "Wakatakakage",
         "absences": 8,
-        "status": "Withdrawn / absent"
+        "kyujoDays": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "status": "Kyujo · injured / withdrawn"
       },
       {
         "id": "wakanosho",
         "jsaId": "4121",
         "name": "Wakanosho",
         "absences": 1,
-        "status": "Withdrawn / absent"
+        "kyujoDays": [
+          7,
+          8
+        ],
+        "status": "Kyujo · injured / withdrawn"
       }
     ],
     "source": "https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/8/",
@@ -10942,8 +12312,8 @@ window.SUMO_DATA = {
         ]
       }
     ],
-    "generatedAt": "2026-07-19T12:23:25.140Z",
-    "dataSignature": "fb23945c07d1824c480a89198d13ebea37452edf1721c516c56b12f501bef3cf"
+    "generatedAt": "2026-07-19T12:57:36.954Z",
+    "dataSignature": "6de77d8fe14fd9263e3cae67c9b87203b581f5abdc91e5a5fa73bf0a5ada0b72"
   },
   "history": [],
   "draftDefaults": {

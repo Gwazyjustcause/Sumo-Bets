@@ -55,8 +55,10 @@ for (const player of data.players) {
 
 assert(data.rikishi.some((rikishi) => rikishi.wins > 0 || rikishi.losses > 0), "Published official records must survive a draft reset");
 assert(data.rikishi.every((rikishi) => Number.isFinite(rikishi.wins) && Number.isFinite(rikishi.losses)), "Every rikishi needs numeric official records");
+assert(data.rikishi.every((rikishi) => Array.isArray(rikishi.kyujoDays) && typeof rikishi.currentKyujo === "boolean"), "Every official rikishi needs day-specific Kyujo status");
+assert(data.rikishi.some((rikishi) => rikishi.currentKyujo && rikishi.dailyResults.some((result) => result.kyujo)), "The current snapshot must preserve official withdrawal days");
 assert(data.bouts.length > 0, "The official layer must include the latest published Makuuchi results");
-assert.equal(data.history.length, 0, "Version 2 must not ship previous basho history");
+assert.equal(data.history.length, 0, "Version 3 must not ship previous basho history");
 
 for (const bout of data.bouts) {
   assert(ids.has(bout.east), `Bout references unknown east rikishi: ${bout.east}`);
@@ -80,9 +82,10 @@ for (const event of data.history) {
 
 const html = load("index.html");
 const app = load("app.js");
+const sharedDraftApi = load("shared-draft.js");
 const imageResolver = load("image-resolver.js");
 const css = load("styles.css");
-for (const asset of ["styles.css", "data/sumo-data.js", "image-resolver.js", "app.js"]) {
+for (const asset of ["styles.css", "data/sumo-data.js", "image-resolver.js", "shared-draft.js", "app.js"]) {
   assert(html.includes(asset), `index.html must reference ${asset}`);
 }
 assert(existsSync(new URL("assets/rikishi-placeholder.svg", root)), "The silhouette fallback asset must exist");
@@ -92,14 +95,21 @@ for (const match of [...app.matchAll(/assets\/[^"']+/g)]) {
 assert(css.includes("@media (max-width: 620px)"), "Small-screen breakpoint must be present");
 assert(css.includes("prefers-reduced-motion"), "Reduced-motion support must be present");
 assert(html.includes('id="active-player-select"'), "The header needs a player selector");
-assert(app.includes("localStorage.setItem(SETTINGS_STORAGE_KEY"), "Player state must persist locally");
-assert(app.includes("APP_SAVE_VERSION = 2"), "Version 2 must have an explicit save migration version");
+assert(app.includes("localStorage.setItem(SETTINGS_STORAGE_KEY"), "Browser preferences must persist locally");
+assert(app.includes("APP_SAVE_VERSION = 3"), "Version 3 must have an explicit save migration version");
+assert(app.includes("drafts: undefined"), "The shared roster must never be written into browser localStorage");
 assert(app.includes("data-overview-empty") && app.includes("data-history-empty"), "Blank Overview and History states must be present");
-for (const capability of ["data-add-pick", "data-roster-move", "data-swap-pick", "data-history-edit", "calculateHistoryStats", "sidePrediction"]) {
+for (const capability of ["data-add-pick", "data-roster-move", "data-swap-pick", "data-history-edit", "calculateHistoryStats", "sidePrediction", "substituteRules", "substitutionTimeline", "data-replace-sub", "data-sub-reorder"]) {
   assert(app.includes(capability), `Missing player-system capability: ${capability}`);
 }
 for (const capability of ["DRAFT_SCHEMA_VERSION", "normalizeDrafts", "draftOwner", "draftPoolStats", "data-draft-owner", "data-overview-roster", "draft-owner-gwazy", "draft-owner-jake"]) {
   assert(app.includes(capability) || css.includes(capability), `Missing shared-draft capability: ${capability}`);
+}
+for (const capability of ["data-save-draft", "validateSharedDraft", "hasUnsavedDraftChanges", "beforeunload", "data-roster-add", "data-roster-replace", "lastSavedAt", "savedBy", "data-toggle-draft-lock"]) {
+  assert(app.includes(capability), `Missing repository-backed roster capability: ${capability}`);
+}
+for (const capability of ["api.github.com/repos", "sessionStorage", "SHARED_DRAFT_API", "method: \"PUT\"", "sha"]) {
+  assert(sharedDraftApi.includes(capability), `Missing shared draft transport capability: ${capability}`);
 }
 for (const capability of ["banzukeRankRows", "data-banzuke-id", "data-banzuke-shikona", "applyBanzukeFilters", "verifyBanzukeIntegrity", "rikishi missing from rendered banzuke", "Rendered ✗", "Not parsed", "console.error"]) {
   assert(app.includes(capability), `Missing complete-banzuke capability: ${capability}`);
@@ -138,7 +148,17 @@ for (const separatedFile of [
 ]) {
   assert(existsSync(new URL(separatedFile, root)), `Missing separated data/update file: ${separatedFile}`);
 }
+const updateWorkflow = load(".github/workflows/update-jsa-data.yml");
+assert(updateWorkflow.includes("shared-draft.js") && updateWorkflow.includes("github.event_name == 'push'"), "Pages deploys must include the shared transport after application and draft pushes");
 assert(app.includes("resetCurrentDraft") && app.includes("data-reset-draft"), "Reset must be scoped to the current draft layer");
 assert(app.includes("playerScore") && app.includes("pointsThroughDay"), "Draft scores must recalculate from official results");
+
+const sharedDraftDocument = JSON.parse(load("data/draft/current-draft.json"));
+assert.equal(sharedDraftDocument.schemaVersion, 3, "The repository draft must use the Version 3 schema");
+assert.equal(sharedDraftDocument.locked, false, "A new shared draft must begin unlocked");
+for (const playerId of ["gwazy", "jake"]) {
+  assert.deepEqual(sharedDraftDocument.players[playerId].mainPicks, [], `${playerId} shared main picks must begin empty`);
+  assert.deepEqual(sharedDraftDocument.players[playerId].substitutes, [], `${playerId} shared substitutes must begin empty`);
+}
 
 console.log(`Smoke checks passed: ${data.rikishi.length} rikishi, ${data.bouts.length} bouts, ${data.history.length} archived basho.`);

@@ -20,8 +20,8 @@ const icons = {
   pulse: "⌁",
 };
 
-const APP_SAVE_VERSION = 2;
-const DRAFT_SCHEMA_VERSION = 2;
+const APP_SAVE_VERSION = 3;
+const DRAFT_SCHEMA_VERSION = 3;
 const SETTINGS_STORAGE_KEY = "sumoBattleSettings";
 const HISTORY_STORAGE_KEY = "sumoBattleHistoryCache";
 
@@ -161,7 +161,9 @@ const readState = () => {
     const selectedBashoId = data.banzuke?.bashos.some((basho) => basho.id === saved.selectedBashoId)
       ? saved.selectedBashoId
       : defaults.selectedBashoId;
-    const drafts = normalizeDrafts(saved);
+    // Rosters are never restored from localStorage. The repository-backed shared
+    // draft is loaded after startup and remains the single source of truth.
+    const drafts = emptyDrafts();
     const officialBashoId = saved.officialBashoId || defaults.officialBashoId;
     const officialChanged = saved.officialDataSignature && saved.officialDataSignature !== data.meta.dataSignature;
     const selectedDay = officialChanged ? Math.max(1, data.meta.day) : Number(saved.selectedDay || defaults.selectedDay);
@@ -175,21 +177,213 @@ const readState = () => {
 
 let state = readState();
 let pendingSwap = null;
+let pendingSubstituteReplacement = null;
 let historyEditMode = false;
 let activeHistoryId = state.history[0]?.id || null;
 let banzukeProfileTimer = null;
+let sharedDraftSha = null;
+let savedSharedDraft = null;
+let sharedDraftLoading = true;
+let sharedDraftSaving = false;
+let sharedDraftError = null;
+let sharedValidationErrors = [];
 
 function saveState() {
   try {
-    syncAllSubstitutionEvents();
-    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(state));
+    const localState = { ...state, drafts: undefined };
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(localState));
     localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify({ version: APP_SAVE_VERSION, updated: new Date().toISOString(), events: state.history }));
   } catch {
     showToast("This browser is blocking local saves.");
   }
 }
 
-// Persist a clean Version 2 save immediately after any one-time migration.
+function normalizedSharedPlayers(players = {}) {
+  const validIds = new Set(selectedBasho().entries.map((entry) => entry.rikishiId));
+  const owned = new Set();
+  return Object.fromEntries(data.players.map((player) => {
+    const source = players[player.id] || {};
+    const normalizeList = (values, limit) => {
+      const list = [];
+      (Array.isArray(values) ? values : []).forEach((id) => {
+        if (list.length >= limit || !validIds.has(id) || owned.has(id)) return;
+        owned.add(id);
+        list.push(id);
+      });
+      return list;
+    };
+    return [player.id, {
+      mainPicks: normalizeList(source.mainPicks, 6),
+      substitutes: normalizeList(source.substitutes, 3),
+      sidePrediction: ["East", "West"].includes(source.sidePrediction) ? source.sidePrediction : null,
+      substitutionEvents: Array.isArray(source.substitutionEvents) ? source.substitutionEvents : [],
+    }];
+  }));
+}
+
+function sharedComparable(players = state.drafts[state.selectedBashoId] || emptyDraftPlayers()) {
+  return Object.fromEntries(data.players.map((player) => {
+    const draft = players[player.id] || {};
+    return [player.id, {
+      mainPicks: [...(draft.mainPicks || [])],
+      substitutes: [...(draft.substitutes || [])],
+      sidePrediction: draft.sidePrediction || null,
+    }];
+  }));
+}
+
+function sharedPayloadPlayers(players = state.drafts[state.selectedBashoId] || emptyDraftPlayers()) {
+  const comparable = sharedComparable(players);
+  return Object.fromEntries(data.players.map((player) => [player.id, {
+    ...comparable[player.id],
+    substitutionEvents: [...(players[player.id]?.substitutionEvents || [])],
+  }]));
+}
+
+function hasUnsavedDraftChanges() {
+  if (!savedSharedDraft || sharedDraftLoading) return false;
+  return JSON.stringify(sharedComparable()) !== JSON.stringify(sharedComparable(savedSharedDraft.players));
+}
+
+function draftEditingDisabled() {
+  return sharedDraftLoading || sharedDraftSaving || Boolean(savedSharedDraft?.locked);
+}
+
+function applySharedDraft(document, sha = null) {
+  const bashoId = document.bashoId || data.banzuke.currentBashoId;
+  if (!data.banzuke.bashos.some((basho) => basho.id === bashoId)) throw new Error("The shared draft belongs to an unavailable basho.");
+  state.selectedBashoId = bashoId;
+  const players = normalizedSharedPlayers(document.players);
+  state.drafts[bashoId] = JSON.parse(JSON.stringify(players));
+  savedSharedDraft = { ...document, bashoId, players: JSON.parse(JSON.stringify(players)) };
+  sharedDraftSha = sha;
+  sharedDraftError = null;
+  sharedValidationErrors = [];
+  saveState();
+}
+
+async function loadSharedDraft({ force = false } = {}) {
+  if (!window.SHARED_DRAFT_API) {
+    sharedDraftLoading = false;
+    sharedDraftError = "Shared draft service is unavailable.";
+    render();
+    return;
+  }
+  if (hasUnsavedDraftChanges() && !force) return;
+  sharedDraftLoading = true;
+  sharedDraftError = null;
+  render();
+  try {
+    const result = await window.SHARED_DRAFT_API.load();
+    applySharedDraft(result.document, result.sha);
+  } catch (error) {
+    sharedDraftError = error.message || "The shared draft could not be loaded.";
+  } finally {
+    sharedDraftLoading = false;
+    render();
+  }
+}
+
+async function refreshSharedDraft() {
+  if (hasUnsavedDraftChanges() && !window.confirm("You have unsaved changes. Do you want to discard them?")) return;
+  await loadSharedDraft({ force: true });
+}
+
+function validateSharedDraft() {
+  const errors = [];
+  const allIds = [];
+  data.players.forEach((player) => {
+    const check = validateRoster(player.id);
+    if (check.team !== 6) errors.push(`${player.name} needs exactly 6 main picks.`);
+    if (check.subs !== 3) errors.push(`${player.name} needs exactly 3 substitutes.`);
+    if (check.sanyaku > 2) errors.push(`${player.name} has more than 2 Sanyaku main picks.`);
+    if (check.underdogs !== 1) errors.push(`${player.name} needs exactly 1 M13-M17 underdog.`);
+    if (check.substituteSanyaku !== 1) errors.push(`${player.name} needs exactly 1 Sanyaku substitute.`);
+    if (check.substituteMaegashira !== 2) errors.push(`${player.name} needs exactly 2 Maegashira substitutes.`);
+    const roster = getRoster(player.id);
+    allIds.push(...roster.team, ...roster.subs);
+  });
+  const duplicates = [...new Set(allIds.filter((id, index) => allIds.indexOf(id) !== index))];
+  duplicates.forEach((id) => errors.push(`${getRikishi(id)?.name || id} appears more than once in the shared draft.`));
+  return { valid: errors.length === 0, errors };
+}
+
+async function saveSharedDraft() {
+  if (sharedDraftSaving || savedSharedDraft?.locked) return;
+  const validation = validateSharedDraft();
+  sharedValidationErrors = validation.errors;
+  if (!validation.valid) {
+    render();
+    showToast("The shared draft is not valid yet. Review the highlighted errors.");
+    return;
+  }
+  sharedDraftSaving = true;
+  render();
+  try {
+    syncAllSubstitutionEvents();
+    const document = {
+      schemaVersion: DRAFT_SCHEMA_VERSION,
+      bashoId: state.selectedBashoId,
+      revision: Number(savedSharedDraft?.revision || 0) + 1,
+      locked: Boolean(savedSharedDraft?.locked),
+      lastSavedAt: new Date().toISOString(),
+      savedBy: getPlayerDefinition().name,
+      players: sharedPayloadPlayers(),
+    };
+    const result = await window.SHARED_DRAFT_API.save(document, sharedDraftSha);
+    applySharedDraft(result.document, result.sha);
+    playBell();
+    showToast(`Shared picks saved by ${document.savedBy}.`);
+  } catch (error) {
+    sharedDraftError = error.message || "The shared draft could not be saved.";
+    showToast(sharedDraftError);
+  } finally {
+    sharedDraftSaving = false;
+    render();
+  }
+}
+
+async function toggleSharedDraftLock() {
+  if (sharedDraftLoading || sharedDraftSaving || !savedSharedDraft) return;
+  const nextLocked = !Boolean(savedSharedDraft.locked);
+  if (hasUnsavedDraftChanges()) {
+    showToast("Save or discard the working copy before changing the draft lock.");
+    return;
+  }
+  if (nextLocked) {
+    const validation = validateSharedDraft();
+    sharedValidationErrors = validation.errors;
+    if (!validation.valid) {
+      render();
+      showToast("Only a complete, valid draft can be locked.");
+      return;
+    }
+  }
+  sharedDraftSaving = true;
+  render();
+  try {
+    const document = {
+      schemaVersion: DRAFT_SCHEMA_VERSION,
+      bashoId: state.selectedBashoId,
+      revision: Number(savedSharedDraft.revision || 0) + 1,
+      locked: nextLocked,
+      lastSavedAt: new Date().toISOString(),
+      savedBy: getPlayerDefinition().name,
+      players: sharedPayloadPlayers(),
+    };
+    const result = await window.SHARED_DRAFT_API.save(document, sharedDraftSha);
+    applySharedDraft(result.document, result.sha);
+    showToast(nextLocked ? "The shared draft is now locked." : "The shared draft is unlocked for editing.");
+  } catch (error) {
+    sharedDraftError = error.message || "The draft lock could not be changed.";
+    showToast(sharedDraftError);
+  } finally {
+    sharedDraftSaving = false;
+    render();
+  }
+}
+
+// Persist clean local preferences immediately after any one-time migration.
 saveState();
 
 function getPlayerDefinition(id = state.activePlayer) {
@@ -267,16 +461,20 @@ function substitutionTimeline(playerId, throughDay = currentLineupDay()) {
   for (let day = 1; day <= throughDay; day += 1) {
     for (const [mainId, subId] of [...assignments]) {
       const main = getRikishi(mainId);
-      if (isKyujoOnDay(main, day)) continue;
+      const substitute = getRikishi(subId);
+      const mainStillKyujo = isKyujoOnDay(main, day);
+      const substituteKyujo = isKyujoOnDay(substitute, day);
+      if (mainStillKyujo && !substituteKyujo) continue;
       assignments.delete(mainId);
-      events.push({ id: `${playerId}-${day}-returned-${mainId}-${subId}`, day, type: "returned", mainId, subId });
+      const type = mainStillKyujo ? "substitute-kyujo" : "returned";
+      events.push({ id: `${playerId}-${day}-${type}-${mainId}-${subId}`, day, type, mainId, subId });
     }
 
     const occupiedSubstitutes = new Set(assignments.values());
     for (const main of mainPicks) {
       if (!isKyujoOnDay(main, day) || assignments.has(main.id)) continue;
       const categoryTest = isSanyaku(main) ? isSanyaku : isMaegashira;
-      const substitute = substitutes.find((candidate) => categoryTest(candidate) && !occupiedSubstitutes.has(candidate.id));
+      const substitute = substitutes.find((candidate) => categoryTest(candidate) && !occupiedSubstitutes.has(candidate.id) && !isKyujoOnDay(candidate, day));
       if (!substitute) continue;
       assignments.set(main.id, substitute.id);
       occupiedSubstitutes.add(substitute.id);
@@ -297,7 +495,14 @@ function substitutionTimeline(playerId, throughDay = currentLineupDay()) {
   }
 
   const current = byDay.get(throughDay) || { day: throughDay, assignments: [], inactiveMainIds: [], activeMainIds: mainPicks.map((main) => main.id), activeSubIds: [], activeIds: mainPicks.map((main) => main.id) };
-  return { ...current, byDay, events, standbySubIds: substitutes.filter((substitute) => !current.activeSubIds.includes(substitute.id)).map((substitute) => substitute.id) };
+  const standbySubstitutes = substitutes.filter((substitute) => !current.activeSubIds.includes(substitute.id));
+  return {
+    ...current,
+    byDay,
+    events,
+    standbySubIds: standbySubstitutes.map((substitute) => substitute.id),
+    unavailableSubIds: standbySubstitutes.filter((substitute) => isKyujoOnDay(substitute, throughDay)).map((substitute) => substitute.id),
+  };
 }
 
 function syncAllSubstitutionEvents() {
@@ -370,9 +575,11 @@ function newBashoNotice() {
 }
 
 function resetCurrentDraft() {
+  if (savedSharedDraft?.locked) return;
   state.drafts[state.selectedBashoId] = emptyDraftPlayers();
   pendingSwap = null;
-  saveState();
+  pendingSubstituteReplacement = null;
+  sharedValidationErrors = [];
 }
 
 function startNewOfficialBashoDraft() {
@@ -382,7 +589,9 @@ function startNewOfficialBashoDraft() {
   state.officialDataSignature = data.meta.dataSignature;
   state.selectedDay = Math.max(1, data.meta.day);
   pendingSwap = null;
-  saveState();
+  pendingSubstituteReplacement = null;
+  savedSharedDraft = { schemaVersion: DRAFT_SCHEMA_VERSION, bashoId: state.selectedBashoId, revision: 0, locked: false, lastSavedAt: null, savedBy: null, players: emptyDraftPlayers() };
+  sharedValidationErrors = [];
 }
 
 function draftOwner(rikishiId, bashoId = state.selectedBashoId) {
@@ -608,7 +817,7 @@ function rosterCard(rikishi, playerId, substitute = false, role = "active") {
       <div class="roster-card-actions">
         <button type="button" data-roster-move="${rikishi.id}:${substitute ? "main" : "subs"}">${substitute ? "Move to main" : "Move to subs"}</button>
         <button type="button" data-swap-pick="${rikishi.id}:${substitute ? "sub" : "main"}">${isSwapTarget ? "Swap here" : isSwapSource ? "Cancel swap" : "Swap"}</button>
-        ${substitute ? `<button type="button" data-replace-sub="${rikishi.id}">Change substitute</button>` : ""}
+        ${substitute ? `<button type="button" data-sub-reorder="${rikishi.id}:up" aria-label="Move ${rikishi.name} earlier">↑ Earlier</button><button type="button" data-sub-reorder="${rikishi.id}:down" aria-label="Move ${rikishi.name} later">↓ Later</button><button type="button" data-replace-sub="${rikishi.id}">Change substitute</button>` : ""}
         <button class="remove" type="button" data-remove-pick="${rikishi.id}">Remove</button>
       </div>
     </article>`;
@@ -673,7 +882,7 @@ function overviewRosterDashboard(player) {
     return overviewPickRow(player, mainId, timeline.inactiveMainIds.includes(mainId) ? "kyujo" : "active-main", index + 1);
   }).join("");
   const activeReplacementRows = timeline.assignments.map((assignment, index) => overviewPickRow(player, assignment.subId, "active-substitute", index + 1)).join("");
-  const standbyRows = timeline.standbySubIds.map((id, index) => overviewPickRow(player, id, "standby", index + 1)).join("");
+  const standbyRows = timeline.standbySubIds.map((id, index) => overviewPickRow(player, id, timeline.unavailableSubIds.includes(id) ? "kyujo" : "standby", index + 1)).join("");
   return `
     <article class="team-preview overview-roster-column ${player.color}" data-overview-roster="${player.id}">
       <div class="team-preview-head">
@@ -750,14 +959,17 @@ function overviewView() {
 function validateRoster(playerId) {
   const roster = getRoster(playerId);
   const team = roster.team.map(getRikishi);
-  const sanyaku = team.filter((rikishi) => ["Yokozuna", "Ozeki", "Sekiwake", "Komusubi"].includes(rikishi.rank)).length;
+  const sanyaku = team.filter(isSanyaku).length;
   const underdogs = team.filter((rikishi) => /Maegashira (1[3-7])/.test(rikishi.rank)).length;
+  const substituteCheck = substituteRules(roster.subs);
   return {
-    valid: team.length === 6 && roster.subs.length === 3 && sanyaku <= 2 && underdogs === 1,
+    valid: team.length === 6 && roster.subs.length === 3 && sanyaku <= 2 && underdogs === 1 && substituteCheck.sanyaku === 1 && substituteCheck.maegashira === 2,
     team: team.length,
     subs: roster.subs.length,
     sanyaku,
     underdogs,
+    substituteSanyaku: substituteCheck.sanyaku,
+    substituteMaegashira: substituteCheck.maegashira,
   };
 }
 
@@ -769,6 +981,8 @@ function validationChecklist(check) {
       ${item(check.subs === 3, `${check.subs} / 3 Substitutes`)}
       ${item(check.sanyaku <= 2, `${check.sanyaku} / 2 Komusubi+`)}
       ${item(check.underdogs === 1, check.underdogs ? `${check.underdogs} Underdog` : "Missing Underdog")}
+      ${item(check.substituteSanyaku === 1, `${check.substituteSanyaku} / 1 Sanyaku Sub`)}
+      ${item(check.substituteMaegashira === 2, `${check.substituteMaegashira} / 2 Maegashira Subs`)}
     </div>`;
 }
 
@@ -776,17 +990,71 @@ function emptyRosterSlots(count, type) {
   return Array.from({ length: count }, (_, index) => `<div class="empty-roster-slot"><span>+</span><b>${type} slot ${index + 1}</b><small>Add from the Banzuke</small></div>`).join("");
 }
 
+function rosterPickerOptions({ currentId = null, type = "main" } = {}) {
+  const options = data.rikishi.filter((rikishi) => {
+    if (rikishi.id === currentId) return true;
+    if (rikishi.available === false || draftOwner(rikishi.id)) return false;
+    if (type === "sub") return isSanyaku(rikishi) || isMaegashira(rikishi);
+    return true;
+  });
+  return `<option value="">Choose a wrestler...</option>${options.map((rikishi) => `<option value="${rikishi.id}">${escapeHtml(rikishi.name)} - ${escapeHtml(rikishi.rank)} ${escapeHtml(rikishi.side)}</option>`).join("")}`;
+}
+
+function formatSharedSaveTime(value) {
+  if (!value) return { day: "Never", time: "Not saved" };
+  const date = new Date(value);
+  const today = new Date();
+  const sameUtcDay = date.getUTCFullYear() === today.getUTCFullYear() && date.getUTCMonth() === today.getUTCMonth() && date.getUTCDate() === today.getUTCDate();
+  return {
+    day: sameUtcDay ? "Today" : date.toLocaleDateString("en-GB", { timeZone: "UTC", day: "2-digit", month: "short", year: "numeric" }),
+    time: `${date.toLocaleTimeString("en-GB", { timeZone: "UTC", hour: "2-digit", minute: "2-digit", hour12: false })} UTC`,
+  };
+}
+
 function rosterView() {
   const player = getPlayerDefinition();
   const roster = getRoster();
   const check = validateRoster(player.id);
+  const timeline = substitutionTimeline(player.id);
+  const assignmentByMain = new Map(timeline.assignments.map((assignment) => [assignment.mainId, assignment.subId]));
+  const mainRoster = roster.team.map((id) => {
+    const kyujo = timeline.inactiveMainIds.includes(id);
+    const replacementId = assignmentByMain.get(id);
+    return `<div class="main-roster-position ${kyujo ? "has-kyujo" : ""}">${rosterCard(getRikishi(id), player.id, false, kyujo ? "kyujo" : "active")}${replacementId ? `<div class="replacement-bridge"><span>↓</span><b>Automatically replaced by</b></div>${rosterCard(getRikishi(replacementId), player.id, true, "active-substitute")}` : kyujo ? '<div class="replacement-missing">No eligible substitute is available for this position.</div>' : ""}</div>`;
+  }).join("");
+  const standbyRoster = timeline.standbySubIds.map((id, index) => `<div class="sub-order"><span>${index + 1}</span>${rosterCard(getRikishi(id), player.id, true, timeline.unavailableSubIds.includes(id) ? "kyujo" : "standby-substitute")}</div>`).join("");
+  const substitutionLog = timeline.events.length
+    ? timeline.events.map((event) => {
+      const main = getRikishi(event.mainId);
+      const substitute = getRikishi(event.subId);
+      const copy = event.type === "activated"
+        ? `${substitute?.name || "Substitute"} activated for ${main?.name || "main pick"}`
+        : event.type === "returned"
+          ? `${main?.name || "Main pick"} returned; ${substitute?.name || "substitute"} back to standby`
+          : `${substitute?.name || "Substitute"} entered kyujo; replacement slot reassessed`;
+      return `<li class="${event.type}"><span>DAY ${event.day}</span><b>${copy}</b></li>`;
+    }).join("")
+    : '<li class="empty"><span>LIVE</span><b>No substitutions have been required.</b></li>';
+  const saveTime = formatSharedSaveTime(savedSharedDraft?.lastSavedAt);
+  const unsaved = hasUnsavedDraftChanges();
+  const locked = Boolean(savedSharedDraft?.locked);
+  const mainOptions = rosterPickerOptions({ type: "main" });
+  const subOptions = rosterPickerOptions({ type: "sub" });
+  const validationErrors = sharedValidationErrors.length ? `<div class="shared-validation-errors" role="alert"><b>Draft cannot be saved</b><ul>${sharedValidationErrors.map((error) => `<li>${escapeHtml(error)}</li>`).join("")}</ul></div>` : "";
   return `
     <section class="page-shell">
       ${pageIntro("TEAM WORKSPACE", `${player.name}'s roster`, "Review, remove, move, or swap picks without rebuilding the team.", `<a class="primary-button" href="#banzuke">Add from Banzuke</a>`)}
       ${editingBanner(`This roster belongs only to ${player.name}. Use the header selector to edit the other player.`)}
       <div class="rules-strip reveal">
-        <span><b>6</b> starters</span><i></i><span><b>3</b> substitutes</span><i></i><span><b>MAX 2</b> Komusubi+</span><i></i><span><b>EXACTLY 1</b> M13–M17 underdog</span>
+        <span><b>6</b> starters</span><i></i><span><b>1</b> Sanyaku substitute</span><i></i><span><b>2</b> Maegashira substitutes</span><i></i><span><b>SUBS SCORE</b> only while activated</span>
       </div>
+      <section class="shared-draft-bar reveal ${unsaved ? "dirty" : ""}">
+        <div><small>DRAFT STATUS</small><b>${sharedDraftLoading ? "Loading shared draft..." : locked ? "Draft locked" : unsaved ? "&#9679; Unsaved Changes" : "&#10003; Shared draft loaded"}</b></div>
+        <div><small>LAST SAVED</small><b>${saveTime.day}</b><span>${saveTime.time}</span></div>
+        <div><small>SAVED BY</small><b>${escapeHtml(savedSharedDraft?.savedBy || "No one yet")}</b><span>Revision ${Number(savedSharedDraft?.revision || 0)}</span></div>
+        <div class="shared-draft-actions"><button class="secondary-button" type="button" data-refresh-shared>Refresh</button><button class="secondary-button" type="button" data-toggle-draft-lock ${unsaved || sharedDraftLoading || sharedDraftSaving ? "disabled" : ""}>${locked ? "Unlock draft" : "Lock draft"}</button></div>
+      </section>
+      ${sharedDraftError ? `<div class="shared-draft-error" role="alert">${escapeHtml(sharedDraftError)}</div>` : ""}
       <section class="active-roster-workspace ${player.color} reveal">
         <div class="roster-owner">
           <span class="player-avatar ${player.color}">${player.initials}</span>
@@ -794,18 +1062,27 @@ function rosterView() {
           <span class="legal-badge ${check.valid ? "valid" : "invalid"}">${check.valid ? "✓ ROSTER LEGAL" : "! ROSTER INCOMPLETE"}</span>
         </div>
         ${pendingSwap ? `<div class="swap-notice"><b>Swap mode:</b> choose a pick in the other column to swap with ${getRikishi(pendingSwap.rikishiId).name}. <button type="button" data-cancel-swap>Cancel</button></div>` : ""}
+        <section class="roster-management-panel ${locked ? "locked" : ""}">
+          <div><p class="eyebrow">WORKING COPY</p><h3>Add or replace picks</h3><p>Changes stay private in this tab until Save Picks publishes the complete shared draft.</p></div>
+          <label>Add main wrestler<select id="roster-add-main" ${draftEditingDisabled() ? "disabled" : ""}>${mainOptions}</select><button type="button" data-roster-add="main">Add wrestler</button></label>
+          <label>Add substitute<select id="roster-add-sub" ${draftEditingDisabled() ? "disabled" : ""}>${subOptions}</select><button type="button" data-roster-add="sub">Add substitute</button></label>
+          <label>Replace main<select id="roster-replace-main-old" ${draftEditingDisabled() ? "disabled" : ""}><option value="">Current main...</option>${roster.team.map((id) => `<option value="${id}">${escapeHtml(getRikishi(id)?.name || id)}</option>`).join("")}</select><select id="roster-replace-main-new" ${draftEditingDisabled() ? "disabled" : ""}>${mainOptions}</select><button type="button" data-roster-replace="main" ${draftEditingDisabled() ? "disabled" : ""}>Replace wrestler</button></label>
+          <label>Change substitute<select id="roster-replace-sub-old" ${draftEditingDisabled() ? "disabled" : ""}><option value="">Current substitute...</option>${roster.subs.map((id) => `<option value="${id}">${escapeHtml(getRikishi(id)?.name || id)}</option>`).join("")}</select><select id="roster-replace-sub-new" ${draftEditingDisabled() ? "disabled" : ""}>${subOptions}</select><button type="button" data-roster-replace="sub" ${draftEditingDisabled() ? "disabled" : ""}>Change substitute</button></label>
+        </section>
         <div class="active-roster-grid">
           <section>
-            <div class="slot-heading"><span><small>MAIN PICKS</small><b>${roster.team.length} / 6</b></span><strong>${6 - roster.team.length} remaining</strong></div>
-            <div class="roster-list">${roster.team.map((id) => rosterCard(getRikishi(id), player.id)).join("")}${emptyRosterSlots(Math.max(0, 6 - roster.team.length), "Main")}</div>
+            <div class="slot-heading"><span><small>ACTIVE ROSTER & REPLACEMENTS</small><b>${roster.team.length} / 6</b></span><strong>${timeline.activeSubIds.length} substitute${timeline.activeSubIds.length === 1 ? "" : "s"} active</strong></div>
+            <div class="roster-list">${mainRoster}${emptyRosterSlots(Math.max(0, 6 - roster.team.length), "Main")}</div>
           </section>
           <section>
-            <div class="slot-heading"><span><small>SUBSTITUTES</small><b>${roster.subs.length} / 3</b></span><strong>${3 - roster.subs.length} remaining</strong></div>
-            <div class="roster-list substitute-list">${roster.subs.map((id, index) => `<div class="sub-order"><span>${index + 1}</span>${rosterCard(getRikishi(id), player.id, true)}</div>`).join("")}${emptyRosterSlots(Math.max(0, 3 - roster.subs.length), "Substitute")}</div>
+            <div class="slot-heading"><span><small>STANDBY SUBSTITUTES</small><b>${timeline.standbySubIds.length} / ${roster.subs.length || 3}</b></span><strong>${3 - roster.subs.length} draft slots remaining</strong></div>
+            <div class="roster-list substitute-list">${standbyRoster}${emptyRosterSlots(Math.max(0, 3 - roster.subs.length), "Substitute")}${!timeline.standbySubIds.length && roster.subs.length ? '<div class="all-subs-active">All drafted substitutes are currently active.</div>' : ""}</div>
           </section>
         </div>
         ${validationChecklist(check)}
-        <div class="roster-save-row"><p>Edits save automatically on this device.</p><button class="primary-button" type="button" data-save-draft ${check.valid ? "" : "disabled"}>Confirm ${player.name}'s roster</button></div>
+        ${validationErrors}
+        <section class="substitution-log"><div><p class="eyebrow">OFFICIAL JSA AUTOMATION</p><h3>Substitution log</h3></div><ol>${substitutionLog}</ol></section>
+        <div class="roster-save-row shared"><p><b>${unsaved ? "Unsaved working copy" : "Shared draft is up to date"}</b><span>Save validates both players, prevents duplicate ownership, and commits one shared JSON file.</span></p><button class="primary-button" type="button" data-save-draft ${draftEditingDisabled() || !unsaved ? "disabled" : ""}>${sharedDraftSaving ? "Saving..." : "Save Picks"}</button></div>
       </section>
       ${appFooter()}
     </section>`;
@@ -820,7 +1097,7 @@ function pickLocation(rikishiId, playerId = state.activePlayer) {
 
 function mainPickRules(ids) {
   const picks = ids.map(getRikishi).filter(Boolean);
-  const sanyaku = picks.filter((rikishi) => ["Yokozuna", "Ozeki", "Sekiwake", "Komusubi"].includes(rikishi.rank)).length;
+  const sanyaku = picks.filter(isSanyaku).length;
   const underdogs = picks.filter((rikishi) => /Maegashira (1[3-7])/.test(rikishi.rank)).length;
   return {
     sanyaku,
@@ -917,14 +1194,22 @@ function banzukeRow(row) {
     const ownedByActivePlayer = ownerId === state.activePlayer;
     const lockedByOtherPlayer = Boolean(ownerId && !ownedByActivePlayer);
     const sourceUnavailable = rikishi.available === false || !resolved.parsed;
+    const editingUnavailable = draftEditingDisabled();
     const availableToDraft = !ownerId && !sourceUnavailable;
+    const activeRoster = getRoster();
+    const canAddMain = activeRoster.team.length < 6 && mainPickRules([...activeRoster.team, rikishi.id]).valid;
+    const replacementIndex = pendingSubstituteReplacement ? activeRoster.subs.indexOf(pendingSubstituteReplacement) : -1;
+    const candidateSubs = replacementIndex >= 0
+      ? activeRoster.subs.map((id, index) => index === replacementIndex ? rikishi.id : id)
+      : [...activeRoster.subs, rikishi.id];
+    const canAddSub = (replacementIndex >= 0 || activeRoster.subs.length < 3) && substituteRules(candidateSubs).valid;
     let action;
     if (ownedByActivePlayer) {
       action = `<button class="pick-action remove" type="button" data-remove-pick="${rikishi.id}"><small>${location === "main" ? "YOUR MAIN PICK" : "YOUR SUBSTITUTE"}</small>Remove</button>`;
     } else if (lockedByOtherPlayer) {
       action = `<button class="pick-action locked ${owner.color}" type="button" disabled><small>DRAFTED</small>🔒 ${owner.name}</button>`;
     } else {
-      action = `<button class="pick-action" type="button" data-add-pick="${rikishi.id}" ${sourceUnavailable ? "disabled" : ""}><small>${!resolved.parsed ? "DATA INCOMPLETE" : sourceUnavailable ? "UNAVAILABLE" : `FOR ${getPlayerDefinition().name.toUpperCase()}`}</small>${sourceUnavailable ? "Unavailable" : "Add to Team"}</button>`;
+      action = `<div class="pick-action-group"><button class="pick-action" type="button" data-add-pick="${rikishi.id}:main" ${editingUnavailable || sourceUnavailable || !canAddMain ? "disabled" : ""}><small>${!resolved.parsed ? "DATA INCOMPLETE" : "MAIN PICK"}</small>${editingUnavailable ? "Draft locked" : sourceUnavailable ? "Unavailable" : "Add Main"}</button><button class="pick-action substitute" type="button" data-add-pick="${rikishi.id}:sub" ${editingUnavailable || sourceUnavailable || !canAddSub ? "disabled" : ""}><small>${!resolved.parsed ? "DATA INCOMPLETE" : replacementIndex >= 0 ? "REPLACEMENT" : isSanyaku(rikishi) ? "SANYAKU SUB" : "MAEGASHIRA SUB"}</small>${editingUnavailable ? "Draft locked" : sourceUnavailable ? "Unavailable" : replacementIndex >= 0 ? "Replace" : "Add Sub"}</button></div>`;
     }
     const searchValue = `${rikishi.name} ${rikishi.fullName || ""} ${rikishi.stable} ${rikishi.rank} ${rikishi.side}`.toLowerCase();
     return `
@@ -966,6 +1251,7 @@ function banzukeView() {
     <section class="page-shell">
       ${pageIntro(`${escapeHtml(basho.label.toUpperCase())} · TEAM BUILDER`, "Pick from the complete banzuke", `All ${basho.entries.length} official Makuuchi rikishi. Single-click a wrestler for their profile or double-click to edit ${player.name}'s roster.`, `<label class="search-field"><span>⌕</span><input id="banzuke-search" type="search" placeholder="Find a rikishi or stable" autocomplete="off" /></label>`)}
       ${editingBanner(`Shared draft · currently editing ${player.name}. A rikishi drafted by either player is locked to the other.`)}
+      ${pendingSubstituteReplacement ? `<aside class="replacement-mode reveal"><span>↻</span><div><small>CHANGE SUBSTITUTE</small><b>Choose a legal replacement for ${getRikishi(pendingSubstituteReplacement)?.name || "this substitute"}.</b></div><button type="button" data-cancel-sub-replacement>Cancel</button></aside>` : ""}
       <section class="draft-pool-status reveal" data-draft-available="${pool.available}" data-draft-total="${pool.total}">
         <div class="draft-pool-stat available"><small>AVAILABLE</small><b>${pool.available}</b><span>of ${pool.total} rikishi</span></div>
         <div class="draft-pool-meter" aria-label="${pool.available} available, ${pool.counts.gwazy} drafted by Gwazy, ${pool.counts.jake} drafted by Jake">
@@ -1211,10 +1497,14 @@ function settingsView() {
           <div class="source-list">${data.meta.sources.map((source) => `<a href="${source.url}" target="_blank" rel="noreferrer"><span>${icons.source}</span><b>${source.label}</b><small>sumo.or.jp</small></a>`).join("")}</div>
           <button class="secondary-button" type="button" data-mock-sync>Check data now</button>
         </section>
-        <section class="settings-card reveal"><div class="settings-card-title"><span>⌁</span><div><h2>Local draft layer</h2><p>Rosters and predictions stay on this device and never overwrite JSA data.</p></div></div>
-          <div class="storage-meter"><div><span>Version 2 save</span><b>${storageKilobytes} KB</b></div><span><i style="--width:${Math.min(100, Number(storageKilobytes) * 4)}%"></i></span></div>
+        <section class="settings-card reveal"><div class="settings-card-title"><span>⌁</span><div><h2>Shared draft repository</h2><p>Rosters and predictions are read from one repository JSON file on every device.</p></div></div>
+          <div class="sync-panel"><span class="sync-icon">${window.SHARED_DRAFT_API?.token() ? "✓" : "!"}</span><div><b>${window.SHARED_DRAFT_API?.token() ? "Write access ready" : "Write token required to save"}</b><small>${escapeHtml(window.SHARED_DRAFT_API?.config?.owner || "")}/${escapeHtml(window.SHARED_DRAFT_API?.config?.repo || "")} · ${escapeHtml(window.SHARED_DRAFT_API?.config?.branch || "")}</small></div></div>
+          <label class="setting-field">Fine-grained GitHub token<input id="shared-draft-token" type="password" autocomplete="off" placeholder="github_pat_…" /></label>
+          <button class="secondary-button" type="button" data-store-draft-token>${window.SHARED_DRAFT_API?.token() ? "Replace session token" : "Use token for this session"}</button>
+          <button class="secondary-button" type="button" data-refresh-shared>Download latest shared draft</button>
+          <div class="storage-meter"><div><span>Local preferences only</span><b>${storageKilobytes} KB</b></div><span><i style="--width:${Math.min(100, Number(storageKilobytes) * 4)}%"></i></span></div>
           <button class="danger-button" type="button" data-reset-draft>Reset current draft only</button>
-          <p class="microcopy">Keeps official basho data, previous drafts, history, player notes, display settings, and image cache.</p>
+          <p class="microcopy">The token needs Contents read/write access to this repository. It exists only in this browser tab and is never written to localStorage or the repository.</p>
         </section>
       </div>
       ${appFooter()}
@@ -1225,8 +1515,8 @@ function appFooter() {
   return `
     <footer class="app-footer">
       <div class="brand footer-brand"><span class="brand-mon"><span>相</span></span><span><strong>SUMO BATTLE</strong><small>Made for the rivalry, not for money.</small></span></div>
-      <p>Official results come from the <a href="${data.meta.sources[0].url}" target="_blank" rel="noreferrer">Nihon Sumo Kyokai</a>. Private draft data stays separate in this browser.</p>
-      <span>v2.0 · ${data.meta.shortTournament}</span>
+      <p>Official results come from the <a href="${data.meta.sources[0].url}" target="_blank" rel="noreferrer">Nihon Sumo Kyokai</a>. Picks come from the shared repository draft.</p>
+      <span>v3.0 · ${data.meta.shortTournament}</span>
     </footer>`;
 }
 
@@ -1302,7 +1592,11 @@ function render() {
   }, state.reducedMotion ? 0 : 80);
 }
 
-function addPick(rikishiId) {
+function addPick(rikishiId, requestedTarget = null) {
+  if (draftEditingDisabled()) {
+    showToast(savedSharedDraft?.locked ? "The shared draft is locked." : "Wait for the shared draft to finish loading.");
+    return;
+  }
   const player = getPlayerDefinition();
   const roster = getRoster();
   const rikishi = getRikishi(rikishiId);
@@ -1317,18 +1611,36 @@ function addPick(rikishiId) {
     return;
   }
 
+  const target = ["main", "sub"].includes(requestedTarget) ? requestedTarget : null;
+  const canAddMain = roster.team.length < 6 && mainPickRules([...roster.team, rikishiId]).valid;
+  const replacementIndex = pendingSubstituteReplacement ? roster.subs.indexOf(pendingSubstituteReplacement) : -1;
+  const candidateSubs = replacementIndex >= 0
+    ? roster.subs.map((id, index) => index === replacementIndex ? rikishiId : id)
+    : [...roster.subs, rikishiId];
+  const canAddSub = (replacementIndex >= 0 || roster.subs.length < 3) && substituteRules(candidateSubs).valid;
   let destination = null;
-  if (roster.team.length < 6 && mainPickRules([...roster.team, rikishiId]).valid) {
+
+  if ((target === "main" || target === null) && canAddMain) {
     roster.team.push(rikishiId);
     destination = "main picks";
-  } else if (roster.subs.length < 3) {
-    roster.subs.push(rikishiId);
+  } else if ((target === "sub" || target === null) && canAddSub) {
+    if (replacementIndex >= 0) roster.subs[replacementIndex] = rikishiId;
+    else roster.subs.push(rikishiId);
     destination = "substitutes";
   }
 
   if (!destination) {
     const rule = mainPickRules([...roster.team, rikishiId]);
-    const reason = roster.team.length >= 6 && roster.subs.length >= 3
+    const subRule = substituteRules(candidateSubs);
+    const reason = target === "sub" && roster.subs.length >= 3 && replacementIndex < 0
+      ? `${player.name}'s substitute roster is full. Choose Change substitute from the roster page.`
+      : target === "sub" && subRule.sanyaku > 1
+        ? "Substitutes may include exactly one Komusubi-or-higher wrestler."
+        : target === "sub" && subRule.maegashira > 2
+          ? "Substitutes may include exactly two Maegashira wrestlers."
+          : target === "main" && roster.team.length >= 6
+            ? `${player.name}'s main roster is full. Remove or swap a pick first.`
+            : roster.team.length >= 6 && roster.subs.length >= 3
       ? `${player.name}'s roster is full. Remove or swap a pick first.`
       : rule.sanyaku > 2
         ? "Main picks can include at most two Komusubi or higher."
@@ -1339,12 +1651,14 @@ function addPick(rikishiId) {
     return;
   }
 
-  saveState();
+  const replaced = pendingSubstituteReplacement ? getRikishi(pendingSubstituteReplacement) : null;
+  pendingSubstituteReplacement = null;
   render();
-  showToast(`${rikishi.name} added to ${player.name}'s ${destination}.`);
+  showToast(replaced ? `${rikishi.name} replaced ${replaced.name}. Save Picks to publish.` : `${rikishi.name} staged in ${player.name}'s ${destination}.`);
 }
 
 function removePick(rikishiId) {
+  if (draftEditingDisabled()) return;
   const player = getPlayerDefinition();
   const roster = getRoster();
   const location = pickLocation(rikishiId);
@@ -1356,12 +1670,12 @@ function removePick(rikishiId) {
   const list = location === "main" ? roster.team : roster.subs;
   list.splice(list.indexOf(rikishiId), 1);
   if (pendingSwap?.rikishiId === rikishiId) pendingSwap = null;
-  saveState();
   render();
-  showToast(`${getRikishi(rikishiId).name} removed from ${player.name}'s roster.`);
+  showToast(`${getRikishi(rikishiId).name} removed from the working copy.`);
 }
 
 function movePick(rikishiId, target) {
+  if (draftEditingDisabled()) return;
   const player = getPlayerDefinition();
   const roster = getRoster();
   const from = target === "main" ? roster.subs : roster.team;
@@ -1372,19 +1686,21 @@ function movePick(rikishiId, target) {
     showToast(`${target === "main" ? "Main picks" : "Substitutes"} are full. Use Swap instead.`);
     return;
   }
-  if (target === "main" && !mainPickRules([...roster.team, rikishiId]).valid) {
-    showToast("That move would break the Komusubi+ or underdog rule.");
+  const candidateMain = target === "main" ? [...roster.team, rikishiId] : roster.team.filter((id) => id !== rikishiId);
+  const candidateSubs = target === "subs" ? [...roster.subs, rikishiId] : roster.subs.filter((id) => id !== rikishiId);
+  if (!mainPickRules(candidateMain).valid || !substituteRules(candidateSubs).valid) {
+    showToast("That move would break a main-pick or substitute category rule.");
     return;
   }
   from.splice(from.indexOf(rikishiId), 1);
   to.push(rikishiId);
   pendingSwap = null;
-  saveState();
   render();
   showToast(`${getRikishi(rikishiId).name} moved to ${player.name}'s ${target === "main" ? "main picks" : "substitutes"}.`);
 }
 
 function chooseSwap(rikishiId, source) {
+  if (draftEditingDisabled()) return;
   const playerId = state.activePlayer;
   const sourceIsSub = source === "sub";
   if (pendingSwap?.playerId !== playerId) pendingSwap = null;
@@ -1412,16 +1728,53 @@ function chooseSwap(rikishiId, source) {
   if (mainIndex < 0 || subIndex < 0) return;
   const candidateMain = [...roster.team];
   candidateMain[mainIndex] = subId;
-  if (!mainPickRules(candidateMain).valid) {
-    showToast("That swap would break the Komusubi+ or underdog rule.");
+  const candidateSubs = [...roster.subs];
+  candidateSubs[subIndex] = mainId;
+  if (!mainPickRules(candidateMain).valid || !substituteRules(candidateSubs).valid) {
+    showToast("That swap would break a main-pick or substitute category rule.");
     return;
   }
   roster.team[mainIndex] = subId;
   roster.subs[subIndex] = mainId;
   pendingSwap = null;
-  saveState();
   render();
   showToast(`${getRikishi(subId).name} moved into the main team.`);
+}
+
+function reorderSubstitute(rikishiId, direction) {
+  if (draftEditingDisabled()) return;
+  const roster = getRoster();
+  const index = roster.subs.indexOf(rikishiId);
+  const targetIndex = direction === "up" ? index - 1 : index + 1;
+  if (index < 0 || targetIndex < 0 || targetIndex >= roster.subs.length) return;
+  [roster.subs[index], roster.subs[targetIndex]] = [roster.subs[targetIndex], roster.subs[index]];
+  render();
+  showToast(`${getRikishi(rikishiId).name} moved to substitute slot ${targetIndex + 1}.`);
+}
+
+function replaceRosterPick(oldId, newId, type) {
+  if (draftEditingDisabled() || !oldId || !newId || oldId === newId) return;
+  const owner = draftOwner(newId);
+  const rikishi = getRikishi(newId);
+  if (!rikishi || rikishi.available === false || owner) {
+    showToast("That wrestler is not available in the shared draft.");
+    return;
+  }
+  const roster = getRoster();
+  const list = type === "sub" ? roster.subs : roster.team;
+  const index = list.indexOf(oldId);
+  if (index < 0) return;
+  const candidate = [...list];
+  candidate[index] = newId;
+  const legal = type === "sub" ? substituteRules(candidate).valid : mainPickRules(candidate).valid;
+  if (!legal) {
+    showToast("That replacement would break a roster category rule.");
+    return;
+  }
+  list[index] = newId;
+  pendingSwap = null;
+  render();
+  showToast(`${rikishi.name} staged as the replacement. Save Picks to publish.`);
 }
 
 function developmentDiagnosticsEnabled() {
@@ -1557,7 +1910,7 @@ function currentHistoryEvent() {
 function bindViewEvents() {
   app.querySelectorAll("[data-profile]").forEach((element) => {
     element.addEventListener("click", (event) => {
-      if (event.target.closest("[data-add-pick], [data-remove-pick], [data-roster-move], [data-swap-pick]")) return;
+      if (event.target.closest("[data-add-pick], [data-remove-pick], [data-roster-move], [data-swap-pick], [data-replace-sub], [data-sub-reorder]")) return;
       if (element.closest(".banzuke-rikishi")) {
         clearTimeout(banzukeProfileTimer);
         banzukeProfileTimer = setTimeout(() => openProfile(element.dataset.profile), 220);
@@ -1578,7 +1931,7 @@ function bindViewEvents() {
   }));
   app.querySelectorAll("[data-add-pick]").forEach((button) => button.addEventListener("click", (event) => {
     event.stopPropagation();
-    addPick(button.dataset.addPick);
+    addPick(...button.dataset.addPick.split(":"));
   }));
   app.querySelectorAll("[data-remove-pick]").forEach((button) => button.addEventListener("click", (event) => {
     event.stopPropagation();
@@ -1592,6 +1945,21 @@ function bindViewEvents() {
     event.stopPropagation();
     chooseSwap(...button.dataset.swapPick.split(":"));
   }));
+  app.querySelectorAll("[data-sub-reorder]").forEach((button) => button.addEventListener("click", (event) => {
+    event.stopPropagation();
+    reorderSubstitute(...button.dataset.subReorder.split(":"));
+  }));
+  app.querySelectorAll("[data-replace-sub]").forEach((button) => button.addEventListener("click", (event) => {
+    event.stopPropagation();
+    pendingSubstituteReplacement = button.dataset.replaceSub;
+    pendingSwap = null;
+    location.hash = "#banzuke";
+    render();
+  }));
+  document.querySelector("[data-cancel-sub-replacement]")?.addEventListener("click", () => {
+    pendingSubstituteReplacement = null;
+    render();
+  });
   document.querySelector("[data-cancel-swap]")?.addEventListener("click", () => { pendingSwap = null; render(); });
   app.querySelectorAll("[data-day]").forEach((button) => button.addEventListener("click", () => {
     state.selectedDay = Number(button.dataset.day);
@@ -1627,14 +1995,32 @@ function bindViewEvents() {
     showToast("Score cue played.");
   });
   document.querySelector("[data-save-draft]")?.addEventListener("click", () => {
-    const player = getPlayerDefinition();
-    const valid = validateRoster(player.id).valid;
-    if (valid) {
-      saveState();
-      playBell();
-      showToast(`${player.name}'s legal roster is saved on this device.`);
-    } else showToast(`${player.name}'s roster still breaks a pick rule.`);
+    saveSharedDraft();
   });
+  app.querySelectorAll("[data-refresh-shared]").forEach((button) => button.addEventListener("click", refreshSharedDraft));
+  app.querySelector("[data-toggle-draft-lock]")?.addEventListener("click", toggleSharedDraftLock);
+  document.querySelector("[data-store-draft-token]")?.addEventListener("click", () => {
+    const field = document.querySelector("#shared-draft-token");
+    if (!field?.value.trim()) {
+      showToast("Paste a fine-grained GitHub token first.");
+      return;
+    }
+    window.SHARED_DRAFT_API?.setToken(field.value);
+    field.value = "";
+    render();
+    showToast("Repository write access is ready for this session.");
+  });
+  app.querySelectorAll("[data-roster-add]").forEach((button) => button.addEventListener("click", () => {
+    const type = button.dataset.rosterAdd;
+    const field = document.querySelector(type === "sub" ? "#roster-add-sub" : "#roster-add-main");
+    if (field?.value) addPick(field.value, type);
+  }));
+  app.querySelectorAll("[data-roster-replace]").forEach((button) => button.addEventListener("click", () => {
+    const type = button.dataset.rosterReplace;
+    const oldField = document.querySelector(type === "sub" ? "#roster-replace-sub-old" : "#roster-replace-main-old");
+    const newField = document.querySelector(type === "sub" ? "#roster-replace-sub-new" : "#roster-replace-main-new");
+    replaceRosterPick(oldField?.value, newField?.value, type);
+  }));
   document.querySelector("[data-mock-sync]")?.addEventListener("click", async (event) => {
     event.currentTarget.disabled = true;
     event.currentTarget.textContent = "Checking deployed snapshot…";
@@ -1654,13 +2040,13 @@ function bindViewEvents() {
   document.querySelector("[data-reset-draft]")?.addEventListener("click", () => {
     resetCurrentDraft();
     render();
-    showToast(`${selectedBasho().label} draft reset. Official data and history were preserved.`);
+    showToast(`${selectedBasho().label} working copy reset. Save Picks to publish it.`);
   });
   app.querySelectorAll("[data-bonus]").forEach((button) => button.addEventListener("click", () => {
+    if (draftEditingDisabled()) return;
     getDraftPlayer().sidePrediction = button.dataset.bonus;
-    saveState();
     render();
-    showToast(`${button.dataset.bonus} saved as ${getPlayerDefinition().name}'s 20-point bonus prediction.`);
+    showToast(`${button.dataset.bonus} staged as ${getPlayerDefinition().name}'s prediction. Save Picks to publish.`);
   }));
   document.querySelector("[data-start-new-draft]")?.addEventListener("click", () => {
     startNewOfficialBashoDraft();
@@ -1738,6 +2124,16 @@ function bindViewEvents() {
 }
 
 document.addEventListener("click", (event) => {
+  const routeLink = event.target.closest('a[href^="#"]');
+  const destination = routeLink?.getAttribute("href");
+  const staysInDraftWorkspace = ["#roster", "#banzuke"].includes(destination);
+  if (routeLink && hasUnsavedDraftChanges() && !staysInDraftWorkspace) {
+    if (!window.confirm("You have unsaved changes. Do you want to discard them?")) {
+      event.preventDefault();
+      return;
+    }
+    applySharedDraft(savedSharedDraft, sharedDraftSha);
+  }
   const navTarget = event.target.closest("[data-nav]");
   if (navTarget) location.hash = navTarget.dataset.nav;
 });
@@ -1758,6 +2154,7 @@ soundButton.addEventListener("click", () => {
 playerSelect.addEventListener("change", () => {
   state.activePlayer = playerSelect.value;
   pendingSwap = null;
+  pendingSubstituteReplacement = null;
   saveState();
   setTheme();
   render();
@@ -1765,5 +2162,11 @@ playerSelect.addEventListener("change", () => {
 });
 
 window.addEventListener("hashchange", render);
+window.addEventListener("beforeunload", (event) => {
+  if (!hasUnsavedDraftChanges()) return;
+  event.preventDefault();
+  event.returnValue = "You have unsaved changes. Do you want to discard them?";
+});
 setTheme();
 render();
+loadSharedDraft();

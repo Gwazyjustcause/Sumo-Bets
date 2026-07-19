@@ -117,15 +117,14 @@ assert(app.innerHTML.includes("JAKE'S SIDE PREDICTION"), `Overview should preser
 assert(app.innerHTML.includes("The draft has not started yet."), "A clean save must show the friendly pre-draft state");
 assert.equal(playerSelect.value, "jake", "A storage migration must preserve the harmless active-player preference");
 const migratedSave = JSON.parse(storage.get("sumoBattleSettings"));
-assert.equal(migratedSave.appVersion, 2, "The first Version 2 run must write a new compatible save");
+assert.equal(migratedSave.appVersion, 3, "The first Version 3 run must write a new compatible preferences save");
+assert.equal(Object.hasOwn(migratedSave, "drafts"), false, "Repository-backed rosters must not be copied into localStorage");
 assert.equal(JSON.parse(storage.get("sumoBattleHistoryCache")).events.length, 0, "The one-time migration must clear legacy history cache data");
-assert.equal(vm.runInContext("state.history.length", context), 0, "The live Version 2 state must have no archived basho");
+assert.equal(vm.runInContext("state.history.length", context), 0, "The live Version 3 state must have no archived basho");
 assert.equal(vm.runInContext("data.players.every((player) => player.score === 0 && player.sidePrediction === null)", context), true, "Scores and side predictions must start blank");
 assert.equal(vm.runInContext("data.meta.day", context), 8, "A draft migration must not erase the restored official day");
 assert(vm.runInContext("data.rikishi.some((rikishi) => rikishi.wins > 0)", context), "A draft migration must not erase official rikishi records");
-const archivedDraft = JSON.parse(vm.runInContext(`JSON.stringify(normalizeDrafts({draftSchemaVersion:2,drafts:{"old-basho":{gwazy:{mainPicks:["old-rikishi"],substitutes:[],sidePrediction:"West"},jake:{mainPicks:[],substitutes:[],sidePrediction:null}}}})["old-basho"])`, context));
-assert.deepEqual(archivedDraft.gwazy.mainPicks, ["old-rikishi"], "Loading a new official basho must preserve previous-basho draft data");
-assert.equal(archivedDraft.gwazy.sidePrediction, "West", "Previous-basho predictions must stay with their draft");
+assert.deepEqual(JSON.parse(vm.runInContext("JSON.stringify(getRoster('gwazy'))", context)), { team: [], subs: [] }, "Legacy browser drafts must be ignored in favor of the repository draft");
 
 playerSelect.value = "jake";
 playerSelect.listeners.change();
@@ -137,6 +136,46 @@ const gwazyRosterBefore = vm.runInContext("JSON.stringify(getPlayerState('gwazy'
 assert.deepEqual(JSON.parse(vm.runInContext("JSON.stringify(getRoster('gwazy'))", context)), { team: [], subs: [] }, "A new basho must start with an empty Gwazy draft");
 assert.deepEqual(JSON.parse(vm.runInContext("JSON.stringify(getRoster('jake'))", context)), { team: [], subs: [] }, "A new basho must start with an empty Jake draft");
 assert.equal(vm.runInContext("draftPoolStats().available", context), 42, "Every rikishi must start available");
+
+vm.runInContext(`savedSharedDraft={schemaVersion:3,bashoId:state.selectedBashoId,revision:0,locked:false,lastSavedAt:null,savedBy:null,players:emptyDraftPlayers()}; state.drafts[state.selectedBashoId]={
+  gwazy:{mainPicks:['hoshoryu','kirishima','fujinokawa','gonoyama','hiradoumi','nishikifuji'],substitutes:['yoshinofuji','daieisho','ura'],sidePrediction:'East',substitutionEvents:[]},
+  jake:{mainPicks:['onosato','kotozakura','takanosho','churanoumi','hakunofuji','takerufuji'],substitutes:['oho','ichiyamamoto','oshoma'],sidePrediction:'West',substitutionEvents:[]}
+};`, context);
+assert.equal(vm.runInContext("validateSharedDraft().valid", context), true, "A complete two-player draft with legal substitute categories must save");
+assert.equal(vm.runInContext("hasUnsavedDraftChanges()", context), true, "Editing the working copy must raise the unsaved-changes state");
+vm.runInContext("getDraftPlayer('jake').mainPicks[0]='hoshoryu'", context);
+assert(vm.runInContext("validateSharedDraft().errors.some((error)=>error.includes('appears more than once'))", context), "Cross-player duplicate ownership must block Save Picks");
+vm.runInContext("state.drafts[state.selectedBashoId]=emptyDraftPlayers(); savedSharedDraft.players=emptyDraftPlayers();", context);
+
+assert.equal(vm.runInContext("substituteRules(['onosato','takayasu','abi']).valid", context), true, "A legal substitute roster needs one Sanyaku and two Maegashira");
+assert.equal(vm.runInContext("substituteRules(['onosato','hoshoryu','abi']).valid", context), false, "A second Sanyaku substitute must be rejected");
+vm.runInContext(`state.activePlayer='gwazy'; state.drafts[state.selectedBashoId].gwazy={mainPicks:['wakatakakage','wakanosho'],substitutes:['onosato','takayasu','abi'],sidePrediction:null,substitutionEvents:[]}; saveState();`, context);
+const liveSubstitutions = JSON.parse(vm.runInContext("JSON.stringify(substitutionTimeline('gwazy'))", context));
+assert(liveSubstitutions.assignments.some((entry) => entry.mainId === "wakatakakage" && entry.subId === "onosato"), "A Kyujo Sanyaku main pick must activate the Sanyaku substitute");
+assert(liveSubstitutions.assignments.some((entry) => entry.mainId === "wakanosho" && entry.subId === "takayasu"), "A Kyujo Maegashira main pick must activate the first Maegashira substitute");
+assert(liveSubstitutions.standbySubIds.includes("abi"), "An unused Maegashira substitute must remain on standby");
+assert.equal(vm.runInContext("countedPointsForRikishi('gwazy','abi')", context), 0, "A standby substitute must contribute zero points");
+assert.equal(vm.runInContext("countedPointsForRikishi('gwazy','onosato')", context), vm.runInContext("pointsThroughDay(getRikishi('onosato'))", context), "An activated substitute must count points only while active");
+assert(liveSubstitutions.events.some((event) => event.type === "activated"), "Automatic activations must be present in the live substitution log");
+vm.runInContext(`globalThis.__subTestBackup={tobizaru:JSON.parse(JSON.stringify(getRikishi('tobizaru').dailyResults)),takayasu:JSON.parse(JSON.stringify(getRikishi('takayasu').dailyResults))}; for(const day of [8,9]){const result=getRikishi('tobizaru').dailyResults.find((item)=>item.day===day); result.status='absent'; result.kyujo=true; result.completed=false; result.result=null; result.opponentId=null; result.opponentJsaId=null;} getDraftPlayer('gwazy').mainPicks=['wakanosho','tobizaru'];`, context);
+const twoMaegashiraReplacements = JSON.parse(vm.runInContext("JSON.stringify(substitutionTimeline('gwazy',9))", context));
+assert(twoMaegashiraReplacements.assignments.some((entry) => entry.mainId === "wakanosho" && entry.subId === "takayasu"), "The first withdrawn Maegashira must use the first Maegashira substitute");
+assert(twoMaegashiraReplacements.assignments.some((entry) => entry.mainId === "tobizaru" && entry.subId === "abi"), "A second withdrawn Maegashira must use the second Maegashira substitute");
+vm.runInContext(`getDraftPlayer('gwazy').mainPicks=['wakanosho']; for(const day of [8,9]){const result=getRikishi('takayasu').dailyResults.find((item)=>item.day===day); result.status='absent'; result.kyujo=true; result.completed=false; result.result=null; result.opponentId=null; result.opponentJsaId=null;}`, context);
+const unavailableSubstitute = JSON.parse(vm.runInContext("JSON.stringify(substitutionTimeline('gwazy',9))", context));
+assert(unavailableSubstitute.assignments.some((entry) => entry.mainId === "wakanosho" && entry.subId === "abi"), "A withdrawn substitute must be released and the next eligible substitute activated");
+assert(unavailableSubstitute.events.some((event) => event.type === "substitute-kyujo" && event.subId === "takayasu"), "A substitute withdrawal must be logged");
+vm.runInContext(`getRikishi('tobizaru').dailyResults=__subTestBackup.tobizaru; getRikishi('takayasu').dailyResults=__subTestBackup.takayasu; getDraftPlayer('gwazy').mainPicks=['wakatakakage','wakanosho']; delete globalThis.__subTestBackup;`, context);
+location.hash = "#roster";
+window.listeners.hashchange();
+await new Promise((resolve) => setTimeout(resolve, 160));
+assert(app.innerHTML.includes("KYUJO · INACTIVE") && app.innerHTML.includes("ACTIVE SUBSTITUTE") && app.innerHTML.includes("STANDBY · 0 PTS"), "The roster must visually distinguish injured, active-replacement, and standby states");
+assert(app.innerHTML.includes("Substitution log") && app.innerHTML.includes("activated for"), "The roster must render its automatic substitution log");
+vm.runInContext(`getRikishi('wakanosho').dailyResults[8].status='scheduled'; getRikishi('wakanosho').dailyResults[8].opponentId='abi';`, context);
+const returnTimeline = JSON.parse(vm.runInContext("JSON.stringify(substitutionTimeline('gwazy',9))", context));
+assert(!returnTimeline.assignments.some((entry) => entry.mainId === "wakanosho"), "A returning main wrestler must automatically reclaim his position");
+assert(returnTimeline.events.some((event) => event.type === "returned" && event.mainId === "wakanosho"), "A return from Kyujo must be logged");
+vm.runInContext(`getRikishi('wakanosho').dailyResults[8].status=null; getRikishi('wakanosho').dailyResults[8].opponentId=null; resetCurrentDraft(); state.activePlayer='jake'; saveState();`, context);
 
 vm.runInContext("addPick('hoshoryu');", context);
 await new Promise((resolve) => setTimeout(resolve, 120));
@@ -212,18 +251,16 @@ vm.runInContext(`verifyBanzukeIntegrity({officialRikishi:[{id:"never-parsed",shi
 const missingParseErrors = browserConsole.errors.slice(errorsBeforeParseAudit).join("\n");
 assert(missingParseErrors.includes("Never Parsed") && missingParseErrors.includes("Not parsed"), "Official wrestlers missing from the dataset must fail loudly");
 
-const currentBashoId = vm.runInContext("state.selectedBashoId", context);
 const corruptSaved = JSON.parse(storage.get("sumoBattleSettings"));
 corruptSaved.draftSchemaVersion = 2;
-corruptSaved.drafts[currentBashoId] = {
+corruptSaved.drafts = { "nagoya-2026": {
   gwazy: { mainPicks: ["onosato"], substitutes: [] },
   jake: { mainPicks: ["onosato", "hoshoryu"], substitutes: ["not-a-rikishi"] },
-};
+} };
 storage.set("sumoBattleSettings", JSON.stringify(corruptSaved));
 vm.runInContext("state = readState();", context);
-assert.equal(vm.runInContext("draftOwner('onosato')", context), "gwazy", "Stored duplicate ownership must be resolved deterministically");
-assert(!vm.runInContext("getRoster('jake').team.includes('onosato')", context), "Sanitization must remove the losing duplicate assignment");
-assert(!vm.runInContext("getRoster('jake').subs.includes('not-a-rikishi')", context), "Sanitization must remove unknown rikishi IDs");
+assert.equal(vm.runInContext("draftOwner('onosato')", context), null, "Browser draft ownership must never override the shared repository draft");
+assert.deepEqual(JSON.parse(vm.runInContext("JSON.stringify(getRoster('jake'))", context)), { team: [], subs: [] }, "Legacy browser roster data must be discarded completely");
 
 location.hash = "#history";
 vm.runInContext("state.activePlayer = 'jake'; historyEditMode = true; render();", context);
@@ -232,4 +269,4 @@ assert(app.innerHTML.includes("NO ARCHIVED BASHO"), "History must render a clean
 assert(!app.innerHTML.includes("EDITING ARCHIVED BASHO"), "Empty history must not expose a demo editor");
 assert.equal(vm.runInContext("calculateHistoryStats().average", context), 0, "Empty history must calculate no statistics");
 
-console.log("Runtime smoke checks passed: Version 2 migration, blank state, shared draft, and six routes.");
+console.log("Runtime smoke checks passed: Version 3 migration, blank state, staged shared draft, and six routes.");
