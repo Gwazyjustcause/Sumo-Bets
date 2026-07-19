@@ -18,6 +18,7 @@
       try {
         const parsed = new URL(url);
         if (parsed.protocol !== "https:") missing.push("valid HTTPS Project URL");
+        else if (parsed.hostname.endsWith("github.io")) missing.push("Supabase Project URL (the current value is the GitHub Pages URL)");
       } catch {
         missing.push("valid Project URL");
       }
@@ -51,6 +52,9 @@
   function requestError(error, operation) {
     const code = String(error?.code || "");
     const message = String(error?.message || "");
+    if (/<!doctype html|github pages|file not found/i.test(message)) {
+      return new Error("The configured Project URL is a website URL, not the Supabase Project URL. Copy the URL from Supabase Project Settings → API.");
+    }
     if (["42P01", "PGRST205"].includes(code) || /relation .*shared_drafts.* does not exist/i.test(message)) {
       return new Error("Supabase table shared_drafts is missing. Run supabase/schema.sql in the Supabase SQL Editor.");
     }

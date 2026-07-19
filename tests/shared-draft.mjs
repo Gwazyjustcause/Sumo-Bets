@@ -131,4 +131,21 @@ await assert.rejects(
   /Missing: Project URL, Publishable Key/,
   "An incomplete setup must fail with actionable field names",
 );
+
+const wrongHostContext = vm.createContext({
+  URL,
+  window: {
+    SUMO_SHARED_DRAFT_CONFIG: {
+      url: "https://gwazyjustcause.github.io/Sumo-Bets",
+      anonKey: "sb_publishable_example",
+    },
+    supabase: { createClient() {} },
+  },
+});
+vm.runInContext(source, wrongHostContext, { filename: "shared-draft.js" });
+assert.deepEqual(
+  JSON.parse(JSON.stringify(wrongHostContext.window.SHARED_DRAFT_API.setupStatus().missing)),
+  ["Supabase Project URL (the current value is the GitHub Pages URL)"],
+  "The setup check must identify a GitHub Pages URL before making a database request",
+);
 console.log("Shared draft transport checks passed: Supabase load, atomic revision save, realtime sync, and conflict rejection.");
