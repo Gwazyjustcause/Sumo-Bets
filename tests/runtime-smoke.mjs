@@ -148,6 +148,12 @@ vm.runInContext(`savedSharedDraft={schemaVersion:3,bashoId:state.selectedBashoId
 };`, context);
 assert.equal(vm.runInContext("validateSharedDraft().valid", context), true, "A complete two-player draft with legal substitute categories must save");
 assert.equal(vm.runInContext("hasUnsavedDraftChanges()", context), true, "Editing the working copy must raise the unsaved-changes state");
+const fantasyResult = JSON.parse(vm.runInContext("JSON.stringify(resultDraftImpact({east:'hoshoryu',west:'onosato',winner:'hoshoryu',completed:true,importance:5,technique:'yorikiri'}, state.selectedDay))", context));
+assert.equal(fantasyResult.headToHead, true, "A Gwazy-versus-Jake matchup must be identified as a head-to-head draft bout");
+assert.deepEqual([...fantasyResult.ownerIds].sort(), ["gwazy", "jake"], "Result impact must expose both draft owners");
+const fantasyResultsHtml = vm.runInContext("resultsView()", context);
+assert(fantasyResultsHtml.includes("data-results-daily-stats") && fantasyResultsHtml.includes("Important Bouts"), "Results must render daily player records and fantasy filters");
+assert(fantasyResultsHtml.includes("result-owner-badge") && fantasyResultsHtml.includes("result-point-award"), "Every Results card must show ownership and point impact");
 const liveForecast = JSON.parse(vm.runInContext("JSON.stringify(forecastModel())", context));
 assert(Number.isFinite(liveForecast.projections.gwazy) && Number.isFinite(liveForecast.projections.jake), "Forecast must calculate both projected final scores from the live draft and official records");
 assert(liveForecast.probability >= 5 && liveForecast.probability <= 95, "Forecast win probability must remain a meaningful percentage");

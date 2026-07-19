@@ -179,6 +179,7 @@ let state = readState();
 let historyEditMode = false;
 let activeHistoryId = state.history[0]?.id || null;
 let banzukeProfileTimer = null;
+let resultsFilter = "all";
 let sharedDraftRevision = 0;
 let savedSharedDraft = null;
 let sharedDraftLoading = true;
@@ -1604,19 +1605,137 @@ function resultsForDay(day) {
     });
 }
 
+function signedPoints(points) {
+  if (points > 0) return `+${points}`;
+  if (points < 0) return `−${Math.abs(points)}`;
+  return "0";
+}
+
+function resultDraftImpact(bout, day) {
+  const activeByPlayer = Object.fromEntries(data.players.map((player) => [
+    player.id,
+    new Set(substitutionTimeline(player.id, day).byDay.get(day)?.activeIds || []),
+  ]));
+  const participants = [bout.east, bout.west].map((rikishiId) => {
+    const rikishi = getRikishi(rikishiId);
+    const ownerId = draftOwner(rikishiId);
+    const owner = ownerId ? getPlayerDefinition(ownerId) : null;
+    const active = Boolean(ownerId && activeByPlayer[ownerId].has(rikishiId));
+    const totalPoints = active && bout.completed
+      ? pointsThroughDay(rikishi, day) - pointsThroughDay(rikishi, day - 1)
+      : 0;
+    const won = Boolean(bout.completed && bout.winner === rikishiId);
+    const winPoints = active && won ? 1 : totalPoints < 0 ? totalPoints : 0;
+    const bonusPoints = Math.max(0, totalPoints - winPoints);
+    return { rikishi, ownerId, owner, active, totalPoints, winPoints, bonusPoints, won };
+  });
+  const ownerIds = [...new Set(participants.map((participant) => participant.ownerId).filter(Boolean))];
+  const draftedCount = participants.filter((participant) => participant.ownerId).length;
+  const headToHead = ownerIds.length === 2;
+  const bonus = participants.some((participant) => participant.bonusPoints > 0);
+  const important = headToHead || bonus || (draftedCount > 0 && Number(bout.importance || 0) >= 3);
+  const ownershipLabel = headToHead
+    ? "GWAZY VS JAKE"
+    : ownerIds.length === 1
+      ? getPlayerDefinition(ownerIds[0]).name.toUpperCase()
+      : "NOT DRAFTED";
+  const contextLabel = headToHead ? "Both drafted" : draftedCount ? "Draft bout" : "No fantasy impact";
+  return { participants, ownerIds, draftedCount, headToHead, important, ownershipLabel, contextLabel };
+}
+
+function resultOwnershipBadge(participant) {
+  if (!participant.owner) return '<span class="result-owner-badge available">AVAILABLE</span>';
+  return `<span class="result-owner-badge ${participant.owner.color}">${participant.owner.name.toUpperCase()}</span>`;
+}
+
+function resultPointAward(participant, completed) {
+  if (!participant.owner) return '<span class="result-point-award available"><b>—</b><small>Not drafted</small></span>';
+  if (!completed) return `<span class="result-point-award ${participant.owner.color}"><b>Pending</b><small>${participant.active ? "Active pick" : "Standby"}</small></span>`;
+  if (!participant.active) return `<span class="result-point-award ${participant.owner.color}"><b>0 pts</b><small>Inactive substitute</small></span>`;
+  return `<span class="result-point-award ${participant.owner.color}"><b>${signedPoints(participant.winPoints)} pt${Math.abs(participant.winPoints) === 1 ? "" : "s"}</b>${participant.bonusPoints ? `<small>+${participant.bonusPoints} bonus</small>` : `<small>${participant.won ? "Win counted" : "No points"}</small>`}</span>`;
+}
+
+function draftImpactBoutCard(bout, day, index) {
+  const impact = resultDraftImpact(bout, day);
+  const [east, west] = impact.participants;
+  const ownerData = data.players.map((player) => `data-results-${player.id}="${String(impact.ownerIds.includes(player.id))}"`).join(" ");
+  const playerMarkup = (participant, side) => `
+    <button class="result-rikishi ${side} ${participant.won ? "winner" : "loser"}" type="button" data-profile="${participant.rikishi.id}">
+      ${side === "east" ? wrestlerImage(participant.rikishi, "medium") : ""}
+      <span class="result-rikishi-copy">
+        <span class="result-name-line"><b>${escapeHtml(participant.rikishi.name)}</b>${bout.completed ? `<i>${participant.won ? "✓" : "✕"}</i>` : ""}</span>
+        <small>${escapeHtml(participant.rikishi.rank)} · ${escapeHtml(participant.rikishi.record)}</small>
+        ${resultOwnershipBadge(participant)}
+      </span>
+      ${resultPointAward(participant, bout.completed)}
+      ${side === "west" ? wrestlerImage(participant.rikishi, "medium") : ""}
+    </button>`;
+  return `
+    <article class="draft-result-card ${impact.headToHead ? "head-to-head" : impact.draftedCount ? "draft-relevant" : "not-drafted"}" data-results-card ${ownerData} data-results-important="${String(impact.important)}">
+      <span class="result-number">${String(index + 1).padStart(2, "0")}</span>
+      ${playerMarkup(east, "east")}
+      <div class="result-impact-center">
+        <span class="bout-draft-label ${impact.headToHead ? "versus" : impact.ownerIds[0] ? getPlayerDefinition(impact.ownerIds[0]).color : "available"}">${impact.ownershipLabel}</span>
+        <b>${bout.completed ? "FINAL" : "SCHEDULED"}</b>
+        <small>${escapeHtml(bout.technique || "Awaiting result")}</small>
+        <em>${impact.contextLabel}</em>
+      </div>
+      ${playerMarkup(west, "west")}
+    </article>`;
+}
+
+function dailyDraftSummary(playerId, day, bouts) {
+  const activeIds = new Set(substitutionTimeline(playerId, day).byDay.get(day)?.activeIds || []);
+  let wins = 0;
+  let losses = 0;
+  bouts.filter((bout) => bout.completed).forEach((bout) => {
+    [bout.east, bout.west].filter((id) => activeIds.has(id)).forEach((id) => {
+      if (bout.winner === id) wins += 1;
+      else losses += 1;
+    });
+  });
+  return { wins, losses, points: playerDayScore(playerId, day) };
+}
+
+function applyResultsFilter() {
+  const cards = [...app.querySelectorAll("[data-results-card]")];
+  let visible = 0;
+  cards.forEach((card) => {
+    const matches = resultsFilter === "all"
+      || (resultsFilter === "my" && card.dataset[`results${state.activePlayer[0].toUpperCase()}${state.activePlayer.slice(1)}`] === "true")
+      || (resultsFilter === "important" && card.dataset.resultsImportant === "true")
+      || card.dataset[`results${resultsFilter[0]?.toUpperCase()}${resultsFilter.slice(1)}`] === "true";
+    card.classList.toggle("filter-hidden", !matches);
+    if (matches) visible += 1;
+  });
+  app.querySelectorAll("[data-results-filter]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.resultsFilter === resultsFilter);
+    button.setAttribute("aria-pressed", String(button.dataset.resultsFilter === resultsFilter));
+  });
+  const count = app.querySelector("#results-visible-count");
+  if (count) count.textContent = `${visible} bout${visible === 1 ? "" : "s"}`;
+  app.querySelector("#results-filter-empty")?.classList.toggle("show", cards.length > 0 && visible === 0);
+}
+
 function resultsView() {
   const day = Number(state.selectedDay);
   const bouts = resultsForDay(day);
   const [gwazy, jake] = data.players;
-  const gwazyToday = playerDayScore(gwazy.id, day);
-  const jakeToday = playerDayScore(jake.id, day);
+  const gwazyToday = dailyDraftSummary(gwazy.id, day, bouts);
+  const jakeToday = dailyDraftSummary(jake.id, day, bouts);
   const completed = bouts.filter((bout) => bout.completed).length;
+  const playerSummary = (player, summary) => `<article class="daily-draft-player ${player.color}"><span class="player-avatar ${player.color}">${player.initials}</span><div><small>${player.name.toUpperCase()} · TODAY'S RECORD</small><strong>${summary.wins}–${summary.losses}</strong></div><b>${signedPoints(summary.points)} pts</b></article>`;
   return `
     <section class="page-shell">
-      ${pageIntro(`${escapeHtml(selectedBasho().label.toUpperCase())} · DAY ${day}`, "Bout results", "Official schedules, records, winners, and kimarite update from the JSA snapshot.", `<div class="daily-score"><span>GWAZY <b>${gwazyToday}</b></span><i></i><span>JAKE <b>${jakeToday}</b></span></div>`)}
+      ${pageIntro(`${escapeHtml(selectedBasho().label.toUpperCase())} · DAY ${day}`, "Draft impact", "See ownership, scoring changes, and the bouts that moved the Gwazy vs Jake battle.")}
+      <section class="daily-draft-scoreboard reveal" data-results-daily-stats>${playerSummary(gwazy, gwazyToday)}<span class="daily-draft-vs">VS</span>${playerSummary(jake, jakeToday)}</section>
       <div class="day-selector reveal" role="tablist" aria-label="Tournament day">${Array.from({ length: 15 }, (_, index) => `<button type="button" role="tab" aria-selected="${day === index + 1}" class="${day === index + 1 ? "active" : ""}" data-day="${index + 1}"><small>DAY</small>${index + 1}</button>`).join("")}</div>
-      <div class="results-summary reveal"><span class="status-dot"></span><strong>${bouts.length ? (completed === bouts.length ? `Day ${day} official results` : `Day ${day} official schedule`) : "Awaiting the official torikumi"}</strong><span>${completed} completed · ${bouts.length - completed} scheduled</span><span>Draft points today: ${gwazyToday + jakeToday}</span></div>
-      <section class="results-list reveal">${bouts.length ? bouts.map((bout, index) => `<div class="result-number">${String(index + 1).padStart(2, "0")}</div>${boutCard(bout, true)}`).join("") : `<div class="empty-results"><span>取</span><h2>Awaiting torikumi</h2><p>Day ${day} matchups will appear here when the official schedule is published.</p></div>`}</section>
+      <div class="results-filter-bar reveal" role="group" aria-label="Draft result filters">
+        ${[["all", "All"], ["gwazy", "Gwazy"], ["jake", "Jake"], ["my", "My Draft"], ["important", "Important Bouts"]].map(([value, label]) => `<button type="button" class="${resultsFilter === value ? "active" : ""}" data-results-filter="${value}" aria-pressed="${String(resultsFilter === value)}">${label}</button>`).join("")}
+        <output id="results-visible-count">${bouts.length} bouts</output>
+      </div>
+      <div class="results-summary reveal"><span class="status-dot"></span><strong>${bouts.length ? `Day ${day} draft tracker` : "Awaiting the official torikumi"}</strong><span>${completed} completed · ${bouts.length - completed} scheduled</span><span>${signedPoints(gwazyToday.points + jakeToday.points)} combined draft pts</span></div>
+      <section class="results-list draft-impact-results reveal" data-results-list>${bouts.length ? bouts.map((bout, index) => draftImpactBoutCard(bout, day, index)).join("") : `<div class="empty-results"><span>取</span><h2>Awaiting torikumi</h2><p>Day ${day} matchups will appear here when the official schedule is published.</p></div>`}<div class="results-filter-empty" id="results-filter-empty"><b>No matching draft bouts</b><span>Choose another filter to see more results.</span></div></section>
       ${appFooter()}
     </section>`;
 }
@@ -2196,6 +2315,10 @@ function bindViewEvents() {
     saveState();
     render();
   }));
+  app.querySelectorAll("[data-results-filter]").forEach((button) => button.addEventListener("click", () => {
+    resultsFilter = button.dataset.resultsFilter;
+    applyResultsFilter();
+  }));
   app.querySelectorAll("[data-theme-choice]").forEach((button) => button.addEventListener("click", () => {
     state.theme = button.dataset.themeChoice;
     saveState();
@@ -2333,6 +2456,7 @@ function bindViewEvents() {
     saveState();
     await loadSharedDraft({ force: true });
   });
+  if (app.querySelector("[data-results-list]")) applyResultsFilter();
 }
 
 document.addEventListener("click", (event) => {

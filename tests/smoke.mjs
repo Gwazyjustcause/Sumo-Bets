@@ -123,6 +123,11 @@ for (const capability of ["data-overview-analytics", "data-overview-standings", 
 for (const capability of ["data-random-draft", "data-clear-player-draft", "data-random-pick", "randomDraftCandidate", "generateRandomDraft", "addRandomPick", "random-draft-dialog"]) {
   assert(app.includes(capability) || css.includes(capability), `Missing random draft capability: ${capability}`);
 }
+for (const capability of ["draftImpactBoutCard", "resultDraftImpact", "dailyDraftSummary", "applyResultsFilter", "data-results-daily-stats", "data-results-filter", "My Draft", "Important Bouts", "result-owner-badge", "result-point-award"]) {
+  assert(app.includes(capability) || css.includes(capability), `Missing draft-focused Results capability: ${capability}`);
+}
+const resultsCardSource = app.slice(app.indexOf("function draftImpactBoutCard"), app.indexOf("function dailyDraftSummary"));
+assert(!resultsCardSource.includes('"Official"'), "Results cards must replace the Official badge with draft ownership");
 assert(!app.includes("FORM GUIDE"), "The obsolete Overview Form Guide card must remain removed");
 for (const capability of ["createClient", "save_shared_draft", "postgres_changes", "SHARED_DRAFT_API", "p_expected_revision", "setupStatus", "Project URL", "Publishable Key"]) {
   assert(sharedDraftApi.includes(capability), `Missing shared draft transport capability: ${capability}`);
