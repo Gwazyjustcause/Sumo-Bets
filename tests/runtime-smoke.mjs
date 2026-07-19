@@ -115,6 +115,11 @@ await new Promise((resolve) => setTimeout(resolve, 240));
 
 assert(app.innerHTML.includes("JAKE'S SIDE PREDICTION"), `Overview should preserve and render the selected player's prediction control. Browser errors: ${browserConsole.errors.join(" | ")}`);
 assert(app.innerHTML.includes("The draft has not started yet."), "A clean save must show the friendly pre-draft state");
+assert(app.innerHTML.includes("Current standings") && app.innerHTML.includes("Projected winner") && app.innerHTML.includes("Point progression"), "Overview must restore the standings, forecast, and momentum analytics row");
+const overviewOrder = [app.innerHTML.indexOf("score-duel"), app.innerHTML.indexOf("data-overview-analytics"), app.innerHTML.indexOf("data-overview-roster")];
+assert(overviewOrder[0] >= 0 && overviewOrder[0] < overviewOrder[1] && overviewOrder[1] < overviewOrder[2], "Overview must order score comparison, analytics, then shared rosters");
+assert.equal((app.innerHTML.match(/class="chart-line /g) || []).length, 2, "Momentum must render a separate point-total line for each player");
+assert(app.innerHTML.includes("D1") && app.innerHTML.includes("D15"), "Momentum must span the complete Day 1 to Day 15 axis");
 assert.equal(playerSelect.value, "jake", "A storage migration must preserve the harmless active-player preference");
 const migratedSave = JSON.parse(storage.get("sumoBattleSettings"));
 assert.equal(migratedSave.appVersion, 3, "The first Version 3 run must write a new compatible preferences save");
@@ -143,6 +148,10 @@ vm.runInContext(`savedSharedDraft={schemaVersion:3,bashoId:state.selectedBashoId
 };`, context);
 assert.equal(vm.runInContext("validateSharedDraft().valid", context), true, "A complete two-player draft with legal substitute categories must save");
 assert.equal(vm.runInContext("hasUnsavedDraftChanges()", context), true, "Editing the working copy must raise the unsaved-changes state");
+const liveForecast = JSON.parse(vm.runInContext("JSON.stringify(forecastModel())", context));
+assert(Number.isFinite(liveForecast.projections.gwazy) && Number.isFinite(liveForecast.projections.jake), "Forecast must calculate both projected final scores from the live draft and official records");
+assert(liveForecast.probability >= 5 && liveForecast.probability <= 95, "Forecast win probability must remain a meaningful percentage");
+assert(vm.runInContext("momentumChart().includes('D15') && (momentumChart().match(/chart-line/g) || []).length === 2", context), "Momentum must plot both players across the full basho axis");
 vm.runInContext("getDraftPlayer('jake').mainPicks[0]='hoshoryu'", context);
 assert(vm.runInContext("validateSharedDraft().errors.some((error)=>error.includes('appears more than once'))", context), "Cross-player duplicate ownership must block Save Picks");
 vm.runInContext("state.drafts[state.selectedBashoId]=emptyDraftPlayers(); savedSharedDraft.players=emptyDraftPlayers();", context);

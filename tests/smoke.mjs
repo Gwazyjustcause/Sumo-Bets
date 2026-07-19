@@ -108,6 +108,10 @@ for (const capability of ["DRAFT_SCHEMA_VERSION", "normalizeDrafts", "draftOwner
 for (const capability of ["data-save-draft", "validateSharedDraft", "hasUnsavedDraftChanges", "beforeunload", "data-roster-add", "data-roster-replace", "lastSavedAt", "savedBy", "data-toggle-draft-lock"]) {
   assert(app.includes(capability), `Missing repository-backed roster capability: ${capability}`);
 }
+for (const capability of ["data-overview-analytics", "data-overview-standings", "data-overview-forecast", "data-overview-momentum", "projectedPlayerScore", "forecastModel", "momentumChart"]) {
+  assert(app.includes(capability), `Missing restored Overview analytics capability: ${capability}`);
+}
+assert(!app.includes("FORM GUIDE"), "The obsolete Overview Form Guide card must remain removed");
 for (const capability of ["api.github.com/repos", "sessionStorage", "SHARED_DRAFT_API", "method: \"PUT\"", "sha"]) {
   assert(sharedDraftApi.includes(capability), `Missing shared draft transport capability: ${capability}`);
 }

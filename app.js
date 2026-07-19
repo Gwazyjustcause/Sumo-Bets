@@ -761,6 +761,118 @@ function scoreDuel() {
     </article>`;
 }
 
+function currentStandingsCard() {
+  const scores = data.players.map((player) => ({
+    ...player,
+    score: playerScore(player.id),
+    today: playerDayScore(player.id),
+  }));
+  const maximum = Math.max(1, ...scores.map((player) => player.score));
+  const [gwazy, jake] = scores;
+  const margin = Math.abs(gwazy.score - jake.score);
+  const marginCopy = margin === 0 ? "Tied" : `${gwazy.score > jake.score ? gwazy.name : jake.name} +${margin}`;
+  const rows = scores.map((player) => `
+    <div class="standing-row">
+      <div class="standing-meta"><strong>${player.name}</strong><span>${player.today >= 0 ? "+" : ""}${player.today} today</span><b>${player.score}</b></div>
+      <div class="score-track"><span class="${player.color}" style="--width:${(player.score / maximum) * 100}%"></span></div>
+    </div>`).join("");
+  return `
+    <section class="glass-card standings-card reveal" data-overview-standings>
+      <div class="section-title"><div><p class="eyebrow">LIVE SCORE</p><h2>Current standings</h2></div><span class="sync-badge"><i></i> Day ${data.meta.day}</span></div>
+      ${rows}
+      <div class="difference-row"><span>Current margin</span><strong>${marginCopy}</strong></div>
+    </section>`;
+}
+
+function projectedPlayerScore(playerId) {
+  const currentDay = Math.max(0, Math.min(data.meta.totalDays, Number(data.meta.day) || 0));
+  const remainingDays = Math.max(0, data.meta.totalDays - currentDay);
+  const timeline = substitutionTimeline(playerId, currentDay);
+  const activeIds = currentDay > 0 ? timeline.activeIds : getRoster(playerId).team;
+  const expectedDailyPoints = activeIds.reduce((total, id) => {
+    const rikishi = getRikishi(id);
+    if (!rikishi) return total;
+    const completed = Math.max(0, rikishi.wins + rikishi.losses);
+    const adjustedWinRate = (rikishi.wins + 2) / (completed + 4);
+    return total + adjustedWinRate;
+  }, 0);
+  const prediction = getSidePrediction(playerId);
+  const sideTotals = data.meta.sideTotals || { East: 0, West: 0 };
+  const leadingSide = sideTotals.East === sideTotals.West ? null : sideTotals.East > sideTotals.West ? "East" : "West";
+  const expectedBonus = !prediction ? 0 : !leadingSide ? 10 : prediction === leadingSide ? 14 : 6;
+  return Math.round(playerScore(playerId) + (expectedDailyPoints * remainingDays) + expectedBonus);
+}
+
+function forecastModel() {
+  const projections = Object.fromEntries(data.players.map((player) => [player.id, projectedPlayerScore(player.id)]));
+  const [gwazy, jake] = data.players;
+  const margin = projections[gwazy.id] - projections[jake.id];
+  const gwazyProbability = Math.round(100 / (1 + Math.exp(-margin / 5)));
+  const winner = margin === 0 ? null : margin > 0 ? gwazy : jake;
+  const winnerProbability = winner?.id === gwazy.id ? gwazyProbability : winner ? 100 - gwazyProbability : 50;
+  return {
+    projections,
+    winner,
+    probability: Math.max(5, Math.min(95, winnerProbability)),
+    margin: Math.abs(margin),
+    remainingDays: Math.max(0, data.meta.totalDays - data.meta.day),
+  };
+}
+
+function forecastCard() {
+  const forecast = forecastModel();
+  const [gwazy, jake] = data.players;
+  const winnerName = forecast.winner?.name || "Too close";
+  return `
+    <section class="glass-card projection-card reveal" data-overview-forecast>
+      <div class="section-title"><div><p class="eyebrow">FORECAST</p><h2>Projected winner</h2></div><span class="spark-icon">${icons.spark}</span></div>
+      <div class="forecast-winner"><strong>${winnerName}</strong><span>${forecast.probability}%</span></div>
+      <div class="probability-track"><span class="${forecast.winner?.color || "violet"}" style="--width:${forecast.probability}%"></span></div>
+      <div class="forecast-score"><small>PROJECTED FINAL SCORE</small><b>${forecast.projections[gwazy.id]} <span>-</span> ${forecast.projections[jake.id]}</b><strong>${forecast.margin ? `+${forecast.margin} projected margin` : "Projected tie"}</strong></div>
+      <p class="microcopy">Live estimate from official records, active lineups, remaining days, and side predictions.</p>
+    </section>`;
+}
+
+function momentumChart() {
+  const width = 640;
+  const height = 170;
+  const left = 42;
+  const right = 624;
+  const top = 16;
+  const bottom = 142;
+  const observedDay = Math.max(1, Math.min(data.meta.totalDays, Number(data.meta.day) || 0));
+  const series = data.players.map((player) => ({
+    ...player,
+    values: Array.from({ length: observedDay }, (_, index) => playerScore(player.id, index + 1)),
+  }));
+  const maximum = Math.max(1, ...series.flatMap((player) => player.values));
+  const xForDay = (day) => left + ((day - 1) / Math.max(1, data.meta.totalDays - 1)) * (right - left);
+  const yForScore = (score) => bottom - (score / maximum) * (bottom - top);
+  const paths = series.map((player) => {
+    const points = player.values.map((score, index) => [xForDay(index + 1), yForScore(score), score, index + 1]);
+    const path = points.map(([x, y], index) => `${index ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
+    return `<path class="chart-line ${player.color}" d="${path}" pathLength="1"></path>${points.map(([x, y, score, day]) => `<circle class="chart-point ${player.color}" cx="${x}" cy="${y}" r="3"><title>${player.name}, Day ${day}: ${score} points</title></circle>`).join("")}`;
+  }).join("");
+  const gridValues = [maximum, Math.round(maximum / 2), 0];
+  const grid = gridValues.map((value) => {
+    const y = yForScore(value);
+    return `<line x1="${left}" y1="${y}" x2="${right}" y2="${y}"></line><text class="chart-y-label" x="34" y="${y + 3}" text-anchor="end">${value}</text>`;
+  }).join("");
+  return `
+    <div class="chart-wrap" role="img" aria-label="Gwazy and Jake point totals from Day 1 through Day ${observedDay}">
+      <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" aria-hidden="true">${grid}${paths}</svg>
+      <div class="chart-days">${[1, 3, 5, 7, 9, 11, 13, 15].map((day) => `<span>D${day}</span>`).join("")}</div>
+    </div>`;
+}
+
+function momentumCard() {
+  return `
+    <section class="glass-card timeline-card reveal" data-overview-momentum>
+      <div class="section-title"><div><p class="eyebrow">MOMENTUM</p><h2>Point progression</h2></div><div class="chart-legend"><span class="violet">Gwazy</span><span class="gold">Jake</span></div></div>
+      ${momentumChart()}
+    </section>`;
+}
+
 function boutCard(bout, compact = false) {
   const east = getRikishi(bout.east);
   const west = getRikishi(bout.west);
@@ -926,15 +1038,17 @@ function overviewView() {
         </div>
       </div>
 
-      ${draftStarted ? scoreDuel() : `
-        <section class="blank-state-panel overview-empty-state reveal" data-overview-empty>
-          <span class="blank-state-icon">番</span>
-          <div><p class="eyebrow">CLEAN SLATE</p><h2>The draft has not started yet.</h2><p>Select wrestlers from the Banzuke to build each player's team. All ${pool.total} Makuuchi rikishi are available.</p></div>
-          <a class="primary-button" href="#banzuke">Open Banzuke</a>
-        </section>`}
+      ${scoreDuel()}
+
+      <div class="overview-grid overview-analytics" data-overview-analytics>
+        ${currentStandingsCard()}
+        ${forecastCard()}
+        ${momentumCard()}
+      </div>
 
       <section class="content-section picks-preview reveal">
         <div class="section-title spacious"><div><p class="eyebrow">SHARED DRAFT · ${escapeHtml(basho.label.toUpperCase())}</p><h2>Complete rosters</h2><p>Both players' main picks, substitutes, scores, predictions, and completion progress update here automatically.</p></div><a class="text-link" href="#banzuke">Open draft <span>${icons.arrow}</span></a></div>
+        ${!draftStarted ? `<div class="overview-roster-empty" data-overview-empty><b>The draft has not started yet.</b><span>Select wrestlers from the Banzuke to build each player's team. All ${pool.total} Makuuchi rikishi are available.</span></div>` : ""}
         <div class="pick-preview-grid overview-rosters">${data.players.map(overviewRosterDashboard).join("")}</div>
       </section>
 
