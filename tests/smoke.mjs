@@ -124,9 +124,10 @@ for (const capability of ["data-random-draft", "data-clear-player-draft", "data-
   assert(app.includes(capability) || css.includes(capability), `Missing random draft capability: ${capability}`);
 }
 assert(!app.includes("FORM GUIDE"), "The obsolete Overview Form Guide card must remain removed");
-for (const capability of ["createClient", "save_shared_draft", "postgres_changes", "SHARED_DRAFT_API", "p_expected_revision", "configured"]) {
+for (const capability of ["createClient", "save_shared_draft", "postgres_changes", "SHARED_DRAFT_API", "p_expected_revision", "setupStatus", "Project URL", "Publishable Key"]) {
   assert(sharedDraftApi.includes(capability), `Missing shared draft transport capability: ${capability}`);
 }
+assert(app.includes("supabase_realtime publication"), "Realtime setup failures must identify the missing publication");
 for (const removedCredentialPath of ["api.github.com/repos", "sessionStorage", "Authorization", "setToken", "GitHub write token"]) {
   assert(!sharedDraftApi.includes(removedCredentialPath), `Personal GitHub credential path must be removed: ${removedCredentialPath}`);
 }

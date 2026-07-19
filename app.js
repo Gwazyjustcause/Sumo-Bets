@@ -314,7 +314,12 @@ function applyRealtimeSharedDraft(result) {
 function subscribeToSharedDraft() {
   if (!window.SHARED_DRAFT_API?.subscribe || !window.SHARED_DRAFT_API.configured?.()) return;
   stopSharedDraftSubscription?.();
-  stopSharedDraftSubscription = window.SHARED_DRAFT_API.subscribe(state.selectedBashoId, applyRealtimeSharedDraft);
+  stopSharedDraftSubscription = window.SHARED_DRAFT_API.subscribe(state.selectedBashoId, applyRealtimeSharedDraft, (status) => {
+    if (["CHANNEL_ERROR", "TIMED_OUT"].includes(status)) {
+      sharedDraftError = "Supabase Realtime is unavailable. Confirm shared_drafts is in the supabase_realtime publication.";
+      render();
+    }
+  });
 }
 
 async function refreshSharedDraft() {
@@ -1772,7 +1777,8 @@ function settingsView() {
   const player = getPlayerDefinition();
   const playerState = getPlayerState();
   const storageKilobytes = (JSON.stringify(state).length / 1024).toFixed(1);
-  const sharedBackendReady = Boolean(window.SHARED_DRAFT_API?.configured?.());
+  const sharedSetup = window.SHARED_DRAFT_API?.setupStatus?.() || { ready: false, missing: ["Supabase client"] };
+  const sharedBackendReady = sharedSetup.ready;
   const sharedBackendUrl = window.SHARED_DRAFT_API?.config?.url || "Not configured";
   return `
     <section class="page-shell settings-shell">
@@ -1802,7 +1808,7 @@ function settingsView() {
           <button class="secondary-button" type="button" data-mock-sync>Check data now</button>
         </section>
         <section class="settings-card reveal"><div class="settings-card-title"><span>⌁</span><div><h2>Realtime shared draft</h2><p>Rosters and predictions sync through Supabase without a personal write token.</p></div></div>
-          <div class="sync-panel"><span class="sync-icon">${sharedBackendReady ? "✓" : "!"}</span><div><b>${sharedBackendReady ? "Supabase connection configured" : "Supabase setup required"}</b><small>${escapeHtml(sharedBackendUrl)}</small></div><span class="sync-badge"><i></i> LIVE</span></div>
+          <div class="sync-panel"><span class="sync-icon">${sharedBackendReady ? "✓" : "!"}</span><div><b>${sharedBackendReady ? "Supabase connection configured" : `Missing: ${escapeHtml(sharedSetup.missing.join(", "))}`}</b><small>${escapeHtml(sharedBackendUrl)}</small></div><span class="sync-badge"><i></i> LIVE</span></div>
           <button class="secondary-button" type="button" data-refresh-shared>Refresh realtime draft</button>
           <div class="storage-meter"><div><span>Local preferences only</span><b>${storageKilobytes} KB</b></div><span><i style="--width:${Math.min(100, Number(storageKilobytes) * 4)}%"></i></span></div>
           <button class="danger-button" type="button" data-reset-draft>Reset current draft only</button>

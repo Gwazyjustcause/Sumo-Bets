@@ -45,6 +45,7 @@ const client = {
 };
 
 const context = vm.createContext({
+  URL,
   window: {
     SUMO_SHARED_DRAFT_CONFIG: {
       url: "https://example.supabase.co",
@@ -61,6 +62,11 @@ const context = vm.createContext({
   },
 });
 vm.runInContext(source, context, { filename: "shared-draft.js" });
+assert.deepEqual(JSON.parse(JSON.stringify(context.window.SHARED_DRAFT_API.setupStatus())), {
+  ready: true,
+  missing: [],
+  message: "Supabase configuration is ready.",
+}, "The setup check must report a complete browser configuration");
 
 const document = {
   schemaVersion: 3,
@@ -106,4 +112,23 @@ unsubscribe();
 assert(removedChannel, "Unsubscribing must release the Supabase realtime channel");
 
 assert.equal(context.window.SHARED_DRAFT_API.token, undefined, "The transport must not expose a personal-token API");
+
+const incompleteContext = vm.createContext({
+  URL,
+  window: {
+    SUMO_SHARED_DRAFT_CONFIG: {
+      url: "https://YOUR_PROJECT.supabase.co",
+      anonKey: "YOUR_PUBLISHABLE_OR_ANON_KEY",
+    },
+    supabase: { createClient() {} },
+  },
+});
+vm.runInContext(source, incompleteContext, { filename: "shared-draft.js" });
+const incomplete = JSON.parse(JSON.stringify(incompleteContext.window.SHARED_DRAFT_API.setupStatus()));
+assert.deepEqual(incomplete.missing, ["Project URL", "Publishable Key"], "The setup check must name every missing configuration value");
+await assert.rejects(
+  incompleteContext.window.SHARED_DRAFT_API.load("nagoya-2026"),
+  /Missing: Project URL, Publishable Key/,
+  "An incomplete setup must fail with actionable field names",
+);
 console.log("Shared draft transport checks passed: Supabase load, atomic revision save, realtime sync, and conflict rejection.");
