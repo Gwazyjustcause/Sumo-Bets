@@ -161,7 +161,7 @@ const readState = () => {
     const selectedBashoId = data.banzuke?.bashos.some((basho) => basho.id === saved.selectedBashoId)
       ? saved.selectedBashoId
       : defaults.selectedBashoId;
-    // Rosters are never restored from localStorage. The repository-backed shared
+    // Rosters are never restored from localStorage. The Supabase-backed shared
     // draft is loaded after startup and remains the single source of truth.
     const drafts = emptyDrafts();
     const officialBashoId = saved.officialBashoId || defaults.officialBashoId;
@@ -179,12 +179,13 @@ let state = readState();
 let historyEditMode = false;
 let activeHistoryId = state.history[0]?.id || null;
 let banzukeProfileTimer = null;
-let sharedDraftSha = null;
+let sharedDraftRevision = 0;
 let savedSharedDraft = null;
 let sharedDraftLoading = true;
 let sharedDraftSaving = false;
 let sharedDraftError = null;
 let sharedValidationErrors = [];
+let stopSharedDraftSubscription = null;
 
 function saveState() {
   try {
@@ -257,14 +258,14 @@ function draftEditingDisabled() {
   return sharedDraftLoading || sharedDraftSaving || Boolean(savedSharedDraft?.locked);
 }
 
-function applySharedDraft(document, sha = null) {
+function applySharedDraft(document, revision = Number(document.revision || 0)) {
   const bashoId = document.bashoId || data.banzuke.currentBashoId;
   if (!data.banzuke.bashos.some((basho) => basho.id === bashoId)) throw new Error("The shared draft belongs to an unavailable basho.");
   state.selectedBashoId = bashoId;
   const players = normalizedSharedPlayers(document.players);
   state.drafts[bashoId] = JSON.parse(JSON.stringify(players));
   savedSharedDraft = { ...document, bashoId, players: JSON.parse(JSON.stringify(players)) };
-  sharedDraftSha = sha;
+  sharedDraftRevision = Number(revision || document.revision || 0);
   sharedDraftError = null;
   sharedValidationErrors = [];
   saveState();
@@ -282,14 +283,38 @@ async function loadSharedDraft({ force = false } = {}) {
   sharedDraftError = null;
   render();
   try {
-    const result = await window.SHARED_DRAFT_API.load();
-    applySharedDraft(result.document, result.sha);
+    const result = await window.SHARED_DRAFT_API.load(state.selectedBashoId);
+    applySharedDraft(result.document, result.revision);
+    subscribeToSharedDraft();
   } catch (error) {
     sharedDraftError = error.message || "The shared draft could not be loaded.";
   } finally {
     sharedDraftLoading = false;
     render();
   }
+}
+
+function applyRealtimeSharedDraft(result) {
+  if (!result?.document || Number(result.revision || 0) <= sharedDraftRevision) return;
+  const playerId = state.activePlayer;
+  const preserveWorkingCopy = hasUnsavedPlayerChanges(playerId);
+  const workingPlayer = preserveWorkingCopy ? JSON.parse(JSON.stringify(getDraftPlayer(playerId))) : null;
+  applySharedDraft(result.document, result.revision);
+  if (workingPlayer) {
+    const conflicts = ownershipConflicts(playerId, workingPlayer, savedSharedDraft.players);
+    const blocked = new Set(conflicts.map((conflict) => conflict.id));
+    workingPlayer.mainPicks = workingPlayer.mainPicks.filter((id) => !blocked.has(id));
+    workingPlayer.substitutes = workingPlayer.substitutes.filter((id) => !blocked.has(id));
+    state.drafts[state.selectedBashoId][playerId] = workingPlayer;
+    if (conflicts.length) showToast("A wrestler in your working copy was just drafted by the other player.");
+  }
+  render();
+}
+
+function subscribeToSharedDraft() {
+  if (!window.SHARED_DRAFT_API?.subscribe || !window.SHARED_DRAFT_API.configured?.()) return;
+  stopSharedDraftSubscription?.();
+  stopSharedDraftSubscription = window.SHARED_DRAFT_API.subscribe(state.selectedBashoId, applyRealtimeSharedDraft);
 }
 
 async function refreshSharedDraft() {
@@ -355,7 +380,7 @@ function adoptLatestWhilePreservingPlayer(result, playerId, blockedIds = []) {
   state.drafts[bashoId] = JSON.parse(JSON.stringify(latestPlayers));
   state.drafts[bashoId][playerId] = workingPlayer;
   savedSharedDraft = { ...result.document, bashoId, players: JSON.parse(JSON.stringify(latestPlayers)) };
-  sharedDraftSha = result.sha;
+  sharedDraftRevision = result.revision;
   return latestPlayers;
 }
 
@@ -378,7 +403,7 @@ async function saveSharedDraft() {
     const candidatePlayer = sharedPayloadPlayers()[playerId];
     let saved = false;
     for (let attempt = 0; attempt < 3 && !saved; attempt += 1) {
-      const latest = await window.SHARED_DRAFT_API.load();
+      const latest = await window.SHARED_DRAFT_API.load(state.selectedBashoId);
       if ((latest.document.bashoId || data.banzuke.currentBashoId) !== state.selectedBashoId) throw new Error("The shared draft changed to a different basho. Refresh before saving.");
       if (latest.document.locked) throw new Error("The shared draft was locked on another device. Refresh before editing.");
       const latestPlayers = normalizedSharedPlayers(latest.document.players);
@@ -403,8 +428,8 @@ async function saveSharedDraft() {
         players: mergedPlayers,
       };
       try {
-        const result = await window.SHARED_DRAFT_API.save(document, latest.sha);
-        applySharedDraft(result.document, result.sha);
+        const result = await window.SHARED_DRAFT_API.save(document, latest.revision);
+        applySharedDraft(result.document, result.revision);
         saved = true;
         playBell();
         showToast(`${player.name}'s picks saved. ${data.players.find((item) => item.id !== playerId).name}'s draft was preserved.`);
@@ -449,8 +474,8 @@ async function toggleSharedDraftLock() {
       savedBy: getPlayerDefinition().name,
       players: sharedPayloadPlayers(),
     };
-    const result = await window.SHARED_DRAFT_API.save(document, sharedDraftSha);
-    applySharedDraft(result.document, result.sha);
+    const result = await window.SHARED_DRAFT_API.save(document, sharedDraftRevision);
+    applySharedDraft(result.document, result.revision);
     showToast(nextLocked ? "The shared draft is now locked." : "The shared draft is unlocked for editing.");
   } catch (error) {
     sharedDraftError = error.message || "The draft lock could not be changed.";
@@ -665,7 +690,9 @@ function startNewOfficialBashoDraft() {
   state.officialDataSignature = data.meta.dataSignature;
   state.selectedDay = Math.max(1, data.meta.day);
   savedSharedDraft = { schemaVersion: DRAFT_SCHEMA_VERSION, bashoId: state.selectedBashoId, revision: 0, locked: false, lastSavedAt: null, savedBy: null, players: emptyDraftPlayers() };
+  sharedDraftRevision = 0;
   sharedValidationErrors = [];
+  subscribeToSharedDraft();
 }
 
 function draftOwner(rikishiId, bashoId = state.selectedBashoId) {
@@ -1223,7 +1250,7 @@ function rosterView() {
         <span><b>6</b> starters</span><i></i><span><b>1</b> Sanyaku substitute</span><i></i><span><b>2</b> Maegashira substitutes</span><i></i><span><b>SUBS SCORE</b> only while activated</span>
       </div>
       <section class="shared-draft-bar reveal ${unsaved ? "dirty" : ""}">
-        <div><small>DRAFT STATUS</small><b>${sharedDraftLoading ? "Loading shared draft..." : locked ? "Draft locked" : unsaved ? "&#9679; Unsaved Changes" : "&#10003; Shared draft loaded"}</b></div>
+        <div><small>DRAFT STATUS</small><b>${sharedDraftLoading ? "Loading shared draft..." : sharedDraftError && !savedSharedDraft ? "Connection required" : locked ? "Draft locked" : unsaved ? "&#9679; Unsaved Changes" : "&#10003; Shared draft loaded"}</b></div>
         <div><small>LAST SAVED</small><b>${saveTime.day}</b><span>${saveTime.time}</span></div>
         <div><small>SAVED BY</small><b>${escapeHtml(savedSharedDraft?.savedBy || "No one yet")}</b><span>Revision ${Number(savedSharedDraft?.revision || 0)}</span></div>
         <div class="shared-draft-actions"><button class="secondary-button" type="button" data-refresh-shared>Refresh</button><button class="secondary-button" type="button" data-toggle-draft-lock ${unsaved || sharedDraftLoading || sharedDraftSaving ? "disabled" : ""}>${locked ? "Unlock draft" : "Lock draft"}</button></div>
@@ -1745,6 +1772,8 @@ function settingsView() {
   const player = getPlayerDefinition();
   const playerState = getPlayerState();
   const storageKilobytes = (JSON.stringify(state).length / 1024).toFixed(1);
+  const sharedBackendReady = Boolean(window.SHARED_DRAFT_API?.configured?.());
+  const sharedBackendUrl = window.SHARED_DRAFT_API?.config?.url || "Not configured";
   return `
     <section class="page-shell settings-shell">
       ${pageIntro("PREFERENCES & DATA", "Settings", "Make the battle yours and keep its source data healthy.")}
@@ -1772,14 +1801,12 @@ function settingsView() {
           <div class="source-list">${data.meta.sources.map((source) => `<a href="${source.url}" target="_blank" rel="noreferrer"><span>${icons.source}</span><b>${source.label}</b><small>sumo.or.jp</small></a>`).join("")}</div>
           <button class="secondary-button" type="button" data-mock-sync>Check data now</button>
         </section>
-        <section class="settings-card reveal"><div class="settings-card-title"><span>⌁</span><div><h2>Shared draft repository</h2><p>Rosters and predictions are read from one repository JSON file on every device.</p></div></div>
-          <div class="sync-panel"><span class="sync-icon">${window.SHARED_DRAFT_API?.token() ? "✓" : "!"}</span><div><b>${window.SHARED_DRAFT_API?.token() ? "Write access ready" : "Write token required to save"}</b><small>${escapeHtml(window.SHARED_DRAFT_API?.config?.owner || "")}/${escapeHtml(window.SHARED_DRAFT_API?.config?.repo || "")} · ${escapeHtml(window.SHARED_DRAFT_API?.config?.branch || "")}</small></div></div>
-          <label class="setting-field">Fine-grained GitHub token<input id="shared-draft-token" type="password" autocomplete="off" placeholder="github_pat_…" /></label>
-          <button class="secondary-button" type="button" data-store-draft-token>${window.SHARED_DRAFT_API?.token() ? "Replace session token" : "Use token for this session"}</button>
-          <button class="secondary-button" type="button" data-refresh-shared>Download latest shared draft</button>
+        <section class="settings-card reveal"><div class="settings-card-title"><span>⌁</span><div><h2>Realtime shared draft</h2><p>Rosters and predictions sync through Supabase without a personal write token.</p></div></div>
+          <div class="sync-panel"><span class="sync-icon">${sharedBackendReady ? "✓" : "!"}</span><div><b>${sharedBackendReady ? "Supabase connection configured" : "Supabase setup required"}</b><small>${escapeHtml(sharedBackendUrl)}</small></div><span class="sync-badge"><i></i> LIVE</span></div>
+          <button class="secondary-button" type="button" data-refresh-shared>Refresh realtime draft</button>
           <div class="storage-meter"><div><span>Local preferences only</span><b>${storageKilobytes} KB</b></div><span><i style="--width:${Math.min(100, Number(storageKilobytes) * 4)}%"></i></span></div>
           <button class="danger-button" type="button" data-reset-draft>Reset current draft only</button>
-          <p class="microcopy">The token needs Contents read/write access to this repository. It exists only in this browser tab and is never written to localStorage or the repository.</p>
+          <p class="microcopy">No GitHub or player credential is stored in the browser. The public Supabase key is limited by the database policies in supabase/schema.sql.</p>
         </section>
       </div>
       ${appFooter()}
@@ -1790,7 +1817,7 @@ function appFooter() {
   return `
     <footer class="app-footer">
       <div class="brand footer-brand"><span class="brand-mon"><span>相</span></span><span><strong>SUMO BATTLE</strong><small>Made for the rivalry, not for money.</small></span></div>
-      <p>Official results come from the <a href="${data.meta.sources[0].url}" target="_blank" rel="noreferrer">Nihon Sumo Kyokai</a>. Picks come from the shared repository draft.</p>
+      <p>Official results come from the <a href="${data.meta.sources[0].url}" target="_blank" rel="noreferrer">Nihon Sumo Kyokai</a>. Picks sync through the realtime Supabase draft.</p>
       <span>v3.0 · ${data.meta.shortTournament}</span>
     </footer>`;
 }
@@ -2196,17 +2223,6 @@ function bindViewEvents() {
   });
   app.querySelectorAll("[data-refresh-shared]").forEach((button) => button.addEventListener("click", refreshSharedDraft));
   app.querySelector("[data-toggle-draft-lock]")?.addEventListener("click", toggleSharedDraftLock);
-  document.querySelector("[data-store-draft-token]")?.addEventListener("click", () => {
-    const field = document.querySelector("#shared-draft-token");
-    if (!field?.value.trim()) {
-      showToast("Paste a fine-grained GitHub token first.");
-      return;
-    }
-    window.SHARED_DRAFT_API?.setToken(field.value);
-    field.value = "";
-    render();
-    showToast("Repository write access is ready for this session.");
-  });
   document.querySelector("[data-mock-sync]")?.addEventListener("click", async (event) => {
     event.currentTarget.disabled = true;
     event.currentTarget.textContent = "Checking deployed snapshot…";
@@ -2302,10 +2318,14 @@ function bindViewEvents() {
   ["#banzuke-pick-filter", "#banzuke-side-filter", "#banzuke-rank-filter", "#banzuke-hide-unavailable"].forEach((selector) => {
     app.querySelector(selector)?.addEventListener("change", applyBanzukeFilters);
   });
-  app.querySelector("#basho-select")?.addEventListener("change", (event) => {
+  app.querySelector("#basho-select")?.addEventListener("change", async (event) => {
+    if (hasUnsavedDraftChanges() && !window.confirm("You have unsaved changes. Do you want to discard them?")) {
+      event.target.value = state.selectedBashoId;
+      return;
+    }
     state.selectedBashoId = event.target.value;
     saveState();
-    render();
+    await loadSharedDraft({ force: true });
   });
 }
 
@@ -2318,7 +2338,7 @@ document.addEventListener("click", (event) => {
       event.preventDefault();
       return;
     }
-    applySharedDraft(savedSharedDraft, sharedDraftSha);
+    applySharedDraft(savedSharedDraft, sharedDraftRevision);
   }
   const navTarget = event.target.closest("[data-nav]");
   if (navTarget) location.hash = navTarget.dataset.nav;

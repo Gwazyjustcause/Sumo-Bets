@@ -85,7 +85,7 @@ const app = load("app.js");
 const sharedDraftApi = load("shared-draft.js");
 const imageResolver = load("image-resolver.js");
 const css = load("styles.css");
-for (const asset of ["styles.css", "data/sumo-data.js", "image-resolver.js", "shared-draft.js", "app.js"]) {
+for (const asset of ["styles.css", "data/sumo-data.js", "image-resolver.js", "supabase-config.js", "shared-draft.js", "app.js"]) {
   assert(html.includes(asset), `index.html must reference ${asset}`);
 }
 assert(existsSync(new URL("assets/rikishi-placeholder.svg", root)), "The silhouette fallback asset must exist");
@@ -105,8 +105,8 @@ for (const capability of ["data-add-pick", "data-roster-move", "data-history-edi
 for (const capability of ["DRAFT_SCHEMA_VERSION", "normalizeDrafts", "draftOwner", "draftPoolStats", "data-draft-owner", "data-overview-roster", "draft-owner-gwazy", "draft-owner-jake"]) {
   assert(app.includes(capability) || css.includes(capability), `Missing shared-draft capability: ${capability}`);
 }
-for (const capability of ["data-save-draft", "validateSharedDraft", "hasUnsavedDraftChanges", "beforeunload", "lastSavedAt", "savedBy", "data-toggle-draft-lock"]) {
-  assert(app.includes(capability), `Missing repository-backed roster capability: ${capability}`);
+for (const capability of ["data-save-draft", "validateSharedDraft", "hasUnsavedDraftChanges", "beforeunload", "lastSavedAt", "savedBy", "data-toggle-draft-lock", "applyRealtimeSharedDraft", "subscribeToSharedDraft"]) {
+  assert(app.includes(capability), `Missing realtime shared-roster capability: ${capability}`);
 }
 for (const capability of ["validatePlayerDraft", "hasUnsavedPlayerChanges", "ownershipConflicts", "adoptLatestWhilePreservingPlayer", "latest.document", "attempt < 3", "just been drafted by"]) {
   assert(app.includes(capability), `Missing simultaneous player-save capability: ${capability}`);
@@ -124,8 +124,11 @@ for (const capability of ["data-random-draft", "data-clear-player-draft", "data-
   assert(app.includes(capability) || css.includes(capability), `Missing random draft capability: ${capability}`);
 }
 assert(!app.includes("FORM GUIDE"), "The obsolete Overview Form Guide card must remain removed");
-for (const capability of ["api.github.com/repos", "sessionStorage", "SHARED_DRAFT_API", "method: \"PUT\"", "sha"]) {
+for (const capability of ["createClient", "save_shared_draft", "postgres_changes", "SHARED_DRAFT_API", "p_expected_revision", "configured"]) {
   assert(sharedDraftApi.includes(capability), `Missing shared draft transport capability: ${capability}`);
+}
+for (const removedCredentialPath of ["api.github.com/repos", "sessionStorage", "Authorization", "setToken", "GitHub write token"]) {
+  assert(!sharedDraftApi.includes(removedCredentialPath), `Personal GitHub credential path must be removed: ${removedCredentialPath}`);
 }
 for (const capability of ["banzukeRankRows", "data-banzuke-id", "data-banzuke-shikona", "applyBanzukeFilters", "verifyBanzukeIntegrity", "rikishi missing from rendered banzuke", "Rendered ✗", "Not parsed", "console.error"]) {
   assert(app.includes(capability), `Missing complete-banzuke capability: ${capability}`);
@@ -156,7 +159,6 @@ for (const separatedFile of [
   "data/official/banzuke.json",
   "data/official/rikishi.json",
   "data/official/results.json",
-  "data/draft/current-draft.json",
   "data/draft/history.json",
   "data/draft/players.json",
   "scripts/update-official-data.mjs",
@@ -165,16 +167,13 @@ for (const separatedFile of [
   assert(existsSync(new URL(separatedFile, root)), `Missing separated data/update file: ${separatedFile}`);
 }
 const updateWorkflow = load(".github/workflows/update-jsa-data.yml");
-assert(updateWorkflow.includes("shared-draft.js") && updateWorkflow.includes("github.event_name == 'push'"), "Pages deploys must include the shared transport after application and draft pushes");
+assert(updateWorkflow.includes("scripts/update-official-data.mjs") && updateWorkflow.includes("git add data/official data/sumo-data.js"), "GitHub Actions must update only the official JSA layer");
+for (const forbiddenWorkflowTask of ["deploy-pages", "upload-pages-artifact", "shared-draft.js", "data/draft", "github.event_name == 'push'"]) {
+  assert(!updateWorkflow.includes(forbiddenWorkflowTask), `The JSA workflow must not manage application or draft persistence: ${forbiddenWorkflowTask}`);
+}
 assert(app.includes("resetCurrentDraft") && app.includes("data-reset-draft"), "Reset must be scoped to the current draft layer");
 assert(app.includes("playerScore") && app.includes("pointsThroughDay"), "Draft scores must recalculate from official results");
-
-const sharedDraftDocument = JSON.parse(load("data/draft/current-draft.json"));
-assert.equal(sharedDraftDocument.schemaVersion, 3, "The repository draft must use the Version 3 schema");
-assert.equal(sharedDraftDocument.locked, false, "A new shared draft must begin unlocked");
-for (const playerId of ["gwazy", "jake"]) {
-  assert.deepEqual(sharedDraftDocument.players[playerId].mainPicks, [], `${playerId} shared main picks must begin empty`);
-  assert.deepEqual(sharedDraftDocument.players[playerId].substitutes, [], `${playerId} shared substitutes must begin empty`);
-}
+assert(existsSync(new URL("supabase/schema.sql", root)), "Supabase schema and conflict-safe save function must be included");
+assert(!existsSync(new URL("data/draft/current-draft.json", root)), "The live shared draft must not be committed to the repository");
 
 console.log(`Smoke checks passed: ${data.rikishi.length} rikishi, ${data.bouts.length} bouts, ${data.history.length} archived basho.`);

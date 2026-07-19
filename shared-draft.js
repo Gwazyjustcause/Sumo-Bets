@@ -1,72 +1,95 @@
 (() => {
   const defaults = {
-    owner: "Gwazyjustcause",
-    repo: "Sumo-Bets",
-    branch: "main",
-    path: "data/draft/current-draft.json",
+    url: "",
+    anonKey: "",
+    table: "shared_drafts",
+    saveFunction: "save_shared_draft",
   };
   const config = { ...defaults, ...(window.SUMO_SHARED_DRAFT_CONFIG || {}) };
-  const apiUrl = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${config.path}`;
-  const tokenKey = "sumoBattleGitHubWriteToken";
+  let client = null;
+  let activeChannel = null;
 
-  function token() {
-    try { return sessionStorage.getItem(tokenKey) || ""; } catch { return ""; }
+  function configured() {
+    return Boolean(config.url && config.anonKey && !config.url.includes("YOUR_PROJECT"));
   }
 
-  function setToken(value) {
-    try {
-      if (value) sessionStorage.setItem(tokenKey, value.trim());
-      else sessionStorage.removeItem(tokenKey);
-    } catch { /* Session credentials are optional until save time. */ }
-  }
-
-  function decodeBase64(value) {
-    const bytes = Uint8Array.from(atob(value.replace(/\n/g, "")), (character) => character.charCodeAt(0));
-    return new TextDecoder().decode(bytes);
-  }
-
-  function encodeBase64(value) {
-    const bytes = new TextEncoder().encode(value);
-    let binary = "";
-    bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
-    return btoa(binary);
-  }
-
-  async function request(url, options = {}) {
-    const headers = { Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", ...(options.headers || {}) };
-    if (token()) headers.Authorization = `Bearer ${token()}`;
-    const response = await fetch(url, { cache: "no-store", ...options, headers });
-    if (!response.ok) {
-      const error = new Error(response.status === 409 || response.status === 422 ? "The shared draft changed on another device. Reload it before saving." : `Shared draft request failed (${response.status}).`);
-      error.status = response.status;
-      throw error;
+  function database() {
+    if (!configured()) throw new Error("Supabase shared draft is not configured. Add the project URL and publishable key in supabase-config.js.");
+    if (!window.supabase?.createClient) throw new Error("The Supabase client could not be loaded.");
+    if (!client) {
+      client = window.supabase.createClient(config.url, config.anonKey, {
+        auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+      });
     }
-    return response.json();
+    return client;
   }
 
-  async function load() {
-    try {
-      const result = await request(`${apiUrl}?ref=${encodeURIComponent(config.branch)}&t=${Date.now()}`);
-      return { document: JSON.parse(decodeBase64(result.content)), sha: result.sha };
-    } catch (error) {
-      if (error.status && error.status !== 403) throw error;
-      const response = await fetch(`${config.path}?t=${Date.now()}`, { cache: "no-store" });
-      if (!response.ok) throw error;
-      return { document: await response.json(), sha: null };
-    }
-  }
-
-  async function save(document, sha) {
-    if (!token()) throw new Error("Add a GitHub write token in Settings before saving the shared draft.");
-    const body = {
-      message: `Save ${document.bashoId} shared draft (${document.savedBy})`,
-      content: encodeBase64(`${JSON.stringify(document, null, 2)}\n`),
-      branch: config.branch,
-      ...(sha ? { sha } : {}),
+  function blankDocument(bashoId) {
+    const emptyPlayer = () => ({ mainPicks: [], substitutes: [], sidePrediction: null, substitutionEvents: [] });
+    return {
+      schemaVersion: 3,
+      bashoId,
+      revision: 0,
+      locked: false,
+      lastSavedAt: null,
+      savedBy: null,
+      players: { gwazy: emptyPlayer(), jake: emptyPlayer() },
     };
-    const result = await request(apiUrl, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-    return { document, sha: result.content?.sha || sha };
   }
 
-  window.SHARED_DRAFT_API = { config, load, save, token, setToken };
+  function normalizeRow(row, bashoId) {
+    if (!row) return { document: blankDocument(bashoId), revision: 0 };
+    const revision = Number(row.revision || row.document?.revision || 0);
+    return { document: { ...row.document, bashoId, revision }, revision };
+  }
+
+  async function load(bashoId) {
+    const { data, error } = await database()
+      .from(config.table)
+      .select("basho_id, revision, document")
+      .eq("basho_id", bashoId)
+      .maybeSingle();
+    if (error) throw new Error(`Shared draft request failed (${error.message || error.code || "unknown"}).`);
+    return normalizeRow(data, bashoId);
+  }
+
+  async function save(document, expectedRevision) {
+    const { data, error } = await database().rpc(config.saveFunction, {
+      p_basho_id: document.bashoId,
+      p_expected_revision: Number(expectedRevision || 0),
+      p_document: document,
+    });
+    if (error) {
+      const stale = error.code === "40001" || /STALE_DRAFT_REVISION|stale/i.test(error.message || "");
+      const saveError = new Error(stale
+        ? "The shared draft changed on another device. Reloading before saving."
+        : `Shared draft request failed (${error.message || error.code || "unknown"}).`);
+      saveError.status = stale ? 409 : Number(error.status || 500);
+      throw saveError;
+    }
+    const row = Array.isArray(data) ? data[0] : data;
+    return normalizeRow(row, document.bashoId);
+  }
+
+  function subscribe(bashoId, onChange) {
+    const db = database();
+    if (activeChannel) db.removeChannel(activeChannel);
+    activeChannel = db
+      .channel(`shared-draft-${bashoId}`)
+      .on("postgres_changes", {
+        event: "*",
+        schema: "public",
+        table: config.table,
+        filter: `basho_id=eq.${bashoId}`,
+      }, (payload) => {
+        if (payload.new) onChange(normalizeRow(payload.new, bashoId));
+      })
+      .subscribe();
+    return () => {
+      if (activeChannel) db.removeChannel(activeChannel);
+      activeChannel = null;
+    };
+  }
+
+  window.SHARED_DRAFT_API = { config, configured, load, save, subscribe };
 })();

@@ -12316,23 +12316,6 @@ window.SUMO_DATA = {
     "dataSignature": "6de77d8fe14fd9263e3cae67c9b87203b581f5abdc91e5a5fa73bf0a5ada0b72"
   },
   "history": [],
-  "draftDefaults": {
-    "schemaVersion": 2,
-    "description": "Blank defaults only. Live drafts are stored per browser in localStorage.",
-    "drafts": {},
-    "players": {
-      "gwazy": {
-        "mainPicks": [],
-        "substitutes": [],
-        "sidePrediction": null
-      },
-      "jake": {
-        "mainPicks": [],
-        "substitutes": [],
-        "sidePrediction": null
-      }
-    }
-  },
   "banzuke": {
     "currentBashoId": "nagoya-2026",
     "bashos": [

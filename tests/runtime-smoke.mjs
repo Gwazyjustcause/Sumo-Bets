@@ -129,7 +129,7 @@ assert.equal(vm.runInContext("state.history.length", context), 0, "The live Vers
 assert.equal(vm.runInContext("data.players.every((player) => player.score === 0 && player.sidePrediction === null)", context), true, "Scores and side predictions must start blank");
 assert.equal(vm.runInContext("data.meta.day", context), 8, "A draft migration must not erase the restored official day");
 assert(vm.runInContext("data.rikishi.some((rikishi) => rikishi.wins > 0)", context), "A draft migration must not erase official rikishi records");
-assert.deepEqual(JSON.parse(vm.runInContext("JSON.stringify(getRoster('gwazy'))", context)), { team: [], subs: [] }, "Legacy browser drafts must be ignored in favor of the repository draft");
+assert.deepEqual(JSON.parse(vm.runInContext("JSON.stringify(getRoster('gwazy'))", context)), { team: [], subs: [] }, "Legacy browser drafts must be ignored in favor of the Supabase draft");
 
 playerSelect.value = "jake";
 playerSelect.listeners.change();
@@ -161,9 +161,9 @@ vm.runInContext(`getDraftPlayer('jake').mainPicks[0]='onosato'; state.activePlay
     jake:{mainPicks:['onosato'],substitutes:[],sidePrediction:'West',substitutionEvents:[]}
   }};
   window.SHARED_DRAFT_API={
-    config:{owner:'test-owner',repo:'test-repo',branch:'main'},token:()=>'',setToken:()=>{},
-    load:async()=>({document:JSON.parse(JSON.stringify(__latestShared)),sha:'sha-'+__concurrentSaves.length}),
-    save:async(document,sha)=>{__putAttempts+=1;if(__putAttempts===1){__latestShared.players.jake.sidePrediction='East';const error=new Error('concurrent update');error.status=409;throw error;}__concurrentSaves.push({document:JSON.parse(JSON.stringify(document)),sha});__latestShared=JSON.parse(JSON.stringify(document));return {document,sha:'saved-'+__concurrentSaves.length};}
+    config:{url:'https://test.supabase.co',table:'shared_drafts'},configured:()=>true,subscribe:()=>()=>{},
+    load:async()=>({document:JSON.parse(JSON.stringify(__latestShared)),revision:__latestShared.revision}),
+    save:async(document,revision)=>{__putAttempts+=1;if(__putAttempts===1){__latestShared.players.jake.sidePrediction='East';const error=new Error('concurrent update');error.status=409;throw error;}__concurrentSaves.push({document:JSON.parse(JSON.stringify(document)),revision});__latestShared=JSON.parse(JSON.stringify(document));return {document,revision:document.revision};}
   };`, context);
 assert.equal(vm.runInContext("validatePlayerDraft('gwazy').valid", context), true, "Gwazy's valid roster must be independently saveable");
 assert.equal(vm.runInContext("validatePlayerDraft('jake').valid", context), true, "The local complete Jake roster remains independently valid before the remote merge");
@@ -171,7 +171,7 @@ await vm.runInContext("saveSharedDraft()", context);
 const firstPlayerScopedSave = JSON.parse(vm.runInContext("JSON.stringify(__concurrentSaves[0].document)", context));
 assert.equal(firstPlayerScopedSave.players.gwazy.mainPicks.length, 6, "Saving Gwazy must publish Gwazy's complete roster");
 assert.deepEqual(firstPlayerScopedSave.players.jake.mainPicks, ["onosato"], "Saving Gwazy must preserve Jake's latest incomplete remote roster without validating or overwriting it");
-assert.equal(firstPlayerScopedSave.players.jake.sidePrediction, "East", "A harmless SHA race must be retried against and preserve Jake's newer prediction");
+assert.equal(firstPlayerScopedSave.players.jake.sidePrediction, "East", "A harmless revision race must be retried against and preserve Jake's newer prediction");
 assert.equal(vm.runInContext("__putAttempts", context), 2, "A non-overlapping concurrent update must retry automatically");
 assert.equal(firstPlayerScopedSave.savedBy, "Gwazy", "Player-scoped save metadata must identify the editor");
 vm.runInContext("getDraftPlayer('gwazy').mainPicks[0]='onosato'", context);
@@ -322,7 +322,7 @@ corruptSaved.drafts = { "nagoya-2026": {
 } };
 storage.set("sumoBattleSettings", JSON.stringify(corruptSaved));
 vm.runInContext("state = readState();", context);
-assert.equal(vm.runInContext("draftOwner('onosato')", context), null, "Browser draft ownership must never override the shared repository draft");
+assert.equal(vm.runInContext("draftOwner('onosato')", context), null, "Browser draft ownership must never override the shared Supabase draft");
 assert.deepEqual(JSON.parse(vm.runInContext("JSON.stringify(getRoster('jake'))", context)), { team: [], subs: [] }, "Legacy browser roster data must be discarded completely");
 
 location.hash = "#history";

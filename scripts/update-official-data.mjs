@@ -377,7 +377,6 @@ async function main() {
   const rikishiData = { ...rikishiCore, generatedAt, dataSignature: signature };
   const results = { ...resultsCore, generatedAt, dataSignature: signature };
   const draftPlayers = await jsonFile(path.join(draftDir, "players.json"), { players: [] });
-  const draftDefaults = await jsonFile(path.join(draftDir, "current-draft.json"), { drafts: {} });
   const draftHistory = await jsonFile(path.join(draftDir, "history.json"), { events: [] });
   const currentBouts = (days.find((item) => item.day === completedDay)?.bouts || [])
     .filter((bout) => bout.completed && idByJsaId.has(bout.eastJsaId) && idByJsaId.has(bout.westJsaId))
@@ -417,7 +416,6 @@ async function main() {
     bouts: currentBouts,
     results,
     history: draftHistory.events || [],
-    draftDefaults,
     banzuke: {
       currentBashoId: bashoSlug,
       bashos: [{

@@ -1,8 +1,6 @@
 name: Update official JSA data
 
 on:
-  push:
-    branches: [main]
   schedule:
     # Runs every six hours during a basho; the script self-throttles to daily outside it.
     - cron: "17 */6 * * *"
@@ -10,19 +8,14 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
-  group: jsa-data-and-pages
+  group: jsa-official-data
   cancel-in-progress: false
 
 jobs:
   update:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -35,7 +28,6 @@ jobs:
           node-version: 20
 
       - name: Fetch official JSA snapshot
-        if: github.event_name != 'push'
         run: node scripts/update-official-data.mjs --scheduled
 
       - name: Detect official data changes
@@ -57,28 +49,3 @@ jobs:
           git add data/official data/sumo-data.js
           git commit -m "data: refresh official JSA snapshot"
           git push
-
-      # GITHUB_TOKEN pushes do not start a second Pages build, so deploy this tree directly.
-      - name: Configure GitHub Pages
-        if: steps.changes.outputs.changed == 'true' || github.event_name == 'push'
-        uses: actions/configure-pages@v5
-
-      - name: Stage static site
-        if: steps.changes.outputs.changed == 'true' || github.event_name == 'push'
-        shell: bash
-        run: |
-          mkdir -p _site
-          cp index.html styles.css app.js image-resolver.js shared-draft.js _site/
-          cp -R assets data _site/
-          touch _site/.nojekyll
-
-      - name: Upload static site
-        if: steps.changes.outputs.changed == 'true' || github.event_name == 'push'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
-
-      - name: Deploy updated site
-        if: steps.changes.outputs.changed == 'true' || github.event_name == 'push'
-        id: deployment
-        uses: actions/deploy-pages@v4
