@@ -175,6 +175,9 @@ for (const forbiddenWorkflowTask of ["deploy-pages", "upload-pages-artifact", "s
 assert(app.includes("resetCurrentDraft") && app.includes("data-reset-draft"), "Reset must be scoped to the current draft layer");
 assert(app.includes("playerScore") && app.includes("pointsThroughDay"), "Draft scores must recalculate from official results");
 assert(existsSync(new URL("supabase/schema.sql", root)), "Supabase schema and conflict-safe save function must be included");
+const supabaseSchema = load("supabase/schema.sql");
+assert(supabaseSchema.includes("on conflict on constraint shared_drafts_pkey"), "The first-save upsert must avoid PL/pgSQL output-column ambiguity");
+assert(!supabaseSchema.includes("on conflict (basho_id)"), "The Supabase save function must not use an ambiguous basho_id conflict target");
 assert(!existsSync(new URL("data/draft/current-draft.json", root)), "The live shared draft must not be committed to the repository");
 
 console.log(`Smoke checks passed: ${data.rikishi.length} rikishi, ${data.bouts.length} bouts, ${data.history.length} archived basho.`);

@@ -47,7 +47,7 @@ begin
       next_revision,
       p_document || jsonb_build_object('bashoId', p_basho_id, 'revision', next_revision)
     )
-    on conflict (basho_id) do nothing;
+    on conflict on constraint shared_drafts_pkey do nothing;
   end if;
 
   if not found then
