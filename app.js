@@ -238,6 +238,16 @@ function sharedPayloadPlayers(players = state.drafts[state.selectedBashoId] || e
   }]));
 }
 
+function sharedPlayerComparable(players, playerId) {
+  return sharedComparable(players)[playerId];
+}
+
+function hasUnsavedPlayerChanges(playerId = state.activePlayer) {
+  if (!savedSharedDraft || sharedDraftLoading) return false;
+  return JSON.stringify(sharedPlayerComparable(state.drafts[state.selectedBashoId], playerId))
+    !== JSON.stringify(sharedPlayerComparable(savedSharedDraft.players, playerId));
+}
+
 function hasUnsavedDraftChanges() {
   if (!savedSharedDraft || sharedDraftLoading) return false;
   return JSON.stringify(sharedComparable()) !== JSON.stringify(sharedComparable(savedSharedDraft.players));
@@ -306,32 +316,102 @@ function validateSharedDraft() {
   return { valid: errors.length === 0, errors };
 }
 
+function validatePlayerDraft(playerId = state.activePlayer) {
+  const player = getPlayerDefinition(playerId);
+  const check = validateRoster(playerId);
+  const roster = getRoster(playerId);
+  const ids = [...roster.team, ...roster.subs];
+  const errors = [];
+  if (check.team !== 6) errors.push(`${player.name} needs exactly 6 main picks.`);
+  if (check.subs !== 3) errors.push(`${player.name} needs exactly 3 substitutes.`);
+  if (check.sanyaku > 2) errors.push(`${player.name} has more than 2 Sanyaku main picks.`);
+  if (check.underdogs !== 1) errors.push(`${player.name} needs exactly 1 M13-M17 underdog.`);
+  if (check.substituteSanyaku !== 1) errors.push(`${player.name} needs exactly 1 Sanyaku substitute.`);
+  if (check.substituteMaegashira !== 2) errors.push(`${player.name} needs exactly 2 Maegashira substitutes.`);
+  [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))]
+    .forEach((id) => errors.push(`${getRikishi(id)?.name || id} appears more than once in ${player.name}'s roster.`));
+  return { valid: errors.length === 0, errors };
+}
+
+function ownershipConflicts(playerId, candidatePlayer, latestPlayers) {
+  const otherOwners = new Map();
+  data.players.filter((player) => player.id !== playerId).forEach((player) => {
+    const draft = latestPlayers[player.id] || {};
+    [...(draft.mainPicks || []), ...(draft.substitutes || [])].forEach((id) => otherOwners.set(id, player.id));
+  });
+  return [...(candidatePlayer.mainPicks || []), ...(candidatePlayer.substitutes || [])]
+    .filter((id) => otherOwners.has(id))
+    .map((id) => ({ id, ownerId: otherOwners.get(id) }));
+}
+
+function adoptLatestWhilePreservingPlayer(result, playerId, blockedIds = []) {
+  const bashoId = result.document.bashoId || data.banzuke.currentBashoId;
+  if (bashoId !== state.selectedBashoId) throw new Error("The shared draft changed to a different basho. Refresh before saving.");
+  const workingPlayer = JSON.parse(JSON.stringify(getDraftPlayer(playerId)));
+  const blocked = new Set(blockedIds);
+  workingPlayer.mainPicks = workingPlayer.mainPicks.filter((id) => !blocked.has(id));
+  workingPlayer.substitutes = workingPlayer.substitutes.filter((id) => !blocked.has(id));
+  const latestPlayers = normalizedSharedPlayers(result.document.players);
+  state.drafts[bashoId] = JSON.parse(JSON.stringify(latestPlayers));
+  state.drafts[bashoId][playerId] = workingPlayer;
+  savedSharedDraft = { ...result.document, bashoId, players: JSON.parse(JSON.stringify(latestPlayers)) };
+  sharedDraftSha = result.sha;
+  return latestPlayers;
+}
+
 async function saveSharedDraft() {
   if (sharedDraftSaving || savedSharedDraft?.locked) return;
-  const validation = validateSharedDraft();
+  const player = getPlayerDefinition();
+  const playerId = player.id;
+  const validation = validatePlayerDraft(playerId);
   sharedValidationErrors = validation.errors;
   if (!validation.valid) {
     render();
-    showToast("The shared draft is not valid yet. Review the highlighted errors.");
+    showToast(`${player.name}'s roster is not valid yet. ${data.players.find((item) => item.id !== playerId).name}'s roster was not checked.`);
     return;
   }
   sharedDraftSaving = true;
+  sharedDraftError = null;
   render();
   try {
-    syncAllSubstitutionEvents();
-    const document = {
-      schemaVersion: DRAFT_SCHEMA_VERSION,
-      bashoId: state.selectedBashoId,
-      revision: Number(savedSharedDraft?.revision || 0) + 1,
-      locked: Boolean(savedSharedDraft?.locked),
-      lastSavedAt: new Date().toISOString(),
-      savedBy: getPlayerDefinition().name,
-      players: sharedPayloadPlayers(),
-    };
-    const result = await window.SHARED_DRAFT_API.save(document, sharedDraftSha);
-    applySharedDraft(result.document, result.sha);
-    playBell();
-    showToast(`Shared picks saved by ${document.savedBy}.`);
+    getDraftPlayer(playerId).substitutionEvents = substitutionTimeline(playerId).events;
+    const candidatePlayer = sharedPayloadPlayers()[playerId];
+    let saved = false;
+    for (let attempt = 0; attempt < 3 && !saved; attempt += 1) {
+      const latest = await window.SHARED_DRAFT_API.load();
+      if ((latest.document.bashoId || data.banzuke.currentBashoId) !== state.selectedBashoId) throw new Error("The shared draft changed to a different basho. Refresh before saving.");
+      if (latest.document.locked) throw new Error("The shared draft was locked on another device. Refresh before editing.");
+      const latestPlayers = normalizedSharedPlayers(latest.document.players);
+      const conflicts = ownershipConflicts(playerId, candidatePlayer, latestPlayers);
+      if (conflicts.length) {
+        adoptLatestWhilePreservingPlayer(latest, playerId, conflicts.map((conflict) => conflict.id));
+        const names = conflicts.map((conflict) => getRikishi(conflict.id)?.name || conflict.id).join(", ");
+        const owners = [...new Set(conflicts.map((conflict) => getPlayerDefinition(conflict.ownerId).name))].join(" and ");
+        const message = `${names} ${conflicts.length === 1 ? "has" : "have"} just been drafted by ${owners}. Please choose another.`;
+        sharedValidationErrors = [message];
+        throw new Error(message);
+      }
+      const mergedPlayers = sharedPayloadPlayers(latestPlayers);
+      mergedPlayers[playerId] = candidatePlayer;
+      const document = {
+        ...latest.document,
+        schemaVersion: DRAFT_SCHEMA_VERSION,
+        bashoId: state.selectedBashoId,
+        revision: Number(latest.document.revision || 0) + 1,
+        lastSavedAt: new Date().toISOString(),
+        savedBy: player.name,
+        players: mergedPlayers,
+      };
+      try {
+        const result = await window.SHARED_DRAFT_API.save(document, latest.sha);
+        applySharedDraft(result.document, result.sha);
+        saved = true;
+        playBell();
+        showToast(`${player.name}'s picks saved. ${data.players.find((item) => item.id !== playerId).name}'s draft was preserved.`);
+      } catch (error) {
+        if (![409, 422].includes(error.status) || attempt === 2) throw error;
+      }
+    }
   } catch (error) {
     sharedDraftError = error.message || "The shared draft could not be saved.";
     showToast(sharedDraftError);
@@ -1132,7 +1212,7 @@ function rosterView() {
     }).join("")
     : '<li class="empty"><span>LIVE</span><b>No substitutions have been required.</b></li>';
   const saveTime = formatSharedSaveTime(savedSharedDraft?.lastSavedAt);
-  const unsaved = hasUnsavedDraftChanges();
+  const unsaved = hasUnsavedPlayerChanges(player.id);
   const locked = Boolean(savedSharedDraft?.locked);
   const validationErrors = sharedValidationErrors.length ? `<div class="shared-validation-errors" role="alert"><b>Draft cannot be saved</b><ul>${sharedValidationErrors.map((error) => `<li>${escapeHtml(error)}</li>`).join("")}</ul></div>` : "";
   return `
@@ -1168,7 +1248,7 @@ function rosterView() {
         ${validationChecklist(check)}
         ${validationErrors}
         <section class="substitution-log"><div><p class="eyebrow">OFFICIAL JSA AUTOMATION</p><h3>Substitution log</h3></div><ol>${substitutionLog}</ol></section>
-        <div class="roster-save-row shared"><p><b>${unsaved ? "Unsaved working copy" : "Shared draft is up to date"}</b><span>Save validates both players, prevents duplicate ownership, and commits one shared JSON file.</span></p><button class="primary-button" type="button" data-save-draft ${draftEditingDisabled() || !unsaved ? "disabled" : ""}>${sharedDraftSaving ? "Saving..." : "Save Picks"}</button></div>
+        <div class="roster-save-row shared"><p><b>${unsaved ? `Unsaved ${player.name} working copy` : `${player.name}'s saved picks are up to date`}</b><span>Save validates and updates only ${player.name}. The opponent's latest roster is fetched and preserved.</span></p><button class="primary-button" type="button" data-save-draft ${draftEditingDisabled() || !unsaved ? "disabled" : ""}>${sharedDraftSaving ? "Saving..." : "Save Picks"}</button></div>
       </section>
       ${appFooter()}
     </section>`;

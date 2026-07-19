@@ -108,6 +108,9 @@ for (const capability of ["DRAFT_SCHEMA_VERSION", "normalizeDrafts", "draftOwner
 for (const capability of ["data-save-draft", "validateSharedDraft", "hasUnsavedDraftChanges", "beforeunload", "lastSavedAt", "savedBy", "data-toggle-draft-lock"]) {
   assert(app.includes(capability), `Missing repository-backed roster capability: ${capability}`);
 }
+for (const capability of ["validatePlayerDraft", "hasUnsavedPlayerChanges", "ownershipConflicts", "adoptLatestWhilePreservingPlayer", "latest.document", "attempt < 3", "just been drafted by"]) {
+  assert(app.includes(capability), `Missing simultaneous player-save capability: ${capability}`);
+}
 for (const removedControl of ["roster-management-panel", "data-roster-add", "data-roster-replace", "data-swap-pick", "data-replace-sub", "Add main wrestler", "Add substitute<select", "Replace main<select", "Change substitute<select"]) {
   assert(!app.includes(removedControl), `Obsolete dropdown or swap UI must be removed: ${removedControl}`);
 }

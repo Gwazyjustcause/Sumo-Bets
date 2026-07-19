@@ -154,6 +154,32 @@ assert(liveForecast.probability >= 5 && liveForecast.probability <= 95, "Forecas
 assert(vm.runInContext("momentumChart().includes('D15') && (momentumChart().match(/chart-line/g) || []).length === 2", context), "Momentum must plot both players across the full basho axis");
 vm.runInContext("getDraftPlayer('jake').mainPicks[0]='hoshoryu'", context);
 assert(vm.runInContext("validateSharedDraft().errors.some((error)=>error.includes('appears more than once'))", context), "Cross-player duplicate ownership must block Save Picks");
+vm.runInContext(`getDraftPlayer('jake').mainPicks[0]='onosato'; state.activePlayer='gwazy';
+  globalThis.__concurrentSaves=[]; globalThis.__putAttempts=0;
+  globalThis.__latestShared={schemaVersion:3,bashoId:state.selectedBashoId,revision:4,locked:false,lastSavedAt:null,savedBy:'Jake',players:{
+    gwazy:{mainPicks:[],substitutes:[],sidePrediction:null,substitutionEvents:[]},
+    jake:{mainPicks:['onosato'],substitutes:[],sidePrediction:'West',substitutionEvents:[]}
+  }};
+  window.SHARED_DRAFT_API={
+    config:{owner:'test-owner',repo:'test-repo',branch:'main'},token:()=>'',setToken:()=>{},
+    load:async()=>({document:JSON.parse(JSON.stringify(__latestShared)),sha:'sha-'+__concurrentSaves.length}),
+    save:async(document,sha)=>{__putAttempts+=1;if(__putAttempts===1){__latestShared.players.jake.sidePrediction='East';const error=new Error('concurrent update');error.status=409;throw error;}__concurrentSaves.push({document:JSON.parse(JSON.stringify(document)),sha});__latestShared=JSON.parse(JSON.stringify(document));return {document,sha:'saved-'+__concurrentSaves.length};}
+  };`, context);
+assert.equal(vm.runInContext("validatePlayerDraft('gwazy').valid", context), true, "Gwazy's valid roster must be independently saveable");
+assert.equal(vm.runInContext("validatePlayerDraft('jake').valid", context), true, "The local complete Jake roster remains independently valid before the remote merge");
+await vm.runInContext("saveSharedDraft()", context);
+const firstPlayerScopedSave = JSON.parse(vm.runInContext("JSON.stringify(__concurrentSaves[0].document)", context));
+assert.equal(firstPlayerScopedSave.players.gwazy.mainPicks.length, 6, "Saving Gwazy must publish Gwazy's complete roster");
+assert.deepEqual(firstPlayerScopedSave.players.jake.mainPicks, ["onosato"], "Saving Gwazy must preserve Jake's latest incomplete remote roster without validating or overwriting it");
+assert.equal(firstPlayerScopedSave.players.jake.sidePrediction, "East", "A harmless SHA race must be retried against and preserve Jake's newer prediction");
+assert.equal(vm.runInContext("__putAttempts", context), 2, "A non-overlapping concurrent update must retry automatically");
+assert.equal(firstPlayerScopedSave.savedBy, "Gwazy", "Player-scoped save metadata must identify the editor");
+vm.runInContext("getDraftPlayer('gwazy').mainPicks[0]='onosato'", context);
+await vm.runInContext("saveSharedDraft()", context);
+assert.equal(vm.runInContext("__concurrentSaves.length", context), 1, "A same-rikishi race loser must not write a conflicting draft");
+assert.equal(vm.runInContext("getRoster('gwazy').team.includes('onosato')", context), false, "A rikishi won by the other player's earlier save must be removed from the losing working copy");
+assert.equal(vm.runInContext("draftOwner('onosato')", context), "jake", "First committed ownership must remain authoritative after a race");
+assert(vm.runInContext("sharedDraftError.includes('just been drafted by Jake')", context), "The race loser must receive a clear ownership conflict message");
 vm.runInContext("state.drafts[state.selectedBashoId]=emptyDraftPlayers(); savedSharedDraft.players=emptyDraftPlayers();", context);
 
 assert.equal(vm.runInContext("substituteRules(['onosato','takayasu','abi']).valid", context), true, "A legal substitute roster needs one Sanyaku and two Maegashira");

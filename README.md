@@ -37,7 +37,7 @@ The private game is stored separately in `data/draft/current-draft.json`. That r
 
 GitHub Pages can read the public draft file without credentials, but a static site cannot safely contain a repository write secret. Each editor therefore adds their own fine-grained GitHub personal access token in **Settings → Shared draft repository**. Restrict the token to `Gwazyjustcause/Sumo-Bets` with **Contents: Read and write** permission. The token is kept only in `sessionStorage`, disappears when the tab session ends, and is never committed or written to `localStorage`.
 
-Saving performs optimistic conflict detection against the GitHub file SHA. If the other player saved first, the stale write is rejected and the editor is asked to refresh instead of overwriting newer picks. A draft can be locked or unlocked manually from the Roster page; locking requires two complete, valid rosters.
+Saving is player-scoped. The app fetches the newest repository revision, validates only the selected player's roster, replaces only that player's section, and preserves the opponent's latest roster and prediction. Non-overlapping SHA races are merged and retried automatically. If both players claim the same rikishi, the first committed save keeps ownership and the second editor receives a clear conflict message instead of overwriting either roster. A draft can be locked or unlocked manually from the Roster page; locking requires two complete, valid rosters.
 
 ## Structure
 
