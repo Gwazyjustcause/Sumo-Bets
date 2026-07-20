@@ -94,6 +94,9 @@ const defaults = {
   sound: false,
   reducedMotion: false,
   compact: false,
+  spoilerFree: true,
+  spoilerWatchedDays: {},
+  spoilerPromptedDays: {},
   activePlayer: "gwazy",
   selectedBashoId: data.banzuke?.currentBashoId || "",
   selectedDay: Math.max(1, data.meta.day),
@@ -189,6 +192,87 @@ let sharedDraftError = null;
 let sharedValidationErrors = [];
 let stopSharedDraftSubscription = null;
 
+function officialCompletedDays() {
+  return (data.results?.days || [])
+    .filter((officialDay) => (officialDay.bouts || []).some((bout) => bout.completed))
+    .map((officialDay) => Number(officialDay.day))
+    .filter((day) => Number.isFinite(day))
+    .sort((a, b) => a - b);
+}
+
+function spoilerBashoId() {
+  return data.meta.bashoId || state.selectedBashoId;
+}
+
+function watchedDaySet() {
+  return new Set(state.spoilerWatchedDays?.[spoilerBashoId()] || []);
+}
+
+function promptedDaySet() {
+  return new Set(state.spoilerPromptedDays?.[spoilerBashoId()] || []);
+}
+
+function initializeSpoilerState() {
+  state.spoilerFree = state.spoilerFree !== false;
+  state.spoilerWatchedDays = state.spoilerWatchedDays && typeof state.spoilerWatchedDays === "object" ? state.spoilerWatchedDays : {};
+  state.spoilerPromptedDays = state.spoilerPromptedDays && typeof state.spoilerPromptedDays === "object" ? state.spoilerPromptedDays : {};
+  const bashoId = spoilerBashoId();
+  const completedDays = officialCompletedDays();
+  if (!Array.isArray(state.spoilerWatchedDays[bashoId])) {
+    const newest = completedDays.at(-1) || 0;
+    state.spoilerWatchedDays[bashoId] = completedDays.filter((day) => day < newest);
+  }
+  if (!Array.isArray(state.spoilerPromptedDays[bashoId])) state.spoilerPromptedDays[bashoId] = [];
+}
+
+function spoilerVisibleDay() {
+  const completedDays = officialCompletedDays();
+  const latest = completedDays.at(-1) || 0;
+  if (!state.spoilerFree) return latest;
+  const watched = watchedDaySet();
+  let visible = 0;
+  for (let day = 1; day <= latest && watched.has(day); day += 1) visible = day;
+  return visible;
+}
+
+function hiddenResultDays() {
+  if (!state.spoilerFree) return [];
+  const watched = watchedDaySet();
+  return officialCompletedDays().filter((day) => !watched.has(day));
+}
+
+function activeHiddenDay() {
+  return hiddenResultDays()[0] || null;
+}
+
+function isDayHidden(day) {
+  return state.spoilerFree && officialCompletedDays().includes(Number(day)) && !watchedDaySet().has(Number(day));
+}
+
+function revealSpoilerDay(day) {
+  const target = Number(day);
+  const bashoId = spoilerBashoId();
+  const watched = watchedDaySet();
+  officialCompletedDays().filter((value) => value <= target).forEach((value) => watched.add(value));
+  state.spoilerWatchedDays[bashoId] = [...watched].sort((a, b) => a - b);
+  const prompted = promptedDaySet();
+  prompted.add(target);
+  state.spoilerPromptedDays[bashoId] = [...prompted].sort((a, b) => a - b);
+  state.selectedDay = target;
+  saveState();
+  render();
+  showToast(`Day ${target} revealed.`);
+}
+
+function keepSpoilerDayHidden(day) {
+  const bashoId = spoilerBashoId();
+  const prompted = promptedDaySet();
+  prompted.add(Number(day));
+  state.spoilerPromptedDays[bashoId] = [...prompted].sort((a, b) => a - b);
+  saveState();
+  render();
+}
+
 function saveState() {
   try {
     const localState = { ...state, drafts: undefined };
@@ -277,7 +361,9 @@ function tournamentStarted(document = savedSharedDraft) {
 }
 
 function tournamentFinished() {
-  return tournamentStarted() && Number(data.meta.day) >= Number(data.meta.totalDays || 15) && data.meta.active === false;
+  const totalDays = Number(data.meta.totalDays || 15);
+  return tournamentStarted() && Number(data.meta.day) >= totalDays && data.meta.active === false
+    && (!state.spoilerFree || spoilerVisibleDay() >= totalDays);
 }
 
 function draftEditingDisabled(playerId = state.activePlayer) {
@@ -562,6 +648,7 @@ function reconcilePendingOfficialBasho() {
   state.pendingOfficialBasho = current;
 }
 
+initializeSpoilerState();
 reconcilePendingOfficialBasho();
 // Persist clean local preferences immediately after any one-time migration.
 saveState();
@@ -627,7 +714,7 @@ function isKyujoOnDay(rikishi, day) {
 }
 
 function currentLineupDay() {
-  return Math.max(0, data.meta.day || 0, data.meta.scheduledThroughDay || 0);
+  return spoilerVisibleDay();
 }
 
 function substitutionTimeline(playerId, throughDay = currentLineupDay()) {
@@ -693,7 +780,7 @@ function syncAllSubstitutionEvents() {
   }
 }
 
-function pointsThroughDay(rikishi, day = data.meta.day) {
+function pointsThroughDay(rikishi, day = spoilerVisibleDay()) {
   const results = (rikishi.dailyResults || []).filter((result) => result.day <= day && result.completed);
   const wins = results.filter((result) => result.result === "win").length;
   const losses = results.filter((result) => result.result === "loss").length;
@@ -710,13 +797,30 @@ function pointsThroughDay(rikishi, day = data.meta.day) {
   return wins - (losses >= 8 ? 1 : 0) + (kinboshi * 3);
 }
 
-function sideWinner(day = data.meta.day) {
+function rikishiDisplayStats(rikishi, day = spoilerVisibleDay()) {
+  const results = (rikishi?.dailyResults || []).filter((result) => result.day <= day && result.completed);
+  const wins = results.filter((result) => result.result === "win").length;
+  const losses = results.filter((result) => result.result === "loss").length;
+  const absences = results.filter((result) => result.kyujo || result.status === "absent").length;
+  const decided = wins + losses;
+  const form = decided ? Math.round((wins / decided) * 100) : 0;
+  return {
+    wins,
+    losses,
+    absences,
+    form,
+    record: absences ? `${wins}–${losses}–${absences}` : `${wins}–${losses}`,
+    points: pointsThroughDay(rikishi, day),
+  };
+}
+
+function sideWinner(day = spoilerVisibleDay()) {
   if (day < data.meta.totalDays) return null;
   const totals = data.meta.sideTotals || { East: 0, West: 0 };
   return totals.East === totals.West ? null : totals.East > totals.West ? "East" : "West";
 }
 
-function playerScore(id, day = data.meta.day) {
+function playerScore(id, day = spoilerVisibleDay()) {
   if (!tournamentStarted()) return 0;
   const timeline = substitutionTimeline(id, day);
   let pickPoints = 0;
@@ -730,12 +834,12 @@ function playerScore(id, day = data.meta.day) {
   return pickPoints + (getSidePrediction(id) && getSidePrediction(id) === sideWinner(day) ? 20 : 0);
 }
 
-function playerDayScore(id, day = data.meta.day) {
+function playerDayScore(id, day = spoilerVisibleDay()) {
   if (day < 1) return 0;
   return playerScore(id, day) - playerScore(id, day - 1);
 }
 
-function countedPointsForRikishi(playerId, rikishiId, day = data.meta.day) {
+function countedPointsForRikishi(playerId, rikishiId, day = spoilerVisibleDay()) {
   const timeline = substitutionTimeline(playerId, day);
   const rikishi = getRikishi(rikishiId);
   let points = 0;
@@ -753,6 +857,25 @@ function hasNewOfficialBasho() {
 function newBashoNotice() {
   if (!hasNewOfficialBasho() || tournamentFinished()) return "";
   return `<aside class="new-basho-notice" role="status"><span>新</span><div><small>OFFICIAL BASHO DETECTED</small><b>${escapeHtml(data.meta.tournament)} is available.</b><p>Choose whether to create a shared draft or record this tournament as skipped.</p></div><div><button class="primary-button" type="button" data-start-new-draft>Start New Draft</button><button class="secondary-button" type="button" data-skip-basho>Skip Tournament</button></div></aside>`;
+}
+
+function spoilerNotice() {
+  const day = activeHiddenDay();
+  if (!day) return "";
+  const visible = spoilerVisibleDay();
+  return `<aside class="spoiler-notice" role="status"><span>◉</span><div><small>DAY ${day} RESULTS AVAILABLE</small><b>Spoiler-Free Mode is active.</b><p>Scores, records, standings, substitutions, and results remain frozen ${visible ? `through watched Day ${visible}` : "at the pre-basho state"}.</p></div><button class="secondary-button" type="button" data-reveal-day="${day}" onclick="event.stopPropagation();revealSpoilerDay(${day})">Reveal Day ${day}</button></aside>`;
+}
+
+function spoilerFirstTimeGate() {
+  const day = activeHiddenDay();
+  if (!day || promptedDaySet().has(day)) return "";
+  return `<section class="spoiler-gate" role="dialog" aria-modal="true" aria-labelledby="spoiler-gate-title">
+    <div class="spoiler-gate-card"><span class="spoiler-eye">◉</span><p class="eyebrow">NEW OFFICIAL RESULTS</p><h2 id="spoiler-gate-title">Day ${day} results are available.</h2><p>Would you like to keep the site spoiler free?</p><div><button class="secondary-button" type="button" data-keep-hidden="${day}" onclick="event.stopPropagation();keepSpoilerDayHidden(${day})">Keep Hidden</button><button class="primary-button" type="button" data-reveal-day="${day}" onclick="event.stopPropagation();revealSpoilerDay(${day})">Reveal Results</button></div></div>
+  </section>`;
+}
+
+function spoilerHiddenPanel(day, context = "results") {
+  return `<section class="spoiler-hidden-panel reveal" data-spoiler-hidden-day="${day}"><span>◉</span><div><p class="eyebrow">DAY ${day} · RESULTS HIDDEN</p><h2>Watch today's basho before revealing.</h2><p>${context === "overview" ? "Current scores, leader, forecast, momentum, and today's standings are protected." : "Bout winners, kimarite, point changes, and today's draft record are protected."}</p></div><button class="primary-button" type="button" data-reveal-day="${day}" onclick="event.stopPropagation();revealSpoilerDay(${day})">Reveal Day ${day}</button></section>`;
 }
 
 function resetCurrentDraft() {
@@ -876,7 +999,7 @@ function getRikishi(id) {
 }
 
 function wrestlerImage(rikishi, size = "small") {
-  return `<span class="rikishi-image ${size} uses-placeholder is-resolving" style="--form:${rikishi.form}%">
+  return `<span class="rikishi-image ${size} uses-placeholder is-resolving" style="--form:${rikishiDisplayStats(rikishi).form}%">
     <img src="assets/rikishi-placeholder.svg" alt="${escapeHtml(rikishi.name)} portrait" loading="lazy" decoding="async" referrerpolicy="no-referrer"
       data-rikishi-image data-rikishi-id="${escapeHtml(rikishi.id)}" data-image-source="placeholder" data-image-state="queued" />
     <span class="image-loading-sheen" aria-hidden="true"></span>
@@ -969,17 +1092,21 @@ function editingBanner(copy = "All changes on this page are isolated to this pla
 
 function progressDots() {
   const currentDay = Math.max(1, Math.min(Number(data.meta.totalDays || 15), Number(data.meta.day || 1)));
-  const officialDays = new Set((data.results?.days || []).map((item) => Number(item.day)));
+  const completedDays = new Set(officialCompletedDays());
+  const watched = watchedDaySet();
   return Array.from({ length: data.meta.totalDays }, (_, index) => {
     const day = index + 1;
-    const selectable = day <= currentDay && officialDays.has(day);
-    const status = [day < currentDay ? "done" : "", day === currentDay ? "current" : "", day === overviewSelectedDay() ? "selected" : "", !selectable ? "future" : ""].filter(Boolean).join(" ");
-    return `<button class="day-dot ${status}" type="button" data-overview-day="${day}" title="${selectable ? `View Day ${day} results` : `Day ${day} results are not available yet`}" ${selectable ? "" : "disabled"}><b>${day}</b></button>`;
+    const hidden = isDayHidden(day);
+    const revealed = completedDays.has(day) && (!state.spoilerFree || watched.has(day));
+    const selectable = revealed || hidden;
+    const status = [revealed ? "watched done" : "", hidden ? "hidden" : "", day === currentDay ? "current" : "", day === Number(state.selectedDay) ? "selected" : "", !selectable ? "future" : ""].filter(Boolean).join(" ");
+    const title = hidden ? `Day ${day} results hidden` : revealed ? `View watched Day ${day}` : `Day ${day} results are not available yet`;
+    return `<button class="day-dot ${status}" type="button" data-overview-day="${day}" title="${title}" ${selectable ? "" : "disabled"}><b>${day}</b>${revealed ? "<i>✓</i>" : hidden ? "<i>◉</i>" : ""}</button>`;
   }).join("");
 }
 
 function overviewSelectedDay() {
-  return Math.max(1, Math.min(Number(data.meta.day || 1), Number(state.selectedDay || data.meta.day || 1)));
+  return Math.max(0, Math.min(spoilerVisibleDay(), Number(state.selectedDay || spoilerVisibleDay())));
 }
 
 function scoreDuel(day = overviewSelectedDay()) {
@@ -1124,10 +1251,12 @@ function momentumCard(day = overviewSelectedDay()) {
     </section>`;
 }
 
-function boutCard(bout, compact = false) {
+function boutCard(bout, compact = false, day = spoilerVisibleDay()) {
   const east = getRikishi(bout.east);
   const west = getRikishi(bout.west);
   if (!east || !west) return "";
+  const eastStats = rikishiDisplayStats(east, day);
+  const westStats = rikishiDisplayStats(west, day);
   const winner = getRikishi(bout.winner) || east;
   const importance = Math.max(1, Math.min(5, Number(bout.importance) || 1));
   const stars = "★".repeat(importance) + "☆".repeat(5 - importance);
@@ -1136,11 +1265,11 @@ function boutCard(bout, compact = false) {
       <span class="bout-importance" title="Match importance ${importance} out of 5">${stars}</span>
       <span class="bout-wrestler ${bout.winner === east.id ? "winner" : ""}">
         ${wrestlerImage(east)}
-        <span><b>${east.name}</b><small>${east.rank} · ${east.record}</small></span>
+        <span><b>${east.name}</b><small>${east.rank} · ${eastStats.record}</small></span>
       </span>
       <span class="versus"><b>VS</b><small>${bout.technique || "Scheduled"}</small></span>
       <span class="bout-wrestler right ${bout.winner === west.id ? "winner" : ""}">
-        <span><b>${west.name}</b><small>${west.rank} · ${west.record}</small></span>
+        <span><b>${west.name}</b><small>${west.rank} · ${westStats.record}</small></span>
         ${wrestlerImage(west)}
       </span>
       <span class="bout-swing">${bout.completed ? (bout.swing ?? "Official") : "Pending"}</span>
@@ -1148,8 +1277,9 @@ function boutCard(bout, compact = false) {
 }
 
 function rosterCard(rikishi, playerId, substitute = false, role = "active") {
-  const hasResult = rikishi.wins + rikishi.losses + (rikishi.absences || 0) > 0;
-  const heat = !hasResult ? "unplayed" : rikishi.form >= 75 ? "hot" : rikishi.form < 40 ? "cold" : "steady";
+  const stats = rikishiDisplayStats(rikishi);
+  const hasResult = stats.wins + stats.losses + stats.absences > 0;
+  const heat = !hasResult ? "unplayed" : stats.form >= 75 ? "hot" : stats.form < 40 ? "cold" : "steady";
   const isKyujo = role === "kyujo";
   const isActiveSubstitute = role === "active-substitute";
   const isStandbySubstitute = role === "standby-substitute";
@@ -1171,11 +1301,11 @@ function rosterCard(rikishi, playerId, substitute = false, role = "active") {
           ${sideBadge(rikishi)}
         </div>
         ${statusBadge}
-        <div class="record-line"><strong>${rikishi.record}</strong><span><b>${rikishi.wins}</b> wins · <b>${rikishi.losses}</b> losses</span></div>
-        <div class="heat-track"><span style="--width:${rikishi.form}%"></span></div>
+        <div class="record-line"><strong>${stats.record}</strong><span><b>${stats.wins}</b> wins · <b>${stats.losses}</b> losses</span></div>
+        <div class="heat-track"><span style="--width:${stats.form}%"></span></div>
       </div>
       <div class="roster-points"><strong>${isStandbySubstitute ? 0 : points}</strong><small>${isKyujo ? "BANKED PTS" : isStandbySubstitute ? "INACTIVE" : "COUNTED PTS"}</small></div>
-      ${rikishi.badge ? `<span class="clutch-badge">✦ ${rikishi.badge}</span>` : ""}
+      ${!activeHiddenDay() && rikishi.badge ? `<span class="clutch-badge">✦ ${rikishi.badge}</span>` : ""}
       ${readOnly ? '<div class="roster-card-readonly">🔒 LOCKED</div>' : `<div class="roster-card-actions">
         ${substitute ? `<button class="move-section" type="button" data-roster-move="${rikishi.id}:main">&larr; Main</button>` : ""}
         ${substitute ? `<button class="order-button" type="button" data-sub-reorder="${rikishi.id}:up" aria-label="Move ${rikishi.name} earlier" title="Move earlier">&uarr;</button><button class="order-button" type="button" data-sub-reorder="${rikishi.id}:down" aria-label="Move ${rikishi.name} later" title="Move later">&darr;</button>` : ""}
@@ -1190,7 +1320,7 @@ function compactPickCard(rikishi) {
     <button class="pick-chip" type="button" data-profile="${rikishi.id}">
       ${wrestlerImage(rikishi)}
       <span><b>${rikishi.name}</b><small>${rikishi.rank}</small></span>
-      <strong>${rikishi.points}</strong>
+      <strong>${rikishiDisplayStats(rikishi).points}</strong>
     </button>`;
 }
 
@@ -1208,7 +1338,7 @@ function overviewRosterSlots(player, ids, type, limit) {
       <span class="dashboard-slot-number">${index + 1}</span>
       ${wrestlerImage(rikishi)}
       <span><b>${escapeHtml(rikishi.name)}</b><small>${escapeHtml(rikishi.rank)} · ${escapeHtml(rikishi.side)}</small></span>
-      <strong>${rikishi.points}<small> PTS</small></strong>
+      <strong>${rikishiDisplayStats(rikishi).points}<small> PTS</small></strong>
     </button>`;
   });
   return slots.join("");
@@ -1238,6 +1368,7 @@ function overviewRosterDashboard(player, day = overviewSelectedDay()) {
   const timeline = substitutionTimeline(player.id, day);
   const prediction = getSidePrediction(player.id);
   const score = playerScore(player.id, day);
+  const scoreLabel = activeHiddenDay() ? (day ? `THROUGH WATCHED DAY ${day}` : "PRE-BASHO SCORE") : "CURRENT SCORE";
   const mainRows = Array.from({ length: 6 }, (_, index) => {
     const mainId = roster.team[index];
     if (!mainId) return overviewEmptySlot(player, "main", index + 1);
@@ -1252,7 +1383,7 @@ function overviewRosterDashboard(player, day = overviewSelectedDay()) {
         <div><small>${player.name.toUpperCase()}'S DRAFT</small><h3>${roster.team.length + roster.subs.length} / 9 slots filled</h3></div>
         <strong>${score}</strong>
       </div>
-      <div class="dashboard-team-meta"><span><small>CURRENT SCORE</small><b>${score} pts</b></span><span><small>SIDE PREDICTION</small><b>${prediction || "None"}</b></span></div>
+      <div class="dashboard-team-meta"><span><small>${scoreLabel}</small><b>${score} pts</b></span><span><small>SIDE PREDICTION</small><b>${prediction || "None"}</b></span></div>
       <section class="dashboard-roster-section">
         <div class="dashboard-roster-heading"><span>MAIN PICKS</span><b>${roster.team.length} / 6</b></div>
         <div class="dashboard-roster-list">${mainRows}</div>
@@ -1317,7 +1448,7 @@ function overviewView() {
         </div>
       </div>
 
-      ${tournamentStarted() ? `${scoreDuel(selectedDay)}
+      ${tournamentStarted() ? activeHiddenDay() ? spoilerHiddenPanel(activeHiddenDay(), "overview") : `${scoreDuel(selectedDay)}
         <div class="overview-grid overview-analytics" data-overview-analytics>
           ${currentStandingsCard(selectedDay)}
           ${forecastCard(selectedDay)}
@@ -1673,6 +1804,7 @@ function banzukeRow(row) {
     if (!entry) return `<span class="banzuke-vacancy" aria-hidden="true"></span>`;
     const resolved = rikishiForBanzukeEntry(entry);
     const rikishi = resolved.rikishi;
+    const stats = rikishiDisplayStats(rikishi);
     const ownerId = draftOwner(rikishi.id);
     const owner = ownerId ? getPlayerDefinition(ownerId) : null;
     const location = ownerId ? pickLocation(rikishi.id, ownerId) : null;
@@ -1710,7 +1842,7 @@ function banzukeRow(row) {
           <span class="banzuke-name-line"><b>${escapeHtml(rikishi.name)}</b><i class="position-chip ${side}">${rikishi.side}</i></span>
           <small>${escapeHtml(rikishi.stable)} stable</small>
           <span class="draft-owner-badge ${owner?.color || "available"}">${owner ? `Owned by ${owner.name}` : availableToDraft ? "Available" : "Unavailable"}</span>
-          <span class="banzuke-record"><strong>${escapeHtml(rikishi.record)}</strong><em><b>${rikishi.wins}</b> wins</em><em><b>${rikishi.losses}</b> losses</em></span>
+          <span class="banzuke-record"><strong>${escapeHtml(stats.record)}</strong><em><b>${stats.wins}</b> wins</em><em><b>${stats.losses}</b> losses</em></span>
         </button>
         ${side === "west" ? wrestlerImage(rikishi) : action}
         <aside class="banzuke-quick-profile" aria-hidden="true">
@@ -1852,17 +1984,20 @@ function draftImpactBoutCard(bout, day, index) {
   const impact = resultDraftImpact(bout, day);
   const [east, west] = impact.participants;
   const ownerData = data.players.map((player) => `data-results-${player.id}="${String(impact.ownerIds.includes(player.id))}"`).join(" ");
-  const playerMarkup = (participant, side) => `
+  const playerMarkup = (participant, side) => {
+    const stats = rikishiDisplayStats(participant.rikishi, day);
+    return `
     <button class="result-rikishi ${side} ${participant.won ? "winner" : "loser"}" type="button" data-profile="${participant.rikishi.id}">
       ${side === "east" ? wrestlerImage(participant.rikishi, "medium") : ""}
       <span class="result-rikishi-copy">
         <span class="result-name-line"><b>${escapeHtml(participant.rikishi.name)}</b>${bout.completed ? `<i>${participant.won ? "✓" : "✕"}</i>` : ""}</span>
-        <small>${escapeHtml(participant.rikishi.rank)} · ${escapeHtml(participant.rikishi.record)}</small>
+        <small>${escapeHtml(participant.rikishi.rank)} · ${escapeHtml(stats.record)}</small>
         ${resultOwnershipBadge(participant)}
       </span>
       ${resultPointAward(participant, bout.completed)}
       ${side === "west" ? wrestlerImage(participant.rikishi, "medium") : ""}
     </button>`;
+  };
   return `
     <article class="draft-result-card ${impact.headToHead ? "head-to-head" : impact.draftedCount ? "draft-relevant" : "not-drafted"}" data-results-card ${ownerData} data-results-important="${String(impact.important)}">
       <span class="result-number">${String(index + 1).padStart(2, "0")}</span>
@@ -1922,6 +2057,14 @@ function resultsView() {
       ${appFooter()}
     </section>`;
   }
+  if (isDayHidden(day)) {
+    return `<section class="page-shell">
+      ${pageIntro(`${escapeHtml(selectedBasho().label.toUpperCase())} · DAY ${day}`, "Results hidden", "Spoiler-Free Mode is protecting this day's official outcomes and draft scoring.")}
+      ${bashoDayTimeline(day)}
+      ${spoilerHiddenPanel(day, "results")}
+      ${appFooter()}
+    </section>`;
+  }
   const bouts = resultsForDay(day);
   const [gwazy, jake] = data.players;
   const gwazyToday = dailyDraftSummary(gwazy.id, day, bouts);
@@ -1945,12 +2088,16 @@ function resultsView() {
 
 function bashoDayTimeline(selectedDay = state.selectedDay) {
   const currentDay = Math.max(1, Math.min(Number(data.meta.totalDays || 15), Number(data.meta.day || 1)));
-  const officialDays = new Set((data.results?.days || []).map((item) => Number(item.day)));
+  const completedDays = new Set(officialCompletedDays());
+  const watched = watchedDaySet();
   return `<div class="day-selector reveal" role="tablist" aria-label="Tournament day">${Array.from({ length: Number(data.meta.totalDays || 15) }, (_, index) => {
     const day = index + 1;
-    const selectable = day <= currentDay && officialDays.has(day);
-    const classes = [day === Number(selectedDay) ? "active" : "", day === currentDay ? "current" : "", day < currentDay ? "completed" : "", !selectable ? "future" : ""].filter(Boolean).join(" ");
-    return `<button type="button" role="tab" aria-selected="${day === Number(selectedDay)}" class="${classes}" data-day="${day}" ${selectable ? "" : "disabled"}><small>${day === currentDay ? "CURRENT" : day < currentDay ? "DONE" : "DAY"}</small>${day}</button>`;
+    const hidden = isDayHidden(day);
+    const revealed = completedDays.has(day) && (!state.spoilerFree || watched.has(day));
+    const selectable = revealed || hidden;
+    const classes = [day === Number(selectedDay) ? "active" : "", day === currentDay ? "current" : "", revealed ? "completed watched" : "", hidden ? "hidden" : "", !selectable ? "future" : ""].filter(Boolean).join(" ");
+    const label = hidden ? "HIDDEN" : day === currentDay ? "CURRENT" : revealed ? "WATCHED" : "DAY";
+    return `<button type="button" role="tab" aria-selected="${day === Number(selectedDay)}" class="${classes}" data-day="${day}" ${selectable ? "" : "disabled"}><small>${label}</small>${day}${revealed ? " ✓" : hidden ? " ◉" : ""}</button>`;
   }).join("")}</div>`;
 }
 
@@ -2135,6 +2282,7 @@ function settingsView() {
           </div>
           ${toggleRow("setting-motion", "Reduce motion", "Minimise score and page animations.", state.reducedMotion)}
           ${toggleRow("setting-compact", "Compact density", "Fit more roster and result rows on screen.", state.compact)}
+          ${toggleRow("setting-spoilers", "Spoiler-Free Mode", `Hide new official results until you reveal them. ${state.spoilerFree ? `Watched through Day ${spoilerVisibleDay()}.` : "Results currently reveal immediately."}`, state.spoilerFree)}
         </section>
         <section class="settings-card reveal"><div class="settings-card-title"><span>♫</span><div><h2>Match sounds</h2><p>A restrained cue when points change.</p></div></div>
           ${toggleRow("setting-sound", "Taiko score cue", "Play a soft drum tone on saved updates.", state.sound)}
@@ -2171,20 +2319,21 @@ function profileMarkup(rikishi) {
   const ownerId = draftOwner(rikishi.id);
   const owner = ownerId ? getPlayerDefinition(ownerId) : null;
   const location = ownerId ? pickLocation(rikishi.id, ownerId) : null;
+  const stats = rikishiDisplayStats(rikishi);
   const profileLink = rikishi.profile
     ? `<a class="primary-button profile-link" href="${escapeHtml(rikishi.profile)}" target="_blank" rel="noreferrer">Official profile ${icons.source}</a>`
     : `<span class="profile-link-unavailable">Official profile unavailable</span>`;
   return `
     <div class="profile-hero">
       ${wrestlerImage(rikishi, "large")}
-      <div><p class="eyebrow">${formatRank(rikishi)}</p><h2 id="profile-name">${rikishi.fullName || rikishi.name}</h2><p>${rikishi.stable} stable · ${rikishi.birthplace}</p><div class="profile-record"><strong>${rikishi.record}</strong><span>${rikishi.wins} wins<br />${rikishi.losses} losses</span></div></div>
+      <div><p class="eyebrow">${formatRank(rikishi)}</p><h2 id="profile-name">${rikishi.fullName || rikishi.name}</h2><p>${rikishi.stable} stable · ${rikishi.birthplace}</p><div class="profile-record"><strong>${stats.record}</strong><span>${stats.wins} wins<br />${stats.losses} losses</span></div></div>
       <div class="profile-owner"><small>DRAFT OWNERSHIP</small><span class="player-avatar ${owner ? owner.color : "neutral"}">${owner ? owner.initials : "—"}</span><b>${owner ? `${owner.name} · ${location === "main" ? "Main pick" : "Substitute"}` : "Available"}</b></div>
     </div>
     <div class="profile-stats">
-      <span><small>POINTS</small><b>${rikishi.points}</b></span><span><small>FORM</small><b>${rikishi.wins + rikishi.losses ? `${rikishi.form}%` : "—"}</b></span><span><small>HEIGHT</small><b>${rikishi.height}</b></span><span><small>WEIGHT</small><b>${rikishi.weight}</b></span>
+      <span><small>POINTS</small><b>${stats.points}</b></span><span><small>FORM</small><b>${stats.wins + stats.losses ? `${stats.form}%` : "—"}</b></span><span><small>HEIGHT</small><b>${rikishi.height}</b></span><span><small>WEIGHT</small><b>${rikishi.weight}</b></span>
     </div>
     <div class="profile-details"><div><small>CAREER HIGH</small><b>${rikishi.careerHigh}</b></div><div><small>SIGNATURE</small><b>${rikishi.technique}</b></div></div>
-    <div class="profile-form"><span style="--width:${rikishi.form}%"></span></div>
+    <div class="profile-form"><span style="--width:${stats.form}%"></span></div>
     ${profileLink}`;
 }
 
@@ -2228,7 +2377,7 @@ function render() {
   };
   app.classList.add("route-leave");
   setTimeout(() => {
-    app.innerHTML = `${newBashoNotice()}${views[route]()}`;
+    app.innerHTML = `${newBashoNotice()}${spoilerNotice()}${views[route]()}${spoilerFirstTimeGate()}`;
     app.classList.remove("route-leave");
     app.dataset.route = route;
     window.scrollTo({ top: 0, behavior: state.reducedMotion ? "auto" : "smooth" });
@@ -2567,6 +2716,14 @@ function bindViewEvents() {
     saveState();
     setTheme();
   });
+  document.querySelector("#setting-spoilers")?.addEventListener("change", (event) => {
+    state.spoilerFree = event.target.checked;
+    if (state.spoilerFree) initializeSpoilerState();
+    else state.selectedDay = Math.max(1, Number(data.meta.day || 1));
+    saveState();
+    render();
+    showToast(state.spoilerFree ? "Spoiler-Free Mode enabled." : "Spoiler-Free Mode disabled. Current results are visible.");
+  });
   document.querySelector(".test-sound")?.addEventListener("click", () => {
     const wasEnabled = state.sound;
     state.sound = true;
@@ -2686,6 +2843,16 @@ function bindViewEvents() {
 }
 
 document.addEventListener("click", (event) => {
+  const revealTarget = event.target.closest("[data-reveal-day]");
+  if (revealTarget) {
+    revealSpoilerDay(revealTarget.dataset.revealDay);
+    return;
+  }
+  const keepHiddenTarget = event.target.closest("[data-keep-hidden]");
+  if (keepHiddenTarget) {
+    keepSpoilerDayHidden(keepHiddenTarget.dataset.keepHidden);
+    return;
+  }
   const routeLink = event.target.closest('a[href^="#"]');
   const destination = routeLink?.getAttribute("href");
   const staysInDraftWorkspace = ["#roster", "#banzuke"].includes(destination);

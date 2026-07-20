@@ -131,7 +131,15 @@ assert.equal(Object.hasOwn(migratedSave, "drafts"), false, "Repository-backed ro
 assert.equal(JSON.parse(storage.get("sumoBattleHistoryCache")).events.length, 0, "The one-time migration must clear legacy history cache data");
 assert.equal(vm.runInContext("state.history.length", context), 0, "The live Version 3 state must have no archived basho");
 assert.equal(vm.runInContext("data.players.every((player) => player.score === 0 && player.sidePrediction === null)", context), true, "Scores and side predictions must start blank");
-assert.equal(vm.runInContext("data.meta.day", context), 8, "A draft migration must not erase the restored official day");
+assert.equal(vm.runInContext("data.meta.day", context), 9, "A draft migration must not erase the restored official day");
+assert.equal(vm.runInContext("state.spoilerFree", context), true, "Spoiler-Free Mode must be enabled by default");
+assert.equal(vm.runInContext("spoilerVisibleDay()", context), 8, "A newly available official day must remain hidden by default");
+assert.equal(vm.runInContext("activeHiddenDay()", context), 9, "The newest unwatched result day must be detected automatically");
+assert(vm.runInContext("spoilerFirstTimeGate().includes('Day 9 results are available')", context), "A new result day must trigger the first-time spoiler choice");
+vm.runInContext("revealSpoilerDay(9)", context);
+assert.equal(vm.runInContext("spoilerVisibleDay()", context), 9, "Revealing a day must atomically expose its official results");
+assert.equal(vm.runInContext("activeHiddenDay()", context), null, "A revealed day must leave no stale spoiler warning");
+vm.runInContext("state.spoilerWatchedDays[spoilerBashoId()]=officialCompletedDays().filter((day)=>day<9);state.spoilerPromptedDays[spoilerBashoId()]=[9]", context);
 assert(vm.runInContext("data.rikishi.some((rikishi) => rikishi.wins > 0)", context), "A draft migration must not erase official rikishi records");
 assert.deepEqual(JSON.parse(vm.runInContext("JSON.stringify(getRoster('gwazy'))", context)), { team: [], subs: [] }, "Legacy browser drafts must be ignored in favor of the Supabase draft");
 
@@ -150,13 +158,19 @@ vm.runInContext(`savedSharedDraft={schemaVersion:4,bashoId:state.selectedBashoId
   gwazy:{mainPicks:['hoshoryu','kirishima','fujinokawa','gonoyama','hiradoumi','nishikifuji'],substitutes:['yoshinofuji','daieisho','ura'],sidePrediction:'East',substitutionEvents:[]},
   jake:{mainPicks:['onosato','kotozakura','takanosho','churanoumi','hakunofuji','takerufuji'],substitutes:['oho','ichiyamamoto','oshoma'],sidePrediction:'West',substitutionEvents:[]}
 };`, context);
+const hiddenTournamentOverview = vm.runInContext("overviewView()", context);
+assert(hiddenTournamentOverview.includes('data-spoiler-hidden-day="9"') && !hiddenTournamentOverview.includes("data-overview-analytics"), "Unwatched results must replace Overview scores and analytics with a spoiler-safe placeholder");
+assert(vm.runInContext("resultsView().includes('Results hidden')", context), "The current unwatched Results day must not render bouts or scoring");
+assert.equal(vm.runInContext("substitutionTimeline('gwazy').day", context), 8, "Substitute activation must remain frozen through the latest watched day");
+assert.equal(vm.runInContext("rikishiDisplayStats(getRikishi('onosato')).record", context), vm.runInContext("rikishiDisplayStats(getRikishi('onosato'),8).record", context), "Visible wrestler records must exclude the hidden day");
+vm.runInContext("state.spoilerWatchedDays[spoilerBashoId()]=officialCompletedDays();state.spoilerPromptedDays[spoilerBashoId()]=officialCompletedDays()", context);
 const tournamentOverview = vm.runInContext("overviewView()", context);
 assert(tournamentOverview.includes("Current standings") && tournamentOverview.includes("Projected winner") && tournamentOverview.includes("Point progression"), "Tournament mode must restore standings, forecast, and momentum");
-assert(tournamentOverview.includes("TOURNAMENT PROGRESS") && tournamentOverview.includes("DAY 8") && !tournamentOverview.includes("draft-progress"), "The tournament hero must replace draft slots with official day progress");
+assert(tournamentOverview.includes("TOURNAMENT PROGRESS") && tournamentOverview.includes("DAY 9") && !tournamentOverview.includes("draft-progress"), "The tournament hero must replace draft slots with official day progress");
 assert(!tournamentOverview.includes("of 18 draft slots filled"), "Tournament mode must not retain draft-progress copy in the score comparison");
 assert.equal((tournamentOverview.match(/data-overview-day=/g) || []).length, 15, "The tournament hero must render all 15 basho days");
-assert(tournamentOverview.includes('data-overview-day="8"') && tournamentOverview.includes('current selected'), "The official current day must be highlighted in the hero");
-assert(tournamentOverview.includes('data-overview-day="9"') && tournamentOverview.includes('future" type="button" data-overview-day="9"'), "Future hero days must remain visible and disabled");
+assert(tournamentOverview.includes('data-overview-day="9"') && tournamentOverview.includes('current selected'), "The official current day must be highlighted in the hero");
+assert(tournamentOverview.includes('data-overview-day="10"') && tournamentOverview.includes('future" type="button" data-overview-day="10"'), "Future hero days must remain visible and disabled");
 const lockedBanzuke = vm.runInContext("banzukeView()", context);
 assert.equal((lockedBanzuke.match(/data-banzuke-id=/g) || []).length, 42, "The complete official Banzuke must remain visible after both drafts lock");
 assert(!lockedBanzuke.includes("Add to Main") && !lockedBanzuke.includes("Add to Subs"), "A locked Banzuke must remove drafting actions");
@@ -290,7 +304,7 @@ vm.runInContext("getDraftPlayer('gwazy').sidePrediction = 'East'; state.history 
 assert.deepEqual(JSON.parse(vm.runInContext("JSON.stringify(getRoster('gwazy'))", context)), { team: [], subs: [] }, "Reset Draft must clear the current roster only");
 assert.equal(vm.runInContext("getSidePrediction('gwazy')", context), null, "Reset Draft must clear the current prediction");
 assert.equal(vm.runInContext("state.history.length", context), 1, "Reset Draft must preserve history");
-assert.equal(vm.runInContext("data.meta.day", context), 8, "Reset Draft must leave the official layer untouched");
+assert.equal(vm.runInContext("data.meta.day", context), 9, "Reset Draft must leave the official layer untouched");
 vm.runInContext("state.history = []; state.activePlayer = 'gwazy'; addPick('kirishima'); state.activePlayer = 'jake'; addPick('hoshoryu'); state.activePlayer = 'gwazy'; saveState();", context);
 
 location.hash = "#overview";
