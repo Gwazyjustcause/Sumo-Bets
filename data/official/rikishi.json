@@ -20,9 +20,9 @@
       "photoFile": "20170096.jpg",
       "wikipedia": null,
       "sourceIndex": 0,
-      "record": "6–3",
+      "record": "6–4",
       "wins": 6,
-      "losses": 3,
+      "losses": 4,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -135,22 +135,22 @@
           "opponentJsaId": "4230",
           "opponentId": "aonishiki",
           "opponent": "Aonishiki",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 12
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3840",
+          "opponentId": "kotoshoho",
+          "opponent": "Kotoshoho",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -205,7 +205,7 @@
       "weight": "—",
       "careerHigh": "Yokozuna",
       "technique": "See official profile",
-      "form": 67,
+      "form": 60,
       "badge": null
     },
     {
@@ -347,14 +347,14 @@
         },
         {
           "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
+          "opponentJsaId": "4055",
+          "opponentId": "atamifuji",
+          "opponent": "Atamifuji",
           "completed": false,
-          "status": null,
+          "status": "scheduled",
           "result": null,
           "kyujo": false,
-          "techniqueId": null
+          "techniqueId": -1
         },
         {
           "day": 12,
@@ -428,8 +428,8 @@
       "photoFile": "20150034.jpg",
       "wikipedia": null,
       "sourceIndex": 2,
-      "record": "7–2",
-      "wins": 7,
+      "record": "8–2",
+      "wins": 8,
       "losses": 2,
       "absences": 0,
       "kyujoDays": [],
@@ -437,7 +437,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 7,
+      "points": 8,
       "dailyResults": [
         {
           "day": 1,
@@ -543,22 +543,22 @@
           "opponentJsaId": "4187",
           "opponentId": "hakunofuji",
           "opponent": "Hakunofuji",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 70
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3753",
+          "opponentId": "ichiyamamoto",
+          "opponent": "Ichiyamamoto",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -613,7 +613,7 @@
       "weight": "—",
       "careerHigh": "Ozeki",
       "technique": "See official profile",
-      "form": 78,
+      "form": 80,
       "badge": null
     },
     {
@@ -632,8 +632,8 @@
       "photoFile": "20150081.jpg",
       "wikipedia": null,
       "sourceIndex": 3,
-      "record": "4–5",
-      "wins": 4,
+      "record": "5–5",
+      "wins": 5,
       "losses": 5,
       "absences": 0,
       "kyujoDays": [],
@@ -641,7 +641,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 4,
+      "points": 5,
       "dailyResults": [
         {
           "day": 1,
@@ -747,22 +747,22 @@
           "opponentJsaId": "3844",
           "opponentId": "oho",
           "opponent": "Oho",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 13
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3616",
+          "opponentId": "ura",
+          "opponent": "Ura",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -817,7 +817,7 @@
       "weight": "—",
       "careerHigh": "Ozeki",
       "technique": "See official profile",
-      "form": 44,
+      "form": 50,
       "badge": null
     },
     {
@@ -836,8 +836,8 @@
       "photoFile": "20200074.jpg",
       "wikipedia": null,
       "sourceIndex": 4,
-      "record": "6–3",
-      "wins": 6,
+      "record": "7–3",
+      "wins": 7,
       "losses": 3,
       "absences": 0,
       "kyujoDays": [],
@@ -845,7 +845,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 6,
+      "points": 7,
       "dailyResults": [
         {
           "day": 1,
@@ -951,22 +951,22 @@
           "opponentJsaId": "3711",
           "opponentId": "churanoumi",
           "opponent": "Churanoumi",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 70
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "4227",
+          "opponentId": "onosato",
+          "opponent": "Onosato",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -1021,7 +1021,7 @@
       "weight": "—",
       "careerHigh": "Sekiwake",
       "technique": "See official profile",
-      "form": 67,
+      "form": 70,
       "badge": null
     },
     {
@@ -1040,9 +1040,9 @@
       "photoFile": "20170094.jpg",
       "wikipedia": null,
       "sourceIndex": 5,
-      "record": "4–5",
+      "record": "4–6",
       "wins": 4,
-      "losses": 5,
+      "losses": 6,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -1155,22 +1155,22 @@
           "opponentJsaId": "3753",
           "opponentId": "ichiyamamoto",
           "opponent": "Ichiyamamoto",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 70
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3842",
+          "opponentId": "hoshoryu",
+          "opponent": "Hoshoryu",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -1225,7 +1225,7 @@
       "weight": "—",
       "careerHigh": "Sekiwake",
       "technique": "See official profile",
-      "form": 44,
+      "form": 40,
       "badge": null
     },
     {
@@ -1459,8 +1459,8 @@
       "photoFile": "20230052.jpg",
       "wikipedia": null,
       "sourceIndex": 7,
-      "record": "8–1",
-      "wins": 8,
+      "record": "9–1",
+      "wins": 9,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -1468,7 +1468,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 8,
+      "points": 9,
       "dailyResults": [
         {
           "day": 1,
@@ -1574,22 +1574,22 @@
           "opponentJsaId": "3842",
           "opponentId": "hoshoryu",
           "opponent": "Hoshoryu",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 12
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "4079",
+          "opponentId": "gonoyama",
+          "opponent": "Gonoyama",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -1644,7 +1644,7 @@
       "weight": "—",
       "careerHigh": "Sekiwake",
       "technique": "See official profile",
-      "form": 89,
+      "form": 90,
       "badge": null
     },
     {
@@ -1663,9 +1663,9 @@
       "photoFile": "20240045.jpg",
       "wikipedia": null,
       "sourceIndex": 8,
-      "record": "5–4",
+      "record": "5–5",
       "wins": 5,
-      "losses": 4,
+      "losses": 5,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -1778,22 +1778,22 @@
           "opponentJsaId": "4079",
           "opponentId": "gonoyama",
           "opponent": "Gonoyama",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 18
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3711",
+          "opponentId": "churanoumi",
+          "opponent": "Churanoumi",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -1848,7 +1848,7 @@
       "weight": "—",
       "careerHigh": "Komusubi",
       "technique": "See official profile",
-      "form": 56,
+      "form": 50,
       "badge": null
     },
     {
@@ -1867,9 +1867,9 @@
       "photoFile": "20180002.jpg",
       "wikipedia": null,
       "sourceIndex": 9,
-      "record": "1–8",
+      "record": "1–9",
       "wins": 1,
-      "losses": 8,
+      "losses": 9,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -1982,22 +1982,22 @@
           "opponentJsaId": "3661",
           "opponentId": "kotozakura",
           "opponent": "Kotozakura",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 13
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3265",
+          "opponentId": "takanosho",
+          "opponent": "Takanosho",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -2052,7 +2052,7 @@
       "weight": "—",
       "careerHigh": "Komusubi",
       "technique": "See official profile",
-      "form": 11,
+      "form": 10,
       "badge": null
     },
     {
@@ -2071,9 +2071,9 @@
       "photoFile": "20230008.jpg",
       "wikipedia": null,
       "sourceIndex": 10,
-      "record": "4–5",
+      "record": "4–6",
       "wins": 4,
-      "losses": 5,
+      "losses": 6,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -2186,22 +2186,22 @@
           "opponentJsaId": "3265",
           "opponentId": "takanosho",
           "opponent": "Takanosho",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 55
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3705",
+          "opponentId": "hiradoumi",
+          "opponent": "Hiradoumi",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -2256,7 +2256,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 1",
       "technique": "See official profile",
-      "form": 44,
+      "form": 40,
       "badge": "2 kinboshi"
     },
     {
@@ -2275,8 +2275,8 @@
       "photoFile": "20100039.jpg",
       "wikipedia": null,
       "sourceIndex": 11,
-      "record": "3–6",
-      "wins": 3,
+      "record": "4–6",
+      "wins": 4,
       "losses": 6,
       "absences": 0,
       "kyujoDays": [],
@@ -2284,7 +2284,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 3,
+      "points": 4,
       "dailyResults": [
         {
           "day": 1,
@@ -2390,22 +2390,22 @@
           "opponentJsaId": "4191",
           "opponentId": "fujinokawa",
           "opponent": "Fujinokawa",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 55
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3844",
+          "opponentId": "oho",
+          "opponent": "Oho",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -2460,7 +2460,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 1",
       "technique": "See official profile",
-      "form": 33,
+      "form": 40,
       "badge": null
     },
     {
@@ -2479,8 +2479,8 @@
       "photoFile": "20210023.jpg",
       "wikipedia": null,
       "sourceIndex": 12,
-      "record": "4–5",
-      "wins": 4,
+      "record": "5–5",
+      "wins": 5,
       "losses": 5,
       "absences": 0,
       "kyujoDays": [],
@@ -2488,7 +2488,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 1,
-      "points": 7,
+      "points": 8,
       "dailyResults": [
         {
           "day": 1,
@@ -2594,22 +2594,22 @@
           "opponentJsaId": "4279",
           "opponentId": "yoshinofuji",
           "opponent": "Yoshinofuji",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 18
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "4230",
+          "opponentId": "aonishiki",
+          "opponent": "Aonishiki",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -2664,7 +2664,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 2",
       "technique": "See official profile",
-      "form": 44,
+      "form": 50,
       "badge": "1 kinboshi"
     },
     {
@@ -2683,9 +2683,9 @@
       "photoFile": "20160048.jpg",
       "wikipedia": null,
       "sourceIndex": 13,
-      "record": "3–6",
+      "record": "3–7",
       "wins": 3,
-      "losses": 6,
+      "losses": 7,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -2798,22 +2798,22 @@
           "opponentJsaId": "4055",
           "opponentId": "atamifuji",
           "opponent": "Atamifuji",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 70
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "4279",
+          "opponentId": "yoshinofuji",
+          "opponent": "Yoshinofuji",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -2868,7 +2868,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 2",
       "technique": "See official profile",
-      "form": 33,
+      "form": 30,
       "badge": null
     },
     {
@@ -2887,9 +2887,9 @@
       "photoFile": "20160042.jpg",
       "wikipedia": null,
       "sourceIndex": 14,
-      "record": "1–8",
+      "record": "1–9",
       "wins": 1,
-      "losses": 8,
+      "losses": 9,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -3002,22 +3002,22 @@
           "opponentJsaId": "3616",
           "opponentId": "ura",
           "opponent": "Ura",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 53
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "4191",
+          "opponentId": "fujinokawa",
+          "opponent": "Fujinokawa",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -3072,7 +3072,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 3",
       "technique": "See official profile",
-      "form": 11,
+      "form": 10,
       "badge": null
     },
     {
@@ -3091,9 +3091,9 @@
       "photoFile": "20230004.jpg",
       "wikipedia": null,
       "sourceIndex": 15,
-      "record": "7–2",
+      "record": "7–3",
       "wins": 7,
-      "losses": 2,
+      "losses": 3,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -3206,22 +3206,22 @@
           "opponentJsaId": "3622",
           "opponentId": "kirishima",
           "opponent": "Kirishima",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 70
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "2775",
+          "opponentId": "takayasu",
+          "opponent": "Takayasu",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -3276,7 +3276,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 3",
       "technique": "See official profile",
-      "form": 78,
+      "form": 70,
       "badge": "1 kinboshi"
     },
     {
@@ -3418,14 +3418,14 @@
         },
         {
           "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
+          "opponentJsaId": "3742",
+          "opponentId": "nishikifuji",
+          "opponent": "Nishikifuji",
           "completed": false,
-          "status": null,
+          "status": "scheduled",
           "result": null,
           "kyujo": false,
-          "techniqueId": null
+          "techniqueId": -1
         },
         {
           "day": 12,
@@ -3499,8 +3499,8 @@
       "photoFile": "20170002.jpg",
       "wikipedia": null,
       "sourceIndex": 17,
-      "record": "4–5",
-      "wins": 4,
+      "record": "5–5",
+      "wins": 5,
       "losses": 5,
       "absences": 0,
       "kyujoDays": [],
@@ -3508,7 +3508,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 4,
+      "points": 5,
       "dailyResults": [
         {
           "day": 1,
@@ -3614,22 +3614,22 @@
           "opponentJsaId": "3840",
           "opponentId": "kotoshoho",
           "opponent": "Kotoshoho",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 70
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3622",
+          "opponentId": "kirishima",
+          "opponent": "Kirishima",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -3684,7 +3684,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 4",
       "technique": "See official profile",
-      "form": 44,
+      "form": 50,
       "badge": null
     },
     {
@@ -3703,8 +3703,8 @@
       "photoFile": "20150028.jpg",
       "wikipedia": null,
       "sourceIndex": 18,
-      "record": "3–6",
-      "wins": 3,
+      "record": "4–6",
+      "wins": 4,
       "losses": 6,
       "absences": 0,
       "kyujoDays": [],
@@ -3712,7 +3712,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 3,
+      "points": 4,
       "dailyResults": [
         {
           "day": 1,
@@ -3818,22 +3818,22 @@
           "opponentJsaId": "3705",
           "opponentId": "hiradoumi",
           "opponent": "Hiradoumi",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 53
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3661",
+          "opponentId": "kotozakura",
+          "opponent": "Kotozakura",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -3888,7 +3888,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 5",
       "technique": "See official profile",
-      "form": 33,
+      "form": 40,
       "badge": null
     },
     {
@@ -3907,9 +3907,9 @@
       "photoFile": "20210053.jpg",
       "wikipedia": null,
       "sourceIndex": 19,
-      "record": "4–5",
+      "record": "4–6",
       "wins": 4,
-      "losses": 5,
+      "losses": 6,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -4022,22 +4022,22 @@
           "opponentJsaId": "4336",
           "opponentId": "fujiryoga",
           "opponent": "Fujiryoga",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 18
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3594",
+          "opponentId": "tobizaru",
+          "opponent": "Tobizaru",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -4092,7 +4092,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 5",
       "technique": "See official profile",
-      "form": 44,
+      "form": 40,
       "badge": null
     },
     {
@@ -4111,9 +4111,9 @@
       "photoFile": "20140019.jpg",
       "wikipedia": null,
       "sourceIndex": 20,
-      "record": "4–5",
+      "record": "4–6",
       "wins": 4,
-      "losses": 5,
+      "losses": 6,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -4226,22 +4226,22 @@
           "opponentJsaId": "3907",
           "opponentId": "roga",
           "opponent": "Roga",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 16
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "4175",
+          "opponentId": "asahakuryu",
+          "opponent": "Asahakuryu",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -4296,7 +4296,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 6",
       "technique": "See official profile",
-      "form": 44,
+      "form": 40,
       "badge": null
     },
     {
@@ -4315,9 +4315,9 @@
       "photoFile": "20210037.jpg",
       "wikipedia": null,
       "sourceIndex": 21,
-      "record": "5–4",
+      "record": "5–5",
       "wins": 5,
-      "losses": 4,
+      "losses": 5,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -4430,22 +4430,22 @@
           "opponentJsaId": "3682",
           "opponentId": "asanoyama",
           "opponent": "Asanoyama",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 70
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3620",
+          "opponentId": "mitakeumi",
+          "opponent": "Mitakeumi",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -4500,7 +4500,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 6",
       "technique": "See official profile",
-      "form": 56,
+      "form": 50,
       "badge": null
     },
     {
@@ -4519,8 +4519,8 @@
       "photoFile": "20220003.jpg",
       "wikipedia": null,
       "sourceIndex": 22,
-      "record": "8–1",
-      "wins": 8,
+      "record": "9–1",
+      "wins": 9,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -4528,7 +4528,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 8,
+      "points": 9,
       "dailyResults": [
         {
           "day": 1,
@@ -4634,22 +4634,22 @@
           "opponentJsaId": "3485",
           "opponentId": "abi",
           "opponent": "Abi",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 27
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3990",
+          "opponentId": "shishi",
+          "opponent": "Shishi",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -4704,7 +4704,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 7",
       "technique": "See official profile",
-      "form": 89,
+      "form": 90,
       "badge": null
     },
     {
@@ -4723,8 +4723,8 @@
       "photoFile": "20050022.jpg",
       "wikipedia": null,
       "sourceIndex": 23,
-      "record": "7–2",
-      "wins": 7,
+      "record": "8–2",
+      "wins": 8,
       "losses": 2,
       "absences": 0,
       "kyujoDays": [],
@@ -4732,7 +4732,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 7,
+      "points": 8,
       "dailyResults": [
         {
           "day": 1,
@@ -4838,22 +4838,22 @@
           "opponentJsaId": "3594",
           "opponentId": "tobizaru",
           "opponent": "Tobizaru",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 55
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "4187",
+          "opponentId": "hakunofuji",
+          "opponent": "Hakunofuji",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -4908,7 +4908,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 7",
       "technique": "See official profile",
-      "form": 78,
+      "form": 80,
       "badge": null
     },
     {
@@ -4927,8 +4927,8 @@
       "photoFile": "20110065.jpg",
       "wikipedia": null,
       "sourceIndex": 24,
-      "record": "3–6",
-      "wins": 3,
+      "record": "4–6",
+      "wins": 4,
       "losses": 6,
       "absences": 0,
       "kyujoDays": [],
@@ -4936,7 +4936,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 3,
+      "points": 4,
       "dailyResults": [
         {
           "day": 1,
@@ -5042,22 +5042,22 @@
           "opponentJsaId": "4287",
           "opponentId": "kazuma",
           "opponent": "Kazuma",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 53
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "4112",
+          "opponentId": "kinbozan",
+          "opponent": "Kinbozan",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -5112,7 +5112,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 8",
       "technique": "See official profile",
-      "form": 33,
+      "form": 40,
       "badge": null
     },
     {
@@ -5131,8 +5131,8 @@
       "photoFile": "20180068.jpg",
       "wikipedia": null,
       "sourceIndex": 25,
-      "record": "3–6",
-      "wins": 3,
+      "record": "4–6",
+      "wins": 4,
       "losses": 6,
       "absences": 0,
       "kyujoDays": [],
@@ -5140,7 +5140,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 3,
+      "points": 4,
       "dailyResults": [
         {
           "day": 1,
@@ -5246,22 +5246,22 @@
           "opponentJsaId": "3521",
           "opponentId": "shodai",
           "opponent": "Shodai",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 16
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "4231",
+          "opponentId": "onokatsu",
+          "opponent": "Onokatsu",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -5316,7 +5316,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 8",
       "technique": "See official profile",
-      "form": 33,
+      "form": 40,
       "badge": null
     },
     {
@@ -5335,8 +5335,8 @@
       "photoFile": "20250038.jpg",
       "wikipedia": null,
       "sourceIndex": 26,
-      "record": "5–4",
-      "wins": 5,
+      "record": "6–4",
+      "wins": 6,
       "losses": 4,
       "absences": 0,
       "kyujoDays": [],
@@ -5344,7 +5344,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 5,
+      "points": 6,
       "dailyResults": [
         {
           "day": 1,
@@ -5450,22 +5450,22 @@
           "opponentJsaId": "4108",
           "opponentId": "oshoma",
           "opponent": "Oshoma",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 18
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "4287",
+          "opponentId": "kazuma",
+          "opponent": "Kazuma",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -5520,7 +5520,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 9",
       "technique": "See official profile",
-      "form": 56,
+      "form": 60,
       "badge": null
     },
     {
@@ -5539,9 +5539,9 @@
       "photoFile": "20150005.jpg",
       "wikipedia": null,
       "sourceIndex": 27,
-      "record": "3–6",
+      "record": "3–7",
       "wins": 3,
-      "losses": 6,
+      "losses": 7,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -5654,22 +5654,22 @@
           "opponentJsaId": "2775",
           "opponentId": "takayasu",
           "opponent": "Takayasu",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 55
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "4108",
+          "opponentId": "oshoma",
+          "opponent": "Oshoma",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -5724,7 +5724,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 9",
       "technique": "See official profile",
-      "form": 33,
+      "form": 30,
       "badge": null
     },
     {
@@ -5743,8 +5743,8 @@
       "photoFile": "20160019.jpg",
       "wikipedia": null,
       "sourceIndex": 28,
-      "record": "7–2",
-      "wins": 7,
+      "record": "8–2",
+      "wins": 8,
       "losses": 2,
       "absences": 0,
       "kyujoDays": [],
@@ -5752,7 +5752,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 7,
+      "points": 8,
       "dailyResults": [
         {
           "day": 1,
@@ -5858,22 +5858,22 @@
           "opponentJsaId": "4093",
           "opponentId": "fujiseiun",
           "opponent": "Fujiseiun",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 70
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "4171",
+          "opponentId": "takerufuji",
+          "opponent": "Takerufuji",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -5928,7 +5928,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 10",
       "technique": "See official profile",
-      "form": 78,
+      "form": 80,
       "badge": null
     },
     {
@@ -5947,9 +5947,9 @@
       "photoFile": "20090066.jpg",
       "wikipedia": null,
       "sourceIndex": 29,
-      "record": "3–6",
+      "record": "3–7",
       "wins": 3,
-      "losses": 6,
+      "losses": 7,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -6062,22 +6062,22 @@
           "opponentJsaId": "4171",
           "opponentId": "takerufuji",
           "opponent": "Takerufuji",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 70
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "4101",
+          "opponentId": "asakoryu",
+          "opponent": "Asakoryu",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -6132,7 +6132,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 10",
       "technique": "See official profile",
-      "form": 33,
+      "form": 30,
       "badge": null
     },
     {
@@ -6360,9 +6360,9 @@
       "photoFile": "20150032.jpg",
       "wikipedia": null,
       "sourceIndex": 31,
-      "record": "1–8",
+      "record": "1–9",
       "wins": 1,
-      "losses": 8,
+      "losses": 9,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -6475,22 +6475,22 @@
           "opponentJsaId": "4101",
           "opponentId": "asakoryu",
           "opponent": "Asakoryu",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 18
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "4093",
+          "opponentId": "fujiseiun",
+          "opponent": "Fujiseiun",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -6545,7 +6545,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 11",
       "technique": "See official profile",
-      "form": 11,
+      "form": 10,
       "badge": null
     },
     {
@@ -6564,8 +6564,8 @@
       "photoFile": "20220063.jpg",
       "wikipedia": null,
       "sourceIndex": 32,
-      "record": "2–7",
-      "wins": 2,
+      "record": "3–7",
+      "wins": 3,
       "losses": 7,
       "absences": 0,
       "kyujoDays": [],
@@ -6573,7 +6573,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 2,
+      "points": 3,
       "dailyResults": [
         {
           "day": 1,
@@ -6679,22 +6679,22 @@
           "opponentJsaId": "3990",
           "opponentId": "shishi",
           "opponent": "Shishi",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 70
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3521",
+          "opponentId": "shodai",
+          "opponent": "Shodai",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -6749,7 +6749,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 12",
       "technique": "See official profile",
-      "form": 22,
+      "form": 30,
       "badge": null
     },
     {
@@ -6768,9 +6768,9 @@
       "photoFile": "20130059.jpg",
       "wikipedia": null,
       "sourceIndex": 33,
-      "record": "5–4",
+      "record": "5–5",
       "wins": 5,
-      "losses": 4,
+      "losses": 5,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -6883,22 +6883,22 @@
           "opponentJsaId": "4120",
           "opponentId": "kotoeiho",
           "opponent": "Kotoeiho",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 27
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "4116",
+          "opponentId": "daiseizan",
+          "opponent": "Daiseizan",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -6953,7 +6953,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 12",
       "technique": "See official profile",
-      "form": 56,
+      "form": 50,
       "badge": null
     },
     {
@@ -6972,8 +6972,8 @@
       "photoFile": "20160081.jpg",
       "wikipedia": null,
       "sourceIndex": 34,
-      "record": "6–3",
-      "wins": 6,
+      "record": "7–3",
+      "wins": 7,
       "losses": 3,
       "absences": 0,
       "kyujoDays": [],
@@ -6981,7 +6981,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 6,
+      "points": 7,
       "dailyResults": [
         {
           "day": 1,
@@ -7087,22 +7087,22 @@
           "opponentJsaId": "4231",
           "opponentId": "onokatsu",
           "opponent": "Onokatsu",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 70
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3376",
+          "opponentId": "daieisho",
+          "opponent": "Daieisho",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -7157,7 +7157,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 13",
       "technique": "See official profile",
-      "form": 67,
+      "form": 70,
       "badge": null
     },
     {
@@ -7176,8 +7176,8 @@
       "photoFile": "20220059.jpg",
       "wikipedia": null,
       "sourceIndex": 35,
-      "record": "7–2",
-      "wins": 7,
+      "record": "8–2",
+      "wins": 8,
       "losses": 2,
       "absences": 0,
       "kyujoDays": [],
@@ -7185,7 +7185,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 7,
+      "points": 8,
       "dailyResults": [
         {
           "day": 1,
@@ -7291,22 +7291,22 @@
           "opponentJsaId": "3207",
           "opponentId": "chiyoshoma",
           "opponent": "Chiyoshoma",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 70
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3682",
+          "opponentId": "asanoyama",
+          "opponent": "Asanoyama",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -7361,7 +7361,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 13",
       "technique": "See official profile",
-      "form": 78,
+      "form": 80,
       "badge": null
     },
     {
@@ -7380,9 +7380,9 @@
       "photoFile": "20210057.jpg",
       "wikipedia": null,
       "sourceIndex": 36,
-      "record": "6–3",
+      "record": "6–4",
       "wins": 6,
-      "losses": 3,
+      "losses": 4,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -7495,22 +7495,22 @@
           "opponentJsaId": "4116",
           "opponentId": "daiseizan",
           "opponent": "Daiseizan",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 70
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3371",
+          "opponentId": "wakamotoharu",
+          "opponent": "Wakamotoharu",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -7565,7 +7565,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 14",
       "technique": "See official profile",
-      "form": 67,
+      "form": 60,
       "badge": null
     },
     {
@@ -7584,9 +7584,9 @@
       "photoFile": "20200005.jpg",
       "wikipedia": null,
       "sourceIndex": 37,
-      "record": "8–1",
+      "record": "8–2",
       "wins": 8,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -7699,22 +7699,22 @@
           "opponentJsaId": "4175",
           "opponentId": "asahakuryu",
           "opponent": "Asahakuryu",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 70
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "4120",
+          "opponentId": "kotoeiho",
+          "opponent": "Kotoeiho",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -7769,7 +7769,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 14",
       "technique": "See official profile",
-      "form": 89,
+      "form": 80,
       "badge": null
     },
     {
@@ -7788,16 +7788,16 @@
       "photoFile": "20230053.jpg",
       "wikipedia": null,
       "sourceIndex": 38,
-      "record": "2–7",
+      "record": "2–8",
       "wins": 2,
-      "losses": 7,
+      "losses": 8,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 2,
+      "points": 1,
       "dailyResults": [
         {
           "day": 1,
@@ -7903,22 +7903,22 @@
           "opponentJsaId": "3742",
           "opponentId": "nishikifuji",
           "opponent": "Nishikifuji",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 70
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3907",
+          "opponentId": "roga",
+          "opponent": "Roga",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -7973,7 +7973,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 15",
       "technique": "See official profile",
-      "form": 22,
+      "form": 20,
       "badge": null
     },
     {
@@ -7992,9 +7992,9 @@
       "photoFile": "20240054.jpg",
       "wikipedia": null,
       "sourceIndex": 39,
-      "record": "3–6",
+      "record": "3–7",
       "wins": 3,
-      "losses": 6,
+      "losses": 7,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -8107,22 +8107,22 @@
           "opponentJsaId": "3371",
           "opponentId": "wakamotoharu",
           "opponent": "Wakamotoharu",
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
+          "kyujo": false,
+          "techniqueId": 53
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "4336",
+          "opponentId": "fujiryoga",
+          "opponent": "Fujiryoga",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -8177,7 +8177,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 15",
       "technique": "See official profile",
-      "form": 33,
+      "form": 30,
       "badge": null
     },
     {
@@ -8196,8 +8196,8 @@
       "photoFile": "20210061.jpg",
       "wikipedia": null,
       "sourceIndex": 40,
-      "record": "3–6",
-      "wins": 3,
+      "record": "4–6",
+      "wins": 4,
       "losses": 6,
       "absences": 0,
       "kyujoDays": [],
@@ -8205,7 +8205,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 3,
+      "points": 4,
       "dailyResults": [
         {
           "day": 1,
@@ -8311,22 +8311,22 @@
           "opponentJsaId": "4112",
           "opponentId": "kinbozan",
           "opponent": "Kinbozan",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 70
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3485",
+          "opponentId": "abi",
+          "opponent": "Abi",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -8381,7 +8381,7 @@
       "weight": "—",
       "careerHigh": "Maegashira 16",
       "technique": "See official profile",
-      "form": 33,
+      "form": 40,
       "badge": null
     },
     {
@@ -8400,8 +8400,8 @@
       "photoFile": "20210046.jpg",
       "wikipedia": null,
       "sourceIndex": 41,
-      "record": "4–5",
-      "wins": 4,
+      "record": "5–5",
+      "wins": 5,
       "losses": 5,
       "absences": 0,
       "kyujoDays": [],
@@ -8409,7 +8409,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 4,
+      "points": 5,
       "dailyResults": [
         {
           "day": 1,
@@ -8515,22 +8515,22 @@
           "opponentJsaId": "3620",
           "opponentId": "mitakeumi",
           "opponent": "Mitakeumi",
+          "completed": true,
+          "status": "win",
+          "result": "win",
+          "kyujo": false,
+          "techniqueId": 18
+        },
+        {
+          "day": 11,
+          "opponentJsaId": "3207",
+          "opponentId": "chiyoshoma",
+          "opponent": "Chiyoshoma",
           "completed": false,
           "status": "scheduled",
           "result": null,
           "kyujo": false,
           "techniqueId": -1
-        },
-        {
-          "day": 11,
-          "opponentJsaId": null,
-          "opponentId": null,
-          "opponent": null,
-          "completed": false,
-          "status": null,
-          "result": null,
-          "kyujo": false,
-          "techniqueId": null
         },
         {
           "day": 12,
@@ -8585,10 +8585,10 @@
       "weight": "—",
       "careerHigh": "Maegashira 16",
       "technique": "See official profile",
-      "form": 44,
+      "form": 50,
       "badge": null
     }
   ],
-  "generatedAt": "2026-07-20T19:58:43.615Z",
-  "dataSignature": "fcb96dc9c50401a995ad855eedd58d0fbc60463aa47c4f00241953a15bc95c49"
+  "generatedAt": "2026-07-21T08:47:49.191Z",
+  "dataSignature": "cfacfa1d2fcb713d1d1d80f9d7102b57416ea93ce98db24fc7be761a9802fb41"
 }
