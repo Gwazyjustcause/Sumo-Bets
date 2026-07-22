@@ -14,11 +14,11 @@
     "dateRange": "12–26 July 2026",
     "venueId": 3,
     "venue": "IG Arena, Aichi",
-    "currentDay": 11,
+    "currentDay": 12,
     "scheduledThroughDay": 12,
     "totalDays": 15,
     "active": true
   },
-  "generatedAt": "2026-07-22T14:25:50.899Z",
-  "dataSignature": "b795dff76b95204e31d86e695ce20ab6d4069279709e5ccef3a8f480beec5e39"
+  "generatedAt": "2026-07-22T19:46:59.098Z",
+  "dataSignature": "16d23fdbd031c8362d706e0b311cb801c1c04923e8568cd87ada3e14aceae39f"
 }
