@@ -6,7 +6,7 @@
   "currentDay": 11,
   "scheduledThroughDay": 12,
   "sideTotals": {
-    "East": 117,
+    "East": 119,
     "West": 108
   },
   "injuries": [
@@ -3639,7 +3639,7 @@
     {
       "day": 11,
       "label": "Day 11  July 22, 2026",
-      "completed": false,
+      "completed": true,
       "bouts": [
         {
           "id": "11-4116-3485",
@@ -3956,13 +3956,13 @@
           "westJsaId": "4227",
           "eastName": "Atamifuji",
           "westName": "Onosato",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "7–3",
-          "westRecord": "6–4"
+          "completed": true,
+          "winner": "atamifuji",
+          "winnerJsaId": "4055",
+          "technique": "oshidashi",
+          "techniqueId": 18,
+          "eastRecord": "8–3",
+          "westRecord": "6–5"
         },
         {
           "id": "11-3842-3840",
@@ -3973,13 +3973,13 @@
           "westJsaId": "3840",
           "eastName": "Hoshoryu",
           "westName": "Kotoshoho",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "6–4",
-          "westRecord": "4–6"
+          "completed": true,
+          "winner": "hoshoryu",
+          "winnerJsaId": "3842",
+          "technique": "uwatenage",
+          "techniqueId": 12,
+          "eastRecord": "7–4",
+          "westRecord": "4–7"
         }
       ]
     },
@@ -4274,7 +4274,7 @@
           "winnerJsaId": null,
           "technique": "&nbsp;",
           "techniqueId": -1,
-          "eastRecord": "7–3",
+          "eastRecord": "8–3",
           "westRecord": "9–2"
         },
         {
@@ -4292,7 +4292,7 @@
           "technique": "&nbsp;",
           "techniqueId": -1,
           "eastRecord": "10–1",
-          "westRecord": "4–6"
+          "westRecord": "4–7"
         },
         {
           "id": "12-3842-3661",
@@ -4308,7 +4308,7 @@
           "winnerJsaId": null,
           "technique": "&nbsp;",
           "techniqueId": -1,
-          "eastRecord": "6–4",
+          "eastRecord": "7–4",
           "westRecord": "6–5"
         },
         {
@@ -4326,11 +4326,11 @@
           "technique": "&nbsp;",
           "techniqueId": -1,
           "eastRecord": "9–2",
-          "westRecord": "6–4"
+          "westRecord": "6–5"
         }
       ]
     }
   ],
-  "generatedAt": "2026-07-22T08:46:55.226Z",
-  "dataSignature": "ec80f6580a4b3b5887df6cb270418d66e391459516ee304a99fe747bbaa4e14b"
+  "generatedAt": "2026-07-22T14:25:50.899Z",
+  "dataSignature": "b795dff76b95204e31d86e695ce20ab6d4069279709e5ccef3a8f480beec5e39"
 }

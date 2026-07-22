@@ -20,8 +20,8 @@
       "photoFile": "20170096.jpg",
       "wikipedia": null,
       "sourceIndex": 0,
-      "record": "6–4",
-      "wins": 6,
+      "record": "7–4",
+      "wins": 7,
       "losses": 4,
       "absences": 0,
       "kyujoDays": [],
@@ -29,7 +29,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 6,
+      "points": 7,
       "dailyResults": [
         {
           "day": 1,
@@ -146,11 +146,11 @@
           "opponentJsaId": "3840",
           "opponentId": "kotoshoho",
           "opponent": "Kotoshoho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 12
         },
         {
           "day": 12,
@@ -205,7 +205,7 @@
       "weight": "—",
       "careerHigh": "Yokozuna",
       "technique": "See official profile",
-      "form": 60,
+      "form": 64,
       "badge": null
     },
     {
@@ -224,9 +224,9 @@
       "photoFile": "20230048.jpg",
       "wikipedia": null,
       "sourceIndex": 1,
-      "record": "6–4",
+      "record": "6–5",
       "wins": 6,
-      "losses": 4,
+      "losses": 5,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -350,11 +350,11 @@
           "opponentJsaId": "4055",
           "opponentId": "atamifuji",
           "opponent": "Atamifuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 12,
@@ -409,7 +409,7 @@
       "weight": "—",
       "careerHigh": "Yokozuna",
       "technique": "See official profile",
-      "form": 60,
+      "form": 55,
       "badge": null
     },
     {
@@ -836,8 +836,8 @@
       "photoFile": "20200074.jpg",
       "wikipedia": null,
       "sourceIndex": 4,
-      "record": "7–3",
-      "wins": 7,
+      "record": "8–3",
+      "wins": 8,
       "losses": 3,
       "absences": 0,
       "kyujoDays": [],
@@ -845,7 +845,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 7,
+      "points": 8,
       "dailyResults": [
         {
           "day": 1,
@@ -962,11 +962,11 @@
           "opponentJsaId": "4227",
           "opponentId": "onosato",
           "opponent": "Onosato",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 12,
@@ -1021,7 +1021,7 @@
       "weight": "—",
       "careerHigh": "Sekiwake",
       "technique": "See official profile",
-      "form": 70,
+      "form": 73,
       "badge": null
     },
     {
@@ -1040,9 +1040,9 @@
       "photoFile": "20170094.jpg",
       "wikipedia": null,
       "sourceIndex": 5,
-      "record": "4–6",
+      "record": "4–7",
       "wins": 4,
-      "losses": 6,
+      "losses": 7,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -1166,11 +1166,11 @@
           "opponentJsaId": "3842",
           "opponentId": "hoshoryu",
           "opponent": "Hoshoryu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 12
         },
         {
           "day": 12,
@@ -1225,7 +1225,7 @@
       "weight": "—",
       "careerHigh": "Sekiwake",
       "technique": "See official profile",
-      "form": 40,
+      "form": 36,
       "badge": null
     },
     {
@@ -8591,6 +8591,6 @@
       "badge": null
     }
   ],
-  "generatedAt": "2026-07-22T08:46:55.226Z",
-  "dataSignature": "ec80f6580a4b3b5887df6cb270418d66e391459516ee304a99fe747bbaa4e14b"
+  "generatedAt": "2026-07-22T14:25:50.899Z",
+  "dataSignature": "b795dff76b95204e31d86e695ce20ab6d4069279709e5ccef3a8f480beec5e39"
 }
