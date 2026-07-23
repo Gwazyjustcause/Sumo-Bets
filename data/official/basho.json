@@ -15,10 +15,10 @@
     "venueId": 3,
     "venue": "IG Arena, Aichi",
     "currentDay": 12,
-    "scheduledThroughDay": 12,
+    "scheduledThroughDay": 13,
     "totalDays": 15,
     "active": true
   },
-  "generatedAt": "2026-07-23T08:46:30.776Z",
-  "dataSignature": "f8c34a2b4d73cbc6d8826823024c36d8b9497ac6eaf42fa714b2a40eee84ff70"
+  "generatedAt": "2026-07-23T14:35:28.729Z",
+  "dataSignature": "806f65838f5ffe2563054f09b79907ae782f3841978306fdaf673871cef7a2d3"
 }
