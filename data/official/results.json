@@ -3,7 +3,7 @@
   "bashoId": "636",
   "bashoSlug": "nagoya-2026",
   "division": "Makuuchi",
-  "currentDay": 13,
+  "currentDay": 14,
   "scheduledThroughDay": 14,
   "sideTotals": {
     "East": 139,
@@ -14,7 +14,7 @@
       "id": "wakatakakage",
       "jsaId": "3761",
       "name": "Wakatakakage",
-      "absences": 13,
+      "absences": 14,
       "kyujoDays": [
         1,
         2,
@@ -28,7 +28,8 @@
         10,
         11,
         12,
-        13
+        13,
+        14
       ],
       "status": "Kyujo · injured / withdrawn"
     },
@@ -36,7 +37,7 @@
       "id": "wakanosho",
       "jsaId": "4121",
       "name": "Wakanosho",
-      "absences": 6,
+      "absences": 7,
       "kyujoDays": [
         7,
         8,
@@ -44,12 +45,13 @@
         10,
         11,
         12,
-        13
+        13,
+        14
       ],
       "status": "Kyujo · injured / withdrawn"
     }
   ],
-  "source": "https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/13/",
+  "source": "https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/14/",
   "days": [
     {
       "day": 1,
@@ -5029,6 +5031,6 @@
       ]
     }
   ],
-  "generatedAt": "2026-07-24T14:15:09.930Z",
-  "dataSignature": "6eaa8103736394e6f83c6096733fa058d15503baf6f12bc8a26a6fab9c0d8cb1"
+  "generatedAt": "2026-07-24T19:48:59.266Z",
+  "dataSignature": "6833d9db32803b30c7499495e7f627f03355a218322c414afb0c8ad54b21e3c5"
 }
