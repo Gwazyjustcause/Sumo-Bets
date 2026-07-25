@@ -20,12 +20,13 @@
       "photoFile": "20170096.jpg",
       "wikipedia": null,
       "sourceIndex": 0,
-      "record": "7–7",
+      "record": "7–7–1",
       "wins": 7,
       "losses": 7,
-      "absences": 0,
+      "absences": 1,
       "kyujoDays": [
-        14
+        14,
+        15
       ],
       "currentKyujo": true,
       "status": "Kyujo · injured / withdrawn",
@@ -192,10 +193,10 @@
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         }
       ],
@@ -1246,10 +1247,10 @@
       "photoFile": "20170011.jpg",
       "wikipedia": null,
       "sourceIndex": 6,
-      "record": "0–0–14",
+      "record": "0–0–15",
       "wins": 0,
       "losses": 0,
-      "absences": 14,
+      "absences": 15,
       "kyujoDays": [
         1,
         2,
@@ -1264,7 +1265,8 @@
         11,
         12,
         13,
-        14
+        14,
+        15
       ],
       "currentKyujo": true,
       "status": "Kyujo · injured / withdrawn",
@@ -1431,10 +1433,10 @@
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         }
       ],
@@ -6157,10 +6159,10 @@
       "photoFile": "20220004.jpg",
       "wikipedia": null,
       "sourceIndex": 30,
-      "record": "5–2–7",
+      "record": "5–2–8",
       "wins": 5,
       "losses": 2,
-      "absences": 7,
+      "absences": 8,
       "kyujoDays": [
         7,
         8,
@@ -6169,7 +6171,8 @@
         11,
         12,
         13,
-        14
+        14,
+        15
       ],
       "currentKyujo": true,
       "status": "Kyujo · injured / withdrawn",
@@ -6336,10 +6339,10 @@
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         }
       ],
@@ -8599,6 +8602,6 @@
       "badge": null
     }
   ],
-  "generatedAt": "2026-07-25T14:04:04.197Z",
-  "dataSignature": "623cbec16930839ca5b90d3cc67591e55ad76df1e04cc0dc8a764cb2e27349f6"
+  "generatedAt": "2026-07-25T19:36:57.802Z",
+  "dataSignature": "449bfb2ccfd3e5fc045aeff1c13435faf1e749b95d2cee5da9a275e42650c28d"
 }
