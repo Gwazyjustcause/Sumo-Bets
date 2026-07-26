@@ -2,7 +2,7 @@
 window.SUMO_DATA = {
   "meta": {
     "bashoId": "636",
-    "dataSignature": "449bfb2ccfd3e5fc045aeff1c13435faf1e749b95d2cee5da9a275e42650c28d",
+    "dataSignature": "336c46e212236ea3785264a547937f5dda06c29add09ed8cecd6fe2ac04167ac",
     "tournament": "Nagoya Basho 2026",
     "shortTournament": "July 2026",
     "day": 15,
@@ -10,12 +10,12 @@ window.SUMO_DATA = {
     "totalDays": 15,
     "dateRange": "12–26 July 2026",
     "venue": "IG Arena, Aichi",
-    "lastUpdated": "Day 15  July 26, 2026 · official snapshot 2026-07-25 19:36 UTC",
+    "lastUpdated": "Day 15  July 26, 2026 · official snapshot 2026-07-26 08:40 UTC",
     "status": "Day 15 official results",
     "active": true,
     "sideTotals": {
-      "East": 148,
-      "West": 139
+      "East": 158,
+      "West": 148
     },
     "sources": [
       {
@@ -510,8 +510,8 @@ window.SUMO_DATA = {
       "photoFile": "20150034.jpg",
       "wikipedia": null,
       "sourceIndex": 2,
-      "record": "11–3",
-      "wins": 11,
+      "record": "12–3",
+      "wins": 12,
       "losses": 3,
       "absences": 0,
       "kyujoDays": [],
@@ -519,7 +519,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 11,
+      "points": 12,
       "dailyResults": [
         {
           "day": 1,
@@ -680,11 +680,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3661",
           "opponentId": "kotozakura",
           "opponent": "Kotozakura",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20150034.jpg",
@@ -695,7 +695,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Ozeki",
       "technique": "See official profile",
-      "form": 79,
+      "form": 80,
       "badge": null
     },
     {
@@ -714,9 +714,9 @@ window.SUMO_DATA = {
       "photoFile": "20150081.jpg",
       "wikipedia": null,
       "sourceIndex": 3,
-      "record": "8–6",
+      "record": "8–7",
       "wins": 8,
-      "losses": 6,
+      "losses": 7,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -884,11 +884,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3622",
           "opponentId": "kirishima",
           "opponent": "Kirishima",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20150081.jpg",
@@ -899,7 +899,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Ozeki",
       "technique": "See official profile",
-      "form": 57,
+      "form": 53,
       "badge": null
     },
     {
@@ -918,8 +918,8 @@ window.SUMO_DATA = {
       "photoFile": "20200074.jpg",
       "wikipedia": null,
       "sourceIndex": 4,
-      "record": "11–3",
-      "wins": 11,
+      "record": "12–3",
+      "wins": 12,
       "losses": 3,
       "absences": 0,
       "kyujoDays": [],
@@ -927,7 +927,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 11,
+      "points": 12,
       "dailyResults": [
         {
           "day": 1,
@@ -1088,11 +1088,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4230",
           "opponentId": "aonishiki",
           "opponent": "Aonishiki",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20200074.jpg",
@@ -1103,7 +1103,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Sekiwake",
       "technique": "See official profile",
-      "form": 79,
+      "form": 80,
       "badge": null
     },
     {
@@ -1546,9 +1546,9 @@ window.SUMO_DATA = {
       "photoFile": "20230052.jpg",
       "wikipedia": null,
       "sourceIndex": 7,
-      "record": "12–2",
+      "record": "12–3",
       "wins": 12,
-      "losses": 2,
+      "losses": 3,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -1716,11 +1716,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4055",
           "opponentId": "atamifuji",
           "opponent": "Atamifuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20230052.jpg",
@@ -1731,7 +1731,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Sekiwake",
       "technique": "See official profile",
-      "form": 86,
+      "form": 80,
       "badge": null
     },
     {
@@ -1750,9 +1750,9 @@ window.SUMO_DATA = {
       "photoFile": "20240045.jpg",
       "wikipedia": null,
       "sourceIndex": 8,
-      "record": "6–8",
+      "record": "6–9",
       "wins": 6,
-      "losses": 8,
+      "losses": 9,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -1920,11 +1920,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3376",
           "opponentId": "daieisho",
           "opponent": "Daieisho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 53
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20240045.jpg",
@@ -1935,7 +1935,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Komusubi",
       "technique": "See official profile",
-      "form": 43,
+      "form": 40,
       "badge": null
     },
     {
@@ -1954,9 +1954,9 @@ window.SUMO_DATA = {
       "photoFile": "20180002.jpg",
       "wikipedia": null,
       "sourceIndex": 9,
-      "record": "2–12",
+      "record": "2–13",
       "wins": 2,
-      "losses": 12,
+      "losses": 13,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -2124,11 +2124,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4187",
           "opponentId": "hakunofuji",
           "opponent": "Hakunofuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 71
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20180002.jpg",
@@ -2139,7 +2139,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Komusubi",
       "technique": "See official profile",
-      "form": 14,
+      "form": 13,
       "badge": null
     },
     {
@@ -2158,8 +2158,8 @@ window.SUMO_DATA = {
       "photoFile": "20230008.jpg",
       "wikipedia": null,
       "sourceIndex": 10,
-      "record": "7–7",
-      "wins": 7,
+      "record": "8–7",
+      "wins": 8,
       "losses": 7,
       "absences": 0,
       "kyujoDays": [],
@@ -2167,7 +2167,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 2,
-      "points": 13,
+      "points": 14,
       "dailyResults": [
         {
           "day": 1,
@@ -2328,11 +2328,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4093",
           "opponentId": "fujiseiun",
           "opponent": "Fujiseiun",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20230008.jpg",
@@ -2343,7 +2343,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 1",
       "technique": "See official profile",
-      "form": 50,
+      "form": 53,
       "badge": "2 kinboshi"
     },
     {
@@ -2362,9 +2362,9 @@ window.SUMO_DATA = {
       "photoFile": "20100039.jpg",
       "wikipedia": null,
       "sourceIndex": 11,
-      "record": "6–8",
+      "record": "6–9",
       "wins": 6,
-      "losses": 8,
+      "losses": 9,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -2532,11 +2532,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3711",
           "opponentId": "churanoumi",
           "opponent": "Churanoumi",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 65
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20100039.jpg",
@@ -2547,7 +2547,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 1",
       "technique": "See official profile",
-      "form": 43,
+      "form": 40,
       "badge": null
     },
     {
@@ -2566,8 +2566,8 @@ window.SUMO_DATA = {
       "photoFile": "20210023.jpg",
       "wikipedia": null,
       "sourceIndex": 12,
-      "record": "6–8",
-      "wins": 6,
+      "record": "7–8",
+      "wins": 7,
       "losses": 8,
       "absences": 0,
       "kyujoDays": [],
@@ -2575,7 +2575,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 1,
-      "points": 8,
+      "points": 9,
       "dailyResults": [
         {
           "day": 1,
@@ -2736,11 +2736,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3705",
           "opponentId": "hiradoumi",
           "opponent": "Hiradoumi",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20210023.jpg",
@@ -2751,7 +2751,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 2",
       "technique": "See official profile",
-      "form": 43,
+      "form": 47,
       "badge": "1 kinboshi"
     },
     {
@@ -2770,8 +2770,8 @@ window.SUMO_DATA = {
       "photoFile": "20160048.jpg",
       "wikipedia": null,
       "sourceIndex": 13,
-      "record": "6–8",
-      "wins": 6,
+      "record": "7–8",
+      "wins": 7,
       "losses": 8,
       "absences": 0,
       "kyujoDays": [],
@@ -2779,7 +2779,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 5,
+      "points": 6,
       "dailyResults": [
         {
           "day": 1,
@@ -2940,11 +2940,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3265",
           "opponentId": "takanosho",
           "opponent": "Takanosho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 65
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20160048.jpg",
@@ -2955,7 +2955,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 2",
       "technique": "See official profile",
-      "form": 43,
+      "form": 47,
       "badge": null
     },
     {
@@ -2974,9 +2974,9 @@ window.SUMO_DATA = {
       "photoFile": "20160042.jpg",
       "wikipedia": null,
       "sourceIndex": 14,
-      "record": "4–10",
+      "record": "4–11",
       "wins": 4,
-      "losses": 10,
+      "losses": 11,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -3144,11 +3144,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4079",
           "opponentId": "gonoyama",
           "opponent": "Gonoyama",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20160042.jpg",
@@ -3159,7 +3159,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 3",
       "technique": "See official profile",
-      "form": 29,
+      "form": 27,
       "badge": null
     },
     {
@@ -3178,8 +3178,8 @@ window.SUMO_DATA = {
       "photoFile": "20230004.jpg",
       "wikipedia": null,
       "sourceIndex": 15,
-      "record": "8–6",
-      "wins": 8,
+      "record": "9–6",
+      "wins": 9,
       "losses": 6,
       "absences": 0,
       "kyujoDays": [],
@@ -3187,7 +3187,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 1,
-      "points": 11,
+      "points": 12,
       "dailyResults": [
         {
           "day": 1,
@@ -3348,11 +3348,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3844",
           "opponentId": "oho",
           "opponent": "Oho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 71
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20230004.jpg",
@@ -3363,7 +3363,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 3",
       "technique": "See official profile",
-      "form": 57,
+      "form": 60,
       "badge": "1 kinboshi"
     },
     {
@@ -3382,8 +3382,8 @@ window.SUMO_DATA = {
       "photoFile": "20120003.jpg",
       "wikipedia": null,
       "sourceIndex": 16,
-      "record": "9–5",
-      "wins": 9,
+      "record": "10–5",
+      "wins": 10,
       "losses": 5,
       "absences": 0,
       "kyujoDays": [],
@@ -3391,7 +3391,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 9,
+      "points": 10,
       "dailyResults": [
         {
           "day": 1,
@@ -3552,11 +3552,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4279",
           "opponentId": "yoshinofuji",
           "opponent": "Yoshinofuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 53
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20120003.jpg",
@@ -3567,7 +3567,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 4",
       "technique": "See official profile",
-      "form": 64,
+      "form": 67,
       "badge": null
     },
     {
@@ -3586,8 +3586,8 @@ window.SUMO_DATA = {
       "photoFile": "20170002.jpg",
       "wikipedia": null,
       "sourceIndex": 17,
-      "record": "5–9",
-      "wins": 5,
+      "record": "6–9",
+      "wins": 6,
       "losses": 9,
       "absences": 0,
       "kyujoDays": [],
@@ -3595,7 +3595,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 4,
+      "points": 5,
       "dailyResults": [
         {
           "day": 1,
@@ -3756,11 +3756,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3594",
           "opponentId": "tobizaru",
           "opponent": "Tobizaru",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 55
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20170002.jpg",
@@ -3771,7 +3771,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 4",
       "technique": "See official profile",
-      "form": 36,
+      "form": 40,
       "badge": null
     },
     {
@@ -3790,9 +3790,9 @@ window.SUMO_DATA = {
       "photoFile": "20150028.jpg",
       "wikipedia": null,
       "sourceIndex": 18,
-      "record": "5–9",
+      "record": "5–10",
       "wins": 5,
-      "losses": 9,
+      "losses": 10,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -3960,11 +3960,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3485",
           "opponentId": "abi",
           "opponent": "Abi",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 55
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20150028.jpg",
@@ -3975,7 +3975,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 5",
       "technique": "See official profile",
-      "form": 36,
+      "form": 33,
       "badge": null
     },
     {
@@ -3994,8 +3994,8 @@ window.SUMO_DATA = {
       "photoFile": "20210053.jpg",
       "wikipedia": null,
       "sourceIndex": 19,
-      "record": "6–8",
-      "wins": 6,
+      "record": "7–8",
+      "wins": 7,
       "losses": 8,
       "absences": 0,
       "kyujoDays": [],
@@ -4003,7 +4003,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 5,
+      "points": 6,
       "dailyResults": [
         {
           "day": 1,
@@ -4164,11 +4164,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4231",
           "opponentId": "onokatsu",
           "opponent": "Onokatsu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20210053.jpg",
@@ -4179,7 +4179,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 5",
       "technique": "See official profile",
-      "form": 43,
+      "form": 47,
       "badge": null
     },
     {
@@ -4198,8 +4198,8 @@ window.SUMO_DATA = {
       "photoFile": "20140019.jpg",
       "wikipedia": null,
       "sourceIndex": 20,
-      "record": "4–10",
-      "wins": 4,
+      "record": "5–10",
+      "wins": 5,
       "losses": 10,
       "absences": 0,
       "kyujoDays": [],
@@ -4207,7 +4207,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 3,
+      "points": 4,
       "dailyResults": [
         {
           "day": 1,
@@ -4368,11 +4368,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4116",
           "opponentId": "daiseizan",
           "opponent": "Daiseizan",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20140019.jpg",
@@ -4383,7 +4383,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 6",
       "technique": "See official profile",
-      "form": 29,
+      "form": 33,
       "badge": null
     },
     {
@@ -4402,16 +4402,16 @@ window.SUMO_DATA = {
       "photoFile": "20210037.jpg",
       "wikipedia": null,
       "sourceIndex": 21,
-      "record": "7–7",
+      "record": "7–8",
       "wins": 7,
-      "losses": 7,
+      "losses": 8,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 7,
+      "points": 6,
       "dailyResults": [
         {
           "day": 1,
@@ -4572,11 +4572,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4191",
           "opponentId": "fujinokawa",
           "opponent": "Fujinokawa",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20210037.jpg",
@@ -4587,7 +4587,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 6",
       "technique": "See official profile",
-      "form": 50,
+      "form": 47,
       "badge": null
     },
     {
@@ -4606,8 +4606,8 @@ window.SUMO_DATA = {
       "photoFile": "20220003.jpg",
       "wikipedia": null,
       "sourceIndex": 22,
-      "record": "10–4",
-      "wins": 10,
+      "record": "11–4",
+      "wins": 11,
       "losses": 4,
       "absences": 0,
       "kyujoDays": [],
@@ -4615,7 +4615,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 10,
+      "points": 11,
       "dailyResults": [
         {
           "day": 1,
@@ -4776,11 +4776,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4171",
           "opponentId": "takerufuji",
           "opponent": "Takerufuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20220003.jpg",
@@ -4791,7 +4791,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 7",
       "technique": "See official profile",
-      "form": 71,
+      "form": 73,
       "badge": null
     },
     {
@@ -4810,8 +4810,8 @@ window.SUMO_DATA = {
       "photoFile": "20050022.jpg",
       "wikipedia": null,
       "sourceIndex": 23,
-      "record": "10–4",
-      "wins": 10,
+      "record": "11–4",
+      "wins": 11,
       "losses": 4,
       "absences": 0,
       "kyujoDays": [],
@@ -4819,7 +4819,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 10,
+      "points": 11,
       "dailyResults": [
         {
           "day": 1,
@@ -4980,11 +4980,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3682",
           "opponentId": "asanoyama",
           "opponent": "Asanoyama",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20050022.jpg",
@@ -4995,7 +4995,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 7",
       "technique": "See official profile",
-      "form": 71,
+      "form": 73,
       "badge": null
     },
     {
@@ -5014,9 +5014,9 @@ window.SUMO_DATA = {
       "photoFile": "20110065.jpg",
       "wikipedia": null,
       "sourceIndex": 24,
-      "record": "6–8",
+      "record": "6–9",
       "wins": 6,
-      "losses": 8,
+      "losses": 9,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -5184,11 +5184,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4175",
           "opponentId": "asahakuryu",
           "opponent": "Asahakuryu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20110065.jpg",
@@ -5199,7 +5199,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 8",
       "technique": "See official profile",
-      "form": 43,
+      "form": 40,
       "badge": null
     },
     {
@@ -5218,8 +5218,8 @@ window.SUMO_DATA = {
       "photoFile": "20180068.jpg",
       "wikipedia": null,
       "sourceIndex": 25,
-      "record": "8–6",
-      "wins": 8,
+      "record": "9–6",
+      "wins": 9,
       "losses": 6,
       "absences": 0,
       "kyujoDays": [],
@@ -5227,7 +5227,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 8,
+      "points": 9,
       "dailyResults": [
         {
           "day": 1,
@@ -5388,11 +5388,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3990",
           "opponentId": "shishi",
           "opponent": "Shishi",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 71
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20180068.jpg",
@@ -5403,7 +5403,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 8",
       "technique": "See official profile",
-      "form": 57,
+      "form": 60,
       "badge": null
     },
     {
@@ -5422,9 +5422,9 @@ window.SUMO_DATA = {
       "photoFile": "20250038.jpg",
       "wikipedia": null,
       "sourceIndex": 26,
-      "record": "10–4",
+      "record": "10–5",
       "wins": 10,
-      "losses": 4,
+      "losses": 5,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -5592,11 +5592,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4101",
           "opponentId": "asakoryu",
           "opponent": "Asakoryu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 16
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20250038.jpg",
@@ -5607,7 +5607,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 9",
       "technique": "See official profile",
-      "form": 71,
+      "form": 67,
       "badge": null
     },
     {
@@ -5626,9 +5626,9 @@ window.SUMO_DATA = {
       "photoFile": "20150005.jpg",
       "wikipedia": null,
       "sourceIndex": 27,
-      "record": "5–9",
+      "record": "5–10",
       "wins": 5,
-      "losses": 9,
+      "losses": 10,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -5796,11 +5796,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3753",
           "opponentId": "ichiyamamoto",
           "opponent": "Ichiyamamoto",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 55
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20150005.jpg",
@@ -5811,7 +5811,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 9",
       "technique": "See official profile",
-      "form": 36,
+      "form": 33,
       "badge": null
     },
     {
@@ -5830,9 +5830,9 @@ window.SUMO_DATA = {
       "photoFile": "20160019.jpg",
       "wikipedia": null,
       "sourceIndex": 28,
-      "record": "9–5",
+      "record": "9–6",
       "wins": 9,
-      "losses": 5,
+      "losses": 6,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -6000,11 +6000,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "2775",
           "opponentId": "takayasu",
           "opponent": "Takayasu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20160019.jpg",
@@ -6015,7 +6015,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 10",
       "technique": "See official profile",
-      "form": 64,
+      "form": 60,
       "badge": null
     },
     {
@@ -6034,9 +6034,9 @@ window.SUMO_DATA = {
       "photoFile": "20090066.jpg",
       "wikipedia": null,
       "sourceIndex": 29,
-      "record": "5–9",
+      "record": "5–10",
       "wins": 5,
-      "losses": 9,
+      "losses": 10,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -6204,11 +6204,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3742",
           "opponentId": "nishikifuji",
           "opponent": "Nishikifuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20090066.jpg",
@@ -6219,7 +6219,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 10",
       "technique": "See official profile",
-      "form": 36,
+      "form": 33,
       "badge": null
     },
     {
@@ -6452,9 +6452,9 @@ window.SUMO_DATA = {
       "photoFile": "20150032.jpg",
       "wikipedia": null,
       "sourceIndex": 31,
-      "record": "2–12",
+      "record": "2–13",
       "wins": 2,
-      "losses": 12,
+      "losses": 13,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -6622,11 +6622,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4112",
           "opponentId": "kinbozan",
           "opponent": "Kinbozan",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20150032.jpg",
@@ -6637,7 +6637,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 11",
       "technique": "See official profile",
-      "form": 14,
+      "form": 13,
       "badge": null
     },
     {
@@ -6656,8 +6656,8 @@ window.SUMO_DATA = {
       "photoFile": "20220063.jpg",
       "wikipedia": null,
       "sourceIndex": 32,
-      "record": "6–8",
-      "wins": 6,
+      "record": "7–8",
+      "wins": 7,
       "losses": 8,
       "absences": 0,
       "kyujoDays": [],
@@ -6665,7 +6665,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 5,
+      "points": 6,
       "dailyResults": [
         {
           "day": 1,
@@ -6826,11 +6826,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3371",
           "opponentId": "wakamotoharu",
           "opponent": "Wakamotoharu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20220063.jpg",
@@ -6841,7 +6841,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 12",
       "technique": "See official profile",
-      "form": 43,
+      "form": 47,
       "badge": null
     },
     {
@@ -6860,8 +6860,8 @@ window.SUMO_DATA = {
       "photoFile": "20130059.jpg",
       "wikipedia": null,
       "sourceIndex": 33,
-      "record": "6–8",
-      "wins": 6,
+      "record": "7–8",
+      "wins": 7,
       "losses": 8,
       "absences": 0,
       "kyujoDays": [],
@@ -6869,7 +6869,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 5,
+      "points": 6,
       "dailyResults": [
         {
           "day": 1,
@@ -7030,11 +7030,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3616",
           "opponentId": "ura",
           "opponent": "Ura",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 55
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20130059.jpg",
@@ -7045,7 +7045,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 12",
       "technique": "See official profile",
-      "form": 43,
+      "form": 47,
       "badge": null
     },
     {
@@ -7064,8 +7064,8 @@ window.SUMO_DATA = {
       "photoFile": "20160081.jpg",
       "wikipedia": null,
       "sourceIndex": 34,
-      "record": "9–5",
-      "wins": 9,
+      "record": "10–5",
+      "wins": 10,
       "losses": 5,
       "absences": 0,
       "kyujoDays": [],
@@ -7073,7 +7073,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 9,
+      "points": 10,
       "dailyResults": [
         {
           "day": 1,
@@ -7234,11 +7234,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3207",
           "opponentId": "chiyoshoma",
           "opponent": "Chiyoshoma",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20160081.jpg",
@@ -7249,7 +7249,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 13",
       "technique": "See official profile",
-      "form": 64,
+      "form": 67,
       "badge": null
     },
     {
@@ -7268,9 +7268,9 @@ window.SUMO_DATA = {
       "photoFile": "20220059.jpg",
       "wikipedia": null,
       "sourceIndex": 35,
-      "record": "10–4",
+      "record": "10–5",
       "wins": 10,
-      "losses": 4,
+      "losses": 5,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -7438,11 +7438,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4120",
           "opponentId": "kotoeiho",
           "opponent": "Kotoeiho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20220059.jpg",
@@ -7453,7 +7453,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 13",
       "technique": "See official profile",
-      "form": 71,
+      "form": 67,
       "badge": null
     },
     {
@@ -7472,8 +7472,8 @@ window.SUMO_DATA = {
       "photoFile": "20210057.jpg",
       "wikipedia": null,
       "sourceIndex": 36,
-      "record": "8–6",
-      "wins": 8,
+      "record": "9–6",
+      "wins": 9,
       "losses": 6,
       "absences": 0,
       "kyujoDays": [],
@@ -7481,7 +7481,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 8,
+      "points": 9,
       "dailyResults": [
         {
           "day": 1,
@@ -7642,11 +7642,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3620",
           "opponentId": "mitakeumi",
           "opponent": "Mitakeumi",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20210057.jpg",
@@ -7657,7 +7657,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 14",
       "technique": "See official profile",
-      "form": 57,
+      "form": 60,
       "badge": null
     },
     {
@@ -7676,9 +7676,9 @@ window.SUMO_DATA = {
       "photoFile": "20200005.jpg",
       "wikipedia": null,
       "sourceIndex": 37,
-      "record": "10–4",
+      "record": "10–5",
       "wins": 10,
-      "losses": 4,
+      "losses": 5,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -7846,11 +7846,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3907",
           "opponentId": "roga",
           "opponent": "Roga",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 71
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20200005.jpg",
@@ -7861,7 +7861,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 14",
       "technique": "See official profile",
-      "form": 71,
+      "form": 67,
       "badge": null
     },
     {
@@ -7880,9 +7880,9 @@ window.SUMO_DATA = {
       "photoFile": "20230053.jpg",
       "wikipedia": null,
       "sourceIndex": 38,
-      "record": "4–10",
+      "record": "4–11",
       "wins": 4,
-      "losses": 10,
+      "losses": 11,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -8050,11 +8050,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4108",
           "opponentId": "oshoma",
           "opponent": "Oshoma",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20230053.jpg",
@@ -8065,7 +8065,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 15",
       "technique": "See official profile",
-      "form": 29,
+      "form": 27,
       "badge": null
     },
     {
@@ -8084,8 +8084,8 @@ window.SUMO_DATA = {
       "photoFile": "20240054.jpg",
       "wikipedia": null,
       "sourceIndex": 39,
-      "record": "4–10",
-      "wins": 4,
+      "record": "5–10",
+      "wins": 5,
       "losses": 10,
       "absences": 0,
       "kyujoDays": [],
@@ -8093,7 +8093,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 3,
+      "points": 4,
       "dailyResults": [
         {
           "day": 1,
@@ -8254,11 +8254,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "2565",
           "opponentId": null,
           "opponent": "Sadanoumi",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20240054.jpg",
@@ -8269,7 +8269,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 15",
       "technique": "See official profile",
-      "form": 29,
+      "form": 33,
       "badge": null
     },
     {
@@ -8288,9 +8288,9 @@ window.SUMO_DATA = {
       "photoFile": "20210061.jpg",
       "wikipedia": null,
       "sourceIndex": 40,
-      "record": "6–8",
+      "record": "6–9",
       "wins": 6,
-      "losses": 8,
+      "losses": 9,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -8458,11 +8458,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3521",
           "opponentId": "shodai",
           "opponent": "Shodai",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20210061.jpg",
@@ -8473,7 +8473,7 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 16",
       "technique": "See official profile",
-      "form": 43,
+      "form": 40,
       "badge": null
     },
     {
@@ -8492,8 +8492,8 @@ window.SUMO_DATA = {
       "photoFile": "20210046.jpg",
       "wikipedia": null,
       "sourceIndex": 41,
-      "record": "8–6",
-      "wins": 8,
+      "record": "9–6",
+      "wins": 9,
       "losses": 6,
       "absences": 0,
       "kyujoDays": [],
@@ -8501,7 +8501,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 8,
+      "points": 9,
       "dailyResults": [
         {
           "day": 1,
@@ -8662,11 +8662,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4336",
           "opponentId": "fujiryoga",
           "opponent": "Fujiryoga",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 16
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20210046.jpg",
@@ -8677,11 +8677,336 @@ window.SUMO_DATA = {
       "weight": "—",
       "careerHigh": "Maegashira 16",
       "technique": "See official profile",
-      "form": 57,
+      "form": 60,
       "badge": null
     }
   ],
-  "bouts": [],
+  "bouts": [
+    {
+      "id": "15-4112-3620",
+      "day": 15,
+      "east": "kinbozan",
+      "west": "mitakeumi",
+      "eastJsaId": "4112",
+      "westJsaId": "3620",
+      "eastName": "Kinbozan",
+      "westName": "Mitakeumi",
+      "completed": true,
+      "winner": "kinbozan",
+      "winnerJsaId": "4112",
+      "technique": "yorikiri",
+      "techniqueId": 70,
+      "eastRecord": "9–6",
+      "westRecord": "2–13",
+      "importance": 1
+    },
+    {
+      "id": "15-3742-3207",
+      "day": 15,
+      "east": "nishikifuji",
+      "west": "chiyoshoma",
+      "eastJsaId": "3742",
+      "westJsaId": "3207",
+      "eastName": "Nishikifuji",
+      "westName": "Chiyoshoma",
+      "completed": true,
+      "winner": "nishikifuji",
+      "winnerJsaId": "3742",
+      "technique": "oshidashi",
+      "techniqueId": 18,
+      "eastRecord": "10–5",
+      "westRecord": "5–10",
+      "importance": 1
+    },
+    {
+      "id": "15-4336-4101",
+      "day": 15,
+      "east": "fujiryoga",
+      "west": "asakoryu",
+      "eastJsaId": "4336",
+      "westJsaId": "4101",
+      "eastName": "Fujiryoga",
+      "westName": "Asakoryu",
+      "completed": true,
+      "winner": "asakoryu",
+      "winnerJsaId": "4101",
+      "technique": "okuridashi",
+      "techniqueId": 16,
+      "eastRecord": "10–5",
+      "westRecord": "9–6",
+      "importance": 1
+    },
+    {
+      "id": "15-3990-3907",
+      "day": 15,
+      "east": "shishi",
+      "west": "roga",
+      "eastJsaId": "3990",
+      "westJsaId": "3907",
+      "eastName": "Shishi",
+      "westName": "Roga",
+      "completed": true,
+      "winner": "roga",
+      "winnerJsaId": "3907",
+      "technique": "yoritaoshi",
+      "techniqueId": 71,
+      "eastRecord": "10–5",
+      "westRecord": "9–6",
+      "importance": 1
+    },
+    {
+      "id": "15-3371-4175",
+      "day": 15,
+      "east": "wakamotoharu",
+      "west": "asahakuryu",
+      "eastJsaId": "3371",
+      "westJsaId": "4175",
+      "eastName": "Wakamotoharu",
+      "westName": "Asahakuryu",
+      "completed": true,
+      "winner": "asahakuryu",
+      "winnerJsaId": "4175",
+      "technique": "yorikiri",
+      "techniqueId": 70,
+      "eastRecord": "6–9",
+      "westRecord": "7–8",
+      "importance": 1
+    },
+    {
+      "id": "15-3682-2775",
+      "day": 15,
+      "east": "asanoyama",
+      "west": "takayasu",
+      "eastJsaId": "3682",
+      "westJsaId": "2775",
+      "eastName": "Asanoyama",
+      "westName": "Takayasu",
+      "completed": true,
+      "winner": "takayasu",
+      "winnerJsaId": "2775",
+      "technique": "oshidashi",
+      "techniqueId": 18,
+      "eastRecord": "9–6",
+      "westRecord": "11–4",
+      "importance": 1
+    },
+    {
+      "id": "15-4120-4171",
+      "day": 15,
+      "east": "kotoeiho",
+      "west": "takerufuji",
+      "eastJsaId": "4120",
+      "westJsaId": "4171",
+      "eastName": "Kotoeiho",
+      "westName": "Takerufuji",
+      "completed": true,
+      "winner": "kotoeiho",
+      "winnerJsaId": "4120",
+      "technique": "oshidashi",
+      "techniqueId": 18,
+      "eastRecord": "11–4",
+      "westRecord": "10–5",
+      "importance": 1
+    },
+    {
+      "id": "15-3521-4116",
+      "day": 15,
+      "east": "shodai",
+      "west": "daiseizan",
+      "eastJsaId": "3521",
+      "westJsaId": "4116",
+      "eastName": "Shodai",
+      "westName": "Daiseizan",
+      "completed": true,
+      "winner": "shodai",
+      "winnerJsaId": "3521",
+      "technique": "yorikiri",
+      "techniqueId": 70,
+      "eastRecord": "5–10",
+      "westRecord": "6–9",
+      "importance": 1
+    },
+    {
+      "id": "15-4231-4108",
+      "day": 15,
+      "east": "onokatsu",
+      "west": "oshoma",
+      "eastJsaId": "4231",
+      "westJsaId": "4108",
+      "eastName": "Onokatsu",
+      "westName": "Oshoma",
+      "completed": true,
+      "winner": "oshoma",
+      "winnerJsaId": "4108",
+      "technique": "oshidashi",
+      "techniqueId": 18,
+      "eastRecord": "4–11",
+      "westRecord": "7–8",
+      "importance": 1
+    },
+    {
+      "id": "15-3616-3485",
+      "day": 15,
+      "east": "ura",
+      "west": "abi",
+      "eastJsaId": "3616",
+      "westJsaId": "3485",
+      "eastName": "Ura",
+      "westName": "Abi",
+      "completed": true,
+      "winner": "abi",
+      "winnerJsaId": "3485",
+      "technique": "tsukidashi",
+      "techniqueId": 55,
+      "eastRecord": "5–10",
+      "westRecord": "7–8",
+      "importance": 1
+    },
+    {
+      "id": "15-3594-3753",
+      "day": 15,
+      "east": "tobizaru",
+      "west": "ichiyamamoto",
+      "eastJsaId": "3594",
+      "westJsaId": "3753",
+      "eastName": "Tobizaru",
+      "westName": "Ichiyamamoto",
+      "completed": true,
+      "winner": "ichiyamamoto",
+      "winnerJsaId": "3753",
+      "technique": "tsukidashi",
+      "techniqueId": 55,
+      "eastRecord": "5–10",
+      "westRecord": "6–9",
+      "importance": 1
+    },
+    {
+      "id": "15-4079-3705",
+      "day": 15,
+      "east": "gonoyama",
+      "west": "hiradoumi",
+      "eastJsaId": "4079",
+      "westJsaId": "3705",
+      "eastName": "Gonoyama",
+      "westName": "Hiradoumi",
+      "completed": true,
+      "winner": "gonoyama",
+      "winnerJsaId": "4079",
+      "technique": "oshidashi",
+      "techniqueId": 18,
+      "eastRecord": "7–8",
+      "westRecord": "4–11",
+      "importance": 1
+    },
+    {
+      "id": "15-3711-3265",
+      "day": 15,
+      "east": "churanoumi",
+      "west": "takanosho",
+      "eastJsaId": "3711",
+      "westJsaId": "3265",
+      "eastName": "Churanoumi",
+      "westName": "Takanosho",
+      "completed": true,
+      "winner": "churanoumi",
+      "winnerJsaId": "3711",
+      "technique": "hikkake",
+      "techniqueId": 65,
+      "eastRecord": "7–8",
+      "westRecord": "6–9",
+      "importance": 1
+    },
+    {
+      "id": "15-4191-4093",
+      "day": 15,
+      "east": "fujinokawa",
+      "west": "fujiseiun",
+      "eastJsaId": "4191",
+      "westJsaId": "4093",
+      "eastName": "Fujinokawa",
+      "westName": "Fujiseiun",
+      "completed": true,
+      "winner": "fujinokawa",
+      "winnerJsaId": "4191",
+      "technique": "yorikiri",
+      "techniqueId": 70,
+      "eastRecord": "8–7",
+      "westRecord": "7–8",
+      "importance": 1
+    },
+    {
+      "id": "15-4187-3844",
+      "day": 15,
+      "east": "hakunofuji",
+      "west": "oho",
+      "eastJsaId": "4187",
+      "westJsaId": "3844",
+      "eastName": "Hakunofuji",
+      "westName": "Oho",
+      "completed": true,
+      "winner": "hakunofuji",
+      "winnerJsaId": "4187",
+      "technique": "yoritaoshi",
+      "techniqueId": 71,
+      "eastRecord": "9–6",
+      "westRecord": "2–13",
+      "importance": 3
+    },
+    {
+      "id": "15-4279-3376",
+      "day": 15,
+      "east": "yoshinofuji",
+      "west": "daieisho",
+      "eastJsaId": "4279",
+      "westJsaId": "3376",
+      "eastName": "Yoshinofuji",
+      "westName": "Daieisho",
+      "completed": true,
+      "winner": "daieisho",
+      "winnerJsaId": "3376",
+      "technique": "tsukiotoshi",
+      "techniqueId": 53,
+      "eastRecord": "6–9",
+      "westRecord": "10–5",
+      "importance": 3
+    },
+    {
+      "id": "15-4055-4230",
+      "day": 15,
+      "east": "atamifuji",
+      "west": "aonishiki",
+      "eastJsaId": "4055",
+      "westJsaId": "4230",
+      "eastName": "Atamifuji",
+      "westName": "Aonishiki",
+      "completed": true,
+      "winner": "atamifuji",
+      "winnerJsaId": "4055",
+      "technique": "oshidashi",
+      "techniqueId": 18,
+      "eastRecord": "12–3",
+      "westRecord": "12–3",
+      "importance": 3
+    },
+    {
+      "id": "15-3622-3661",
+      "day": 15,
+      "east": "kirishima",
+      "west": "kotozakura",
+      "eastJsaId": "3622",
+      "westJsaId": "3661",
+      "eastName": "Kirishima",
+      "westName": "Kotozakura",
+      "completed": true,
+      "winner": "kirishima",
+      "winnerJsaId": "3622",
+      "technique": "yorikiri",
+      "techniqueId": 70,
+      "eastRecord": "12–3",
+      "westRecord": "8–7",
+      "importance": 4
+    }
+  ],
   "results": {
     "schemaVersion": 1,
     "bashoId": "636",
@@ -8690,8 +9015,8 @@ window.SUMO_DATA = {
     "currentDay": 15,
     "scheduledThroughDay": 15,
     "sideTotals": {
-      "East": 148,
-      "West": 139
+      "East": 158,
+      "West": 148
     },
     "injuries": [
       {
@@ -13741,13 +14066,13 @@ window.SUMO_DATA = {
             "westJsaId": "4287",
             "eastName": "Sadanoumi",
             "westName": "Kazuma",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "5–9",
-            "westRecord": "4–10"
+            "completed": true,
+            "winner": "kazuma",
+            "winnerJsaId": "4287",
+            "technique": "oshidashi",
+            "techniqueId": 18,
+            "eastRecord": "5–10",
+            "westRecord": "5–10"
           },
           {
             "id": "15-4112-3620",
@@ -13758,13 +14083,13 @@ window.SUMO_DATA = {
             "westJsaId": "3620",
             "eastName": "Kinbozan",
             "westName": "Mitakeumi",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "8–6",
-            "westRecord": "2–12"
+            "completed": true,
+            "winner": "kinbozan",
+            "winnerJsaId": "4112",
+            "technique": "yorikiri",
+            "techniqueId": 70,
+            "eastRecord": "9–6",
+            "westRecord": "2–13"
           },
           {
             "id": "15-3742-3207",
@@ -13775,13 +14100,13 @@ window.SUMO_DATA = {
             "westJsaId": "3207",
             "eastName": "Nishikifuji",
             "westName": "Chiyoshoma",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "9–5",
-            "westRecord": "5–9"
+            "completed": true,
+            "winner": "nishikifuji",
+            "winnerJsaId": "3742",
+            "technique": "oshidashi",
+            "techniqueId": 18,
+            "eastRecord": "10–5",
+            "westRecord": "5–10"
           },
           {
             "id": "15-4336-4101",
@@ -13792,13 +14117,13 @@ window.SUMO_DATA = {
             "westJsaId": "4101",
             "eastName": "Fujiryoga",
             "westName": "Asakoryu",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "10–4",
-            "westRecord": "8–6"
+            "completed": true,
+            "winner": "asakoryu",
+            "winnerJsaId": "4101",
+            "technique": "okuridashi",
+            "techniqueId": 16,
+            "eastRecord": "10–5",
+            "westRecord": "9–6"
           },
           {
             "id": "15-3990-3907",
@@ -13809,13 +14134,13 @@ window.SUMO_DATA = {
             "westJsaId": "3907",
             "eastName": "Shishi",
             "westName": "Roga",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "10–4",
-            "westRecord": "8–6"
+            "completed": true,
+            "winner": "roga",
+            "winnerJsaId": "3907",
+            "technique": "yoritaoshi",
+            "techniqueId": 71,
+            "eastRecord": "10–5",
+            "westRecord": "9–6"
           },
           {
             "id": "15-3371-4175",
@@ -13826,13 +14151,13 @@ window.SUMO_DATA = {
             "westJsaId": "4175",
             "eastName": "Wakamotoharu",
             "westName": "Asahakuryu",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "6–8",
-            "westRecord": "6–8"
+            "completed": true,
+            "winner": "asahakuryu",
+            "winnerJsaId": "4175",
+            "technique": "yorikiri",
+            "techniqueId": 70,
+            "eastRecord": "6–9",
+            "westRecord": "7–8"
           },
           {
             "id": "15-3682-2775",
@@ -13843,13 +14168,13 @@ window.SUMO_DATA = {
             "westJsaId": "2775",
             "eastName": "Asanoyama",
             "westName": "Takayasu",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "9–5",
-            "westRecord": "10–4"
+            "completed": true,
+            "winner": "takayasu",
+            "winnerJsaId": "2775",
+            "technique": "oshidashi",
+            "techniqueId": 18,
+            "eastRecord": "9–6",
+            "westRecord": "11–4"
           },
           {
             "id": "15-4120-4171",
@@ -13860,13 +14185,13 @@ window.SUMO_DATA = {
             "westJsaId": "4171",
             "eastName": "Kotoeiho",
             "westName": "Takerufuji",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "10–4",
-            "westRecord": "10–4"
+            "completed": true,
+            "winner": "kotoeiho",
+            "winnerJsaId": "4120",
+            "technique": "oshidashi",
+            "techniqueId": 18,
+            "eastRecord": "11–4",
+            "westRecord": "10–5"
           },
           {
             "id": "15-3521-4116",
@@ -13877,13 +14202,13 @@ window.SUMO_DATA = {
             "westJsaId": "4116",
             "eastName": "Shodai",
             "westName": "Daiseizan",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "4–10",
-            "westRecord": "6–8"
+            "completed": true,
+            "winner": "shodai",
+            "winnerJsaId": "3521",
+            "technique": "yorikiri",
+            "techniqueId": 70,
+            "eastRecord": "5–10",
+            "westRecord": "6–9"
           },
           {
             "id": "15-4231-4108",
@@ -13894,13 +14219,13 @@ window.SUMO_DATA = {
             "westJsaId": "4108",
             "eastName": "Onokatsu",
             "westName": "Oshoma",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "4–10",
-            "westRecord": "6–8"
+            "completed": true,
+            "winner": "oshoma",
+            "winnerJsaId": "4108",
+            "technique": "oshidashi",
+            "techniqueId": 18,
+            "eastRecord": "4–11",
+            "westRecord": "7–8"
           },
           {
             "id": "15-3616-3485",
@@ -13911,13 +14236,13 @@ window.SUMO_DATA = {
             "westJsaId": "3485",
             "eastName": "Ura",
             "westName": "Abi",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "5–9",
-            "westRecord": "6–8"
+            "completed": true,
+            "winner": "abi",
+            "winnerJsaId": "3485",
+            "technique": "tsukidashi",
+            "techniqueId": 55,
+            "eastRecord": "5–10",
+            "westRecord": "7–8"
           },
           {
             "id": "15-3594-3753",
@@ -13928,13 +14253,13 @@ window.SUMO_DATA = {
             "westJsaId": "3753",
             "eastName": "Tobizaru",
             "westName": "Ichiyamamoto",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "5–9",
-            "westRecord": "5–9"
+            "completed": true,
+            "winner": "ichiyamamoto",
+            "winnerJsaId": "3753",
+            "technique": "tsukidashi",
+            "techniqueId": 55,
+            "eastRecord": "5–10",
+            "westRecord": "6–9"
           },
           {
             "id": "15-4079-3705",
@@ -13945,13 +14270,13 @@ window.SUMO_DATA = {
             "westJsaId": "3705",
             "eastName": "Gonoyama",
             "westName": "Hiradoumi",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "6–8",
-            "westRecord": "4–10"
+            "completed": true,
+            "winner": "gonoyama",
+            "winnerJsaId": "4079",
+            "technique": "oshidashi",
+            "techniqueId": 18,
+            "eastRecord": "7–8",
+            "westRecord": "4–11"
           },
           {
             "id": "15-3711-3265",
@@ -13962,13 +14287,13 @@ window.SUMO_DATA = {
             "westJsaId": "3265",
             "eastName": "Churanoumi",
             "westName": "Takanosho",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "6–8",
-            "westRecord": "6–8"
+            "completed": true,
+            "winner": "churanoumi",
+            "winnerJsaId": "3711",
+            "technique": "hikkake",
+            "techniqueId": 65,
+            "eastRecord": "7–8",
+            "westRecord": "6–9"
           },
           {
             "id": "15-4191-4093",
@@ -13979,13 +14304,13 @@ window.SUMO_DATA = {
             "westJsaId": "4093",
             "eastName": "Fujinokawa",
             "westName": "Fujiseiun",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "7–7",
-            "westRecord": "7–7"
+            "completed": true,
+            "winner": "fujinokawa",
+            "winnerJsaId": "4191",
+            "technique": "yorikiri",
+            "techniqueId": 70,
+            "eastRecord": "8–7",
+            "westRecord": "7–8"
           },
           {
             "id": "15-4187-3844",
@@ -13996,13 +14321,13 @@ window.SUMO_DATA = {
             "westJsaId": "3844",
             "eastName": "Hakunofuji",
             "westName": "Oho",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "8–6",
-            "westRecord": "2–12"
+            "completed": true,
+            "winner": "hakunofuji",
+            "winnerJsaId": "4187",
+            "technique": "yoritaoshi",
+            "techniqueId": 71,
+            "eastRecord": "9–6",
+            "westRecord": "2–13"
           },
           {
             "id": "15-4279-3376",
@@ -14013,13 +14338,13 @@ window.SUMO_DATA = {
             "westJsaId": "3376",
             "eastName": "Yoshinofuji",
             "westName": "Daieisho",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "6–8",
-            "westRecord": "9–5"
+            "completed": true,
+            "winner": "daieisho",
+            "winnerJsaId": "3376",
+            "technique": "tsukiotoshi",
+            "techniqueId": 53,
+            "eastRecord": "6–9",
+            "westRecord": "10–5"
           },
           {
             "id": "15-4055-4230",
@@ -14030,13 +14355,13 @@ window.SUMO_DATA = {
             "westJsaId": "4230",
             "eastName": "Atamifuji",
             "westName": "Aonishiki",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "11–3",
-            "westRecord": "12–2"
+            "completed": true,
+            "winner": "atamifuji",
+            "winnerJsaId": "4055",
+            "technique": "oshidashi",
+            "techniqueId": 18,
+            "eastRecord": "12–3",
+            "westRecord": "12–3"
           },
           {
             "id": "15-3622-3661",
@@ -14047,13 +14372,13 @@ window.SUMO_DATA = {
             "westJsaId": "3661",
             "eastName": "Kirishima",
             "westName": "Kotozakura",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "11–3",
-            "westRecord": "8–6"
+            "completed": true,
+            "winner": "kirishima",
+            "winnerJsaId": "3622",
+            "technique": "yorikiri",
+            "techniqueId": 70,
+            "eastRecord": "12–3",
+            "westRecord": "8–7"
           },
           {
             "id": "15-3840-4227",
@@ -14075,8 +14400,8 @@ window.SUMO_DATA = {
         ]
       }
     ],
-    "generatedAt": "2026-07-25T19:36:57.802Z",
-    "dataSignature": "449bfb2ccfd3e5fc045aeff1c13435faf1e749b95d2cee5da9a275e42650c28d"
+    "generatedAt": "2026-07-26T08:40:48.068Z",
+    "dataSignature": "336c46e212236ea3785264a547937f5dda06c29add09ed8cecd6fe2ac04167ac"
   },
   "history": [],
   "banzuke": {
