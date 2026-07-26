@@ -227,8 +227,8 @@
       "photoFile": "20230048.jpg",
       "wikipedia": null,
       "sourceIndex": 1,
-      "record": "8–6",
-      "wins": 8,
+      "record": "9–6",
+      "wins": 9,
       "losses": 6,
       "absences": 0,
       "kyujoDays": [],
@@ -236,7 +236,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 8,
+      "points": 9,
       "dailyResults": [
         {
           "day": 1,
@@ -397,11 +397,11 @@
           "opponentJsaId": "3840",
           "opponentId": "kotoshoho",
           "opponent": "Kotoshoho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 17
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20230048.jpg",
@@ -412,7 +412,7 @@
       "weight": "—",
       "careerHigh": "Yokozuna",
       "technique": "See official profile",
-      "form": 57,
+      "form": 60,
       "badge": null
     },
     {
@@ -1043,9 +1043,9 @@
       "photoFile": "20170094.jpg",
       "wikipedia": null,
       "sourceIndex": 5,
-      "record": "6–8",
+      "record": "6–9",
       "wins": 6,
-      "losses": 8,
+      "losses": 9,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -1213,11 +1213,11 @@
           "opponentJsaId": "4227",
           "opponentId": "onosato",
           "opponent": "Onosato",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 17
         }
       ],
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20170094.jpg",
@@ -1228,7 +1228,7 @@
       "weight": "—",
       "careerHigh": "Sekiwake",
       "technique": "See official profile",
-      "form": 43,
+      "form": 40,
       "badge": null
     },
     {
@@ -8602,6 +8602,6 @@
       "badge": null
     }
   ],
-  "generatedAt": "2026-07-26T08:40:48.068Z",
-  "dataSignature": "336c46e212236ea3785264a547937f5dda06c29add09ed8cecd6fe2ac04167ac"
+  "generatedAt": "2026-07-26T13:59:52.184Z",
+  "dataSignature": "f06a1bddbb2aae80517d6106943e6cf075db0c78a5361ad76494aef5f589623a"
 }
