@@ -7,7 +7,7 @@
   };
   const config = { ...defaults, ...(window.SUMO_SHARED_DRAFT_CONFIG || {}) };
   let client = null;
-  let activeChannel = null;
+  const activeChannels = new Map();
 
   function setupStatus() {
     const missing = [];
@@ -121,8 +121,9 @@
 
   function subscribe(bashoId, onChange, onStatus = () => {}) {
     const db = database();
-    if (activeChannel) db.removeChannel(activeChannel);
-    activeChannel = db
+    const previousChannel = activeChannels.get(bashoId);
+    if (previousChannel) db.removeChannel(previousChannel);
+    const channel = db
       .channel(`shared-draft-${bashoId}`)
       .on("postgres_changes", {
         event: "*",
@@ -133,9 +134,11 @@
         if (payload.new) onChange(normalizeRow(payload.new, bashoId));
       })
       .subscribe((status) => onStatus(status));
+    activeChannels.set(bashoId, channel);
     return () => {
-      if (activeChannel) db.removeChannel(activeChannel);
-      activeChannel = null;
+      const currentChannel = activeChannels.get(bashoId);
+      if (currentChannel) db.removeChannel(currentChannel);
+      activeChannels.delete(bashoId);
     };
   }
 

@@ -22,6 +22,7 @@ const icons = {
 
 const APP_SAVE_VERSION = 3;
 const DRAFT_SCHEMA_VERSION = 4;
+const LIFECYCLE_DOCUMENT_ID = "sumo-battle-lifecycle";
 const SETTINGS_STORAGE_KEY = "sumoBattleSettings";
 const HISTORY_STORAGE_KEY = "sumoBattleHistoryCache";
 
@@ -186,11 +187,14 @@ let banzukeProfileTimer = null;
 let resultsFilter = "all";
 let sharedDraftRevision = 0;
 let savedSharedDraft = null;
+let lifecycleRevision = 0;
+let savedLifecycle = null;
 let sharedDraftLoading = true;
 let sharedDraftSaving = false;
 let sharedDraftError = null;
 let sharedValidationErrors = [];
 let stopSharedDraftSubscription = null;
+let stopLifecycleSubscription = null;
 
 function officialCompletedDays() {
   return (data.results?.days || [])
@@ -249,7 +253,7 @@ function isDayHidden(day) {
   return state.spoilerFree && officialCompletedDays().includes(Number(day)) && !watchedDaySet().has(Number(day));
 }
 
-function revealSpoilerDay(day) {
+async function revealSpoilerDay(day) {
   const target = Number(day);
   const bashoId = spoilerBashoId();
   const watched = watchedDaySet();
@@ -262,6 +266,15 @@ function revealSpoilerDay(day) {
   saveState();
   render();
   showToast(`Day ${target} revealed.`);
+  if (officialBashoFinished() && target >= finalOfficialDay()) {
+    try {
+      await archiveCompletedTournament();
+      render();
+    } catch (error) {
+      sharedDraftError = error.message || "The completed tournament could not be archived.";
+      showToast(sharedDraftError);
+    }
+  }
 }
 
 function keepSpoilerDayHidden(day) {
@@ -360,14 +373,40 @@ function tournamentStarted(document = savedSharedDraft) {
   return bothDraftsLocked(document) || ["tournament", "completed"].includes(document?.status);
 }
 
+function finalOfficialDay() {
+  return officialCompletedDays().at(-1) || 0;
+}
+
+function officialBashoFinished() {
+  const officialEnd = Date.parse(`${data.meta.endDate || ""}T23:59:59Z`);
+  const resultsThroughScheduledDay = finalOfficialDay() >= Number(data.meta.scheduledThroughDay || data.meta.day || 0);
+  const endedByOfficialCalendar = Number.isFinite(officialEnd) && Date.now() > officialEnd && resultsThroughScheduledDay;
+  return tournamentStarted()
+    && finalOfficialDay() > 0
+    && (data.meta.active === false || endedByOfficialCalendar);
+}
+
 function tournamentFinished() {
-  const totalDays = Number(data.meta.totalDays || 15);
-  return tournamentStarted() && Number(data.meta.day) >= totalDays && data.meta.active === false
-    && (!state.spoilerFree || spoilerVisibleDay() >= totalDays);
+  if (savedSharedDraft?.status === "completed") return true;
+  const finalDay = finalOfficialDay();
+  return officialBashoFinished()
+    && (!state.spoilerFree || spoilerVisibleDay() >= finalDay);
+}
+
+function latestCompletedHistory(events = savedLifecycle?.history || state.history || []) {
+  return events.find((event) => event.status === "completed") || null;
+}
+
+function championMode() {
+  if (tournamentFinished()) return true;
+  if (!latestCompletedHistory()) return false;
+  return savedLifecycle?.mode === "champion"
+    || savedSharedDraft?.status === "skipped"
+    || hasNewOfficialBasho();
 }
 
 function draftEditingDisabled(playerId = state.activePlayer) {
-  return sharedDraftLoading || sharedDraftSaving || isPlayerDraftLocked(playerId) || tournamentFinished();
+  return sharedDraftLoading || sharedDraftSaving || isPlayerDraftLocked(playerId) || tournamentFinished() || championMode();
 }
 
 function applySharedDraft(document, revision = Number(document.revision || 0)) {
@@ -394,6 +433,89 @@ function applySharedDraft(document, revision = Number(document.revision || 0)) {
   saveState();
 }
 
+function applyLifecycle(document, revision = Number(document.revision || 0)) {
+  if (document?.kind !== "lifecycle") return;
+  savedLifecycle = {
+    ...document,
+    bashoId: LIFECYCLE_DOCUMENT_ID,
+    revision: Number(revision || document.revision || 0),
+    acceptedBashoId: String(document.acceptedBashoId || ""),
+    activeBashoId: String(document.activeBashoId || ""),
+    mode: ["draft", "tournament", "champion"].includes(document.mode) ? document.mode : "champion",
+    history: Array.isArray(document.history) ? JSON.parse(JSON.stringify(document.history)) : [],
+    champion: document.champion || null,
+  };
+  lifecycleRevision = savedLifecycle.revision;
+  if (savedLifecycle.acceptedBashoId) state.officialBashoId = savedLifecycle.acceptedBashoId;
+  if (savedLifecycle.history.length || !state.history.length) state.history = JSON.parse(JSON.stringify(savedLifecycle.history));
+  state.pendingOfficialBasho = hasNewOfficialBasho()
+    ? { id: data.meta.bashoId, basho: data.meta.tournament }
+    : null;
+  saveState();
+}
+
+async function loadLifecycleState() {
+  if (!window.SHARED_DRAFT_API?.configured?.()) return;
+  const result = await window.SHARED_DRAFT_API.load(LIFECYCLE_DOCUMENT_ID);
+  applyLifecycle(result.document, result.revision);
+  subscribeToLifecycle();
+}
+
+async function reconcileSharedPublishedBanzuke() {
+  if (!savedLifecycle || !hasNewOfficialBasho()) return;
+  const current = {
+    officialId: String(data.meta.bashoId),
+    draftId: data.banzuke.currentBashoId,
+    basho: data.meta.tournament,
+    publishedAt: data.meta.generatedAt || new Date().toISOString(),
+  };
+  const previous = savedLifecycle.pendingBasho;
+  const history = [...(savedLifecycle.history || state.history || [])];
+  if (previous?.officialId && previous.officialId !== current.officialId
+    && !history.some((event) => event.id === previous.draftId)) {
+    history.unshift({
+      ...blankHistoryEvent(),
+      id: previous.draftId,
+      basho: previous.basho,
+      status: "skipped",
+      winner: null,
+      gwazyScore: 0,
+      jakeScore: 0,
+      badge: "SKIPPED",
+      skippedAt: new Date().toISOString(),
+      reason: "No draft decision before the following official banzuke was published.",
+    });
+  }
+  if (previous?.officialId !== current.officialId || history.length !== (savedLifecycle.history || []).length) {
+    await saveLifecycleState({ pendingBasho: current, history });
+  }
+}
+
+async function saveLifecycleState(patch) {
+  if (!window.SHARED_DRAFT_API?.configured?.()) return null;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const latest = await window.SHARED_DRAFT_API.load(LIFECYCLE_DOCUMENT_ID);
+    const base = latest.document?.kind === "lifecycle" ? latest.document : {};
+    const document = {
+      ...base,
+      ...patch,
+      kind: "lifecycle",
+      schemaVersion: 1,
+      bashoId: LIFECYCLE_DOCUMENT_ID,
+      revision: Number(latest.document?.revision || 0) + 1,
+      updatedAt: new Date().toISOString(),
+    };
+    try {
+      const result = await window.SHARED_DRAFT_API.save(document, latest.revision);
+      applyLifecycle(result.document, result.revision);
+      return result;
+    } catch (error) {
+      if (error.status !== 409 || attempt === 2) throw error;
+    }
+  }
+  return null;
+}
+
 async function loadSharedDraft({ force = false } = {}) {
   if (!window.SHARED_DRAFT_API) {
     sharedDraftLoading = false;
@@ -406,6 +528,8 @@ async function loadSharedDraft({ force = false } = {}) {
   sharedDraftError = null;
   render();
   try {
+    await loadLifecycleState();
+    await reconcileSharedPublishedBanzuke();
     const result = await window.SHARED_DRAFT_API.load(state.selectedBashoId);
     applySharedDraft(result.document, result.revision);
     await archiveCompletedTournament();
@@ -441,6 +565,27 @@ function subscribeToSharedDraft() {
   stopSharedDraftSubscription = window.SHARED_DRAFT_API.subscribe(state.selectedBashoId, applyRealtimeSharedDraft, (status) => {
     if (["CHANNEL_ERROR", "TIMED_OUT"].includes(status)) {
       sharedDraftError = "Supabase Realtime is unavailable. Confirm shared_drafts is in the supabase_realtime publication.";
+      render();
+    }
+  });
+}
+
+function subscribeToLifecycle() {
+  if (!window.SHARED_DRAFT_API?.subscribe || !window.SHARED_DRAFT_API.configured?.()) return;
+  stopLifecycleSubscription?.();
+  stopLifecycleSubscription = window.SHARED_DRAFT_API.subscribe(LIFECYCLE_DOCUMENT_ID, (result) => {
+    if (!result?.document || Number(result.revision || 0) <= lifecycleRevision) return;
+    applyLifecycle(result.document, result.revision);
+    if (savedLifecycle?.mode === "draft" && savedLifecycle.activeBashoId === data.meta.bashoId
+      && state.selectedBashoId !== data.meta.bashoId) {
+      state.selectedBashoId = data.meta.bashoId;
+      loadSharedDraft({ force: true });
+      return;
+    }
+    render();
+  }, (status) => {
+    if (["CHANNEL_ERROR", "TIMED_OUT"].includes(status)) {
+      sharedDraftError = "Supabase lifecycle updates are unavailable. Refresh to check for Start or Skip decisions.";
       render();
     }
   });
@@ -624,6 +769,15 @@ async function lockMyDraft() {
     };
     const result = await window.SHARED_DRAFT_API.save(document, latest.revision);
     applySharedDraft(result.document, result.revision);
+    if (allLocked) {
+      await saveLifecycleState({
+        acceptedBashoId: data.meta.bashoId,
+        activeBashoId: state.selectedBashoId,
+        mode: "tournament",
+        history: savedLifecycle?.history || state.history || [],
+        champion: savedLifecycle?.champion || latestCompletedHistory(),
+      });
+    }
     playBell();
     showToast(allLocked ? "Both drafts are locked. The tournament has started!" : `${player.name}'s draft is permanently locked.`);
   } catch (error) {
@@ -640,12 +794,7 @@ function reconcilePendingOfficialBasho() {
     state.pendingOfficialBasho = null;
     return;
   }
-  const current = { id: data.meta.bashoId, basho: data.meta.tournament };
-  const pending = state.pendingOfficialBasho;
-  if (pending?.id && pending.id !== current.id && !state.history.some((event) => event.id === pending.id)) {
-    state.history.unshift({ ...blankHistoryEvent(), id: pending.id, basho: pending.basho, status: "skipped", winner: null, gwazyScore: 0, jakeScore: 0, badge: "SKIPPED", skippedAt: new Date().toISOString() });
-  }
-  state.pendingOfficialBasho = current;
+  state.pendingOfficialBasho = { id: data.meta.bashoId, basho: data.meta.tournament };
 }
 
 initializeSpoilerState();
@@ -815,7 +964,8 @@ function rikishiDisplayStats(rikishi, day = spoilerVisibleDay()) {
 }
 
 function sideWinner(day = spoilerVisibleDay()) {
-  if (day < data.meta.totalDays) return null;
+  const decisionDay = data.meta.active === false ? finalOfficialDay() : Number(data.meta.totalDays || 15);
+  if (!decisionDay || day < decisionDay) return null;
   const totals = data.meta.sideTotals || { East: 0, West: 0 };
   return totals.East === totals.West ? null : totals.East > totals.West ? "East" : "West";
 }
@@ -851,11 +1001,15 @@ function countedPointsForRikishi(playerId, rikishiId, day = spoilerVisibleDay())
 }
 
 function hasNewOfficialBasho() {
-  return Boolean(state.officialBashoId && data.meta.bashoId && state.officialBashoId !== data.meta.bashoId);
+  const acceptedBashoId = savedLifecycle?.acceptedBashoId || state.officialBashoId;
+  const publishedBashoId = data.meta.bashoId;
+  const publishedBanzuke = data.banzuke?.bashos?.find((basho) => basho.id === data.banzuke.currentBashoId);
+  return Boolean(acceptedBashoId && publishedBashoId && String(acceptedBashoId) !== String(publishedBashoId)
+    && publishedBanzuke?.entries?.length);
 }
 
 function newBashoNotice() {
-  if (!hasNewOfficialBasho() || tournamentFinished()) return "";
+  if (!hasNewOfficialBasho() || championMode()) return "";
   return `<aside class="new-basho-notice" role="status"><span>新</span><div><small>OFFICIAL BASHO DETECTED</small><b>${escapeHtml(data.meta.tournament)} is available.</b><p>Choose whether to create a shared draft or record this tournament as skipped.</p></div><div><button class="primary-button" type="button" data-start-new-draft>Start New Draft</button><button class="secondary-button" type="button" data-skip-basho>Skip Tournament</button></div></aside>`;
 }
 
@@ -885,17 +1039,40 @@ function resetCurrentDraft() {
 }
 
 function completedHistoryEntry(document = savedSharedDraft) {
-  const gwazyScore = playerScore("gwazy", data.meta.totalDays);
-  const jakeScore = playerScore("jake", data.meta.totalDays);
+  const finalDay = finalOfficialDay() || Number(data.meta.day || data.meta.totalDays || 15);
+  const gwazyScore = playerScore("gwazy", finalDay);
+  const jakeScore = playerScore("jake", finalDay);
   const winner = gwazyScore === jakeScore ? "Draw" : gwazyScore > jakeScore ? "Gwazy" : "Jake";
-  const rosterIds = data.players.flatMap((player) => [...getRoster(player.id).team, ...getRoster(player.id).subs]);
-  const mvp = rosterIds.map((id) => ({ id, points: getRikishi(id)?.points || 0 })).sort((a, b) => b.points - a.points)[0]?.id || "";
+  const rosterPicks = data.players.flatMap((player) => [...getRoster(player.id).team, ...getRoster(player.id).subs]
+    .map((id) => ({ id, playerId: player.id, points: countedPointsForRikishi(player.id, id, finalDay) })));
+  const mvpPick = rosterPicks.sort((a, b) => b.points - a.points)[0] || null;
+  const activatedSubstitutes = data.players.flatMap((player) => {
+    const activatedIds = new Set(substitutionTimeline(player.id, finalDay).events
+      .filter((event) => event.type === "activated")
+      .map((event) => event.subId));
+    return getRoster(player.id).subs.filter((id) => activatedIds.has(id))
+      .map((id) => ({ id, playerId: player.id, points: countedPointsForRikishi(player.id, id, finalDay) }));
+  });
+  const bestSubstitutePick = activatedSubstitutes.sort((a, b) => b.points - a.points)[0] || null;
+  const officialSideWinner = sideWinner(finalDay);
+  const predictions = Object.fromEntries(data.players.map((player) => [player.id, getSidePrediction(player.id)]));
   return {
     ...blankHistoryEvent(), id: document?.bashoId || state.selectedBashoId, basho: selectedBasho().label,
-    status: "completed", winner, gwazyScore, jakeScore, margin: Math.abs(gwazyScore - jakeScore), mvp,
+    status: "completed", winner, gwazyScore, jakeScore, margin: Math.abs(gwazyScore - jakeScore),
+    mvp: mvpPick?.id || "", mvpName: getRikishi(mvpPick?.id)?.name || "",
+    bestSubstitute: bestSubstitutePick ? {
+      ...bestSubstitutePick,
+      player: getPlayerDefinition(bestSubstitutePick.playerId)?.name || bestSubstitutePick.playerId,
+      name: getRikishi(bestSubstitutePick.id)?.name || bestSubstitutePick.id,
+    } : null,
+    sideResult: {
+      winner: officialSideWinner,
+      predictions,
+      correct: Object.fromEntries(data.players.map((player) => [player.id, Boolean(officialSideWinner && predictions[player.id] === officialSideWinner)])),
+    },
     rosters: Object.fromEntries(data.players.map((player) => [player.id, [...getRoster(player.id).team, ...getRoster(player.id).subs]])),
-    predictions: Object.fromEntries(data.players.map((player) => [player.id, getSidePrediction(player.id)])),
-    completedAt: new Date().toISOString(), badge: "COMPLETED",
+    predictions,
+    completedAt: new Date().toISOString(), finalDay, badge: "COMPLETED",
   };
 }
 
@@ -909,29 +1086,53 @@ function historyWithCurrentCompletion() {
 }
 
 async function archiveCompletedTournament() {
-  if (!tournamentFinished() || !savedSharedDraft || savedSharedDraft.status === "completed") return;
-  const document = {
-    ...savedSharedDraft,
-    schemaVersion: DRAFT_SCHEMA_VERSION,
-    revision: Number(savedSharedDraft.revision || 0) + 1,
-    status: "completed",
-    completedAt: new Date().toISOString(),
-    history: historyWithCurrentCompletion(),
-  };
-  try {
-    const result = await window.SHARED_DRAFT_API.save(document, sharedDraftRevision);
-    applySharedDraft(result.document, result.revision);
-  } catch (error) {
-    if (error.status !== 409) throw error;
-    const latest = await window.SHARED_DRAFT_API.load(state.selectedBashoId);
-    applySharedDraft(latest.document, latest.revision);
+  if (!tournamentFinished() || !savedSharedDraft) return;
+  let history = savedSharedDraft.status === "completed" && Array.isArray(savedSharedDraft.history)
+    ? savedSharedDraft.history
+    : historyWithCurrentCompletion();
+  if (savedSharedDraft.status !== "completed") {
+    const document = {
+      ...savedSharedDraft,
+      schemaVersion: DRAFT_SCHEMA_VERSION,
+      revision: Number(savedSharedDraft.revision || 0) + 1,
+      status: "completed",
+      completedAt: new Date().toISOString(),
+      history,
+    };
+    try {
+      const result = await window.SHARED_DRAFT_API.save(document, sharedDraftRevision);
+      applySharedDraft(result.document, result.revision);
+      history = result.document.history;
+    } catch (error) {
+      if (error.status !== 409) throw error;
+      const latest = await window.SHARED_DRAFT_API.load(state.selectedBashoId);
+      applySharedDraft(latest.document, latest.revision);
+      history = latest.document.history || history;
+    }
+  }
+  const champion = history.find((event) => event.id === savedSharedDraft.bashoId && event.status === "completed")
+    || latestCompletedHistory(history)
+    || completedHistoryEntry();
+  if (savedLifecycle?.champion?.id !== champion.id || savedLifecycle.mode !== "champion") {
+    await saveLifecycleState({
+      acceptedBashoId: data.meta.bashoId,
+      activeBashoId: savedSharedDraft.bashoId,
+      mode: "champion",
+      champion,
+      history,
+      pendingBasho: null,
+    });
   }
 }
 
 async function startNewOfficialBashoDraft({ skipped = false } = {}) {
   if (sharedDraftSaving) return;
+  if (!hasNewOfficialBasho()) {
+    showToast("A newer official JSA banzuke has not been published yet.");
+    return;
+  }
   const newBashoId = data.banzuke.currentBashoId;
-  const history = tournamentFinished() ? historyWithCurrentCompletion() : [...(savedSharedDraft?.history || state.history || [])];
+  const history = [...(savedLifecycle?.history || state.history || [])];
   if (skipped && !history.some((event) => event.id === newBashoId)) {
     history.unshift({ ...blankHistoryEvent(), id: newBashoId, basho: data.meta.tournament, status: "skipped", winner: null, gwazyScore: 0, jakeScore: 0, badge: "SKIPPED", skippedAt: new Date().toISOString() });
   }
@@ -939,6 +1140,11 @@ async function startNewOfficialBashoDraft({ skipped = false } = {}) {
   render();
   try {
     const latest = await window.SHARED_DRAFT_API.load(newBashoId);
+    if (Number(latest.revision || 0) > 0 && ["draft", "skipped"].includes(latest.document.status)) {
+      throw Object.assign(new Error(latest.document.status === "skipped"
+        ? `${data.meta.tournament} has already been marked as skipped.`
+        : `The ${data.meta.tournament} draft has already been started.`), { status: 409 });
+    }
     const document = {
       ...latest.document, schemaVersion: DRAFT_SCHEMA_VERSION, bashoId: newBashoId,
       revision: Number(latest.document.revision || 0) + 1, locked: false,
@@ -947,6 +1153,21 @@ async function startNewOfficialBashoDraft({ skipped = false } = {}) {
       savedBy: getPlayerDefinition().name, players: emptyDraftPlayers(),
     };
     const result = await window.SHARED_DRAFT_API.save(document, latest.revision);
+    const champion = latestCompletedHistory(history);
+    await saveLifecycleState({
+      acceptedBashoId: data.meta.bashoId,
+      activeBashoId: newBashoId,
+      mode: skipped ? "champion" : "draft",
+      champion,
+      history,
+      pendingBasho: null,
+      lastDecision: {
+        bashoId: newBashoId,
+        decision: skipped ? "skipped" : "started",
+        decidedAt: new Date().toISOString(),
+        decidedBy: getPlayerDefinition().name,
+      },
+    });
     state.selectedBashoId = newBashoId;
     state.officialBashoId = data.meta.bashoId;
     state.pendingOfficialBasho = null;
@@ -954,8 +1175,13 @@ async function startNewOfficialBashoDraft({ skipped = false } = {}) {
     state.selectedDay = Math.max(1, data.meta.day);
     applySharedDraft(result.document, result.revision);
     subscribeToSharedDraft();
-    showToast(skipped ? `${data.meta.tournament} recorded as skipped.` : `${data.meta.tournament} is ready for a new shared draft.`);
+    showToast(skipped ? `${data.meta.tournament} recorded as skipped. The champion remains on the homepage.` : `${data.meta.tournament} is ready for a new shared draft.`);
   } catch (error) {
+    if (error.status === 409) {
+      await loadLifecycleState().catch(() => {});
+      const latest = await window.SHARED_DRAFT_API.load(newBashoId).catch(() => null);
+      if (latest?.document) applySharedDraft(latest.document, latest.revision);
+    }
     sharedDraftError = error.message || "The next basho could not be started.";
     showToast(sharedDraftError);
   } finally {
@@ -1406,9 +1632,16 @@ function draftWaitingOverview() {
 }
 
 function championOverviewView() {
-  const result = completedHistoryEntry();
+  const result = savedLifecycle?.champion || latestCompletedHistory() || completedHistoryEntry();
   const winner = result.winner === "Draw" ? null : data.players.find((player) => player.name === result.winner);
   const mvp = getRikishi(result.mvp);
+  const mvpName = result.mvpName || mvp?.name || "—";
+  const bestSubstitute = result.bestSubstitute;
+  const officialSideWinner = result.sideResult?.winner || null;
+  const predictions = result.sideResult?.predictions || result.predictions || {};
+  const sidePredictionSummary = officialSideWinner
+    ? data.players.map((player) => `${player.name}: ${predictions[player.id] || "None"} ${predictions[player.id] === officialSideWinner ? "✓" : "✗"}`).join(" · ")
+    : "No side winner recorded";
   const seenKey = `sumoBattleChampionSeen:${result.id}`;
   let celebrate = false;
   try {
@@ -1416,16 +1649,16 @@ function championOverviewView() {
     if (celebrate) localStorage.setItem(seenKey, "1");
   } catch { celebrate = false; }
   const confetti = celebrate && !state.reducedMotion ? `<div class="champion-confetti" aria-hidden="true">${Array.from({ length: 28 }, (_, index) => `<i style="--i:${index}"></i>`).join("")}</div>` : "";
-  const nextCard = hasNewOfficialBasho() ? `<section class="next-basho-card reveal"><div><p class="eyebrow">THE NEXT BASHO IS AVAILABLE</p><h2>${escapeHtml(data.meta.tournament)}</h2><p>Archive this result, then choose whether to play the next official tournament.</p></div><div><button class="primary-button" type="button" data-start-new-draft>Start ${escapeHtml(data.meta.month || "Next")} Draft</button><button class="secondary-button" type="button" data-skip-basho>Skip ${escapeHtml(data.meta.month || "Tournament")}</button></div></section>` : `<section class="next-basho-card waiting reveal"><div><p class="eyebrow">OFF-SEASON</p><h2>The champion remains on top.</h2><p>The next-draft controls will appear when a new official banzuke is published.</p></div></section>`;
+  const nextCard = hasNewOfficialBasho() ? `<section class="next-basho-card reveal" data-new-banzuke-available><div><p class="eyebrow">NEW BASHO AVAILABLE</p><h2>A new official banzuke has been released.</h2><p>${escapeHtml(data.meta.tournament)} is ready. Starting or skipping is a shared decision and never happens automatically.</p></div><div><button class="primary-button" type="button" data-start-new-draft>Start New Draft</button><button class="secondary-button" type="button" data-skip-basho>Skip Tournament</button></div></section>` : `<section class="next-basho-card waiting reveal"><div><p class="eyebrow">OFF-SEASON</p><h2>The champion remains on top.</h2><p>The next-draft controls will appear only after the JSA publishes a newer official Makuuchi banzuke.</p></div></section>`;
   return `<section class="page-shell champion-page">
-    <section class="champion-hero ${winner?.color || "draw"} reveal">${confetti}<span class="champion-trophy">🏆</span><p class="eyebrow">${winner ? "BASHO CHAMPION" : "BASHO COMPLETE"}</p><h1>${winner?.name.toUpperCase() || "DRAW"}</h1><p>${escapeHtml(selectedBasho().label)}</p><div class="champion-score"><span><small>GWAZY</small><b>${result.gwazyScore}</b></span><i>–</i><span><small>JAKE</small><b>${result.jakeScore}</b></span></div><div class="champion-facts"><span><small>WINNING MARGIN</small><b>${result.margin} pts</b></span><span><small>MVP WRESTLER</small><b>${escapeHtml(mvp?.name || "—")}</b></span></div></section>
+    <section class="champion-hero ${winner?.color || "draw"} reveal">${confetti}<span class="champion-trophy">🏆</span><p class="eyebrow">${winner ? "BASHO CHAMPION" : "BASHO COMPLETE"}</p><p class="champion-basho-name">${escapeHtml(result.basho)}</p><h1>${winner?.name.toUpperCase() || "DRAW"}</h1><div class="champion-score"><span><small>GWAZY</small><b>${result.gwazyScore}</b></span><i>–</i><span><small>JAKE</small><b>${result.jakeScore}</b></span></div><div class="champion-facts"><span><small>WINNING MARGIN</small><b>${result.margin} pts</b></span><span><small>MVP WRESTLER</small><b>${escapeHtml(mvpName)}</b></span><span><small>BEST SUBSTITUTE</small><b>${bestSubstitute ? `${escapeHtml(bestSubstitute.name)} · ${escapeHtml(bestSubstitute.player)} · ${bestSubstitute.points} pts` : "None activated"}</b></span><span><small>SIDE RESULT</small><b>${escapeHtml(officialSideWinner || "—")}</b><em>${escapeHtml(sidePredictionSummary)}</em></span></div></section>
     ${nextCard}
     ${appFooter()}
   </section>`;
 }
 
 function overviewView() {
-  if (tournamentFinished()) return championOverviewView();
+  if (championMode()) return championOverviewView();
   const basho = selectedBasho();
   const pool = draftPoolStats(basho);
   const draftStarted = pool.drafted > 0;
@@ -1564,18 +1797,19 @@ function rosterView() {
     : '<li class="empty"><span>LIVE</span><b>No substitutions have been required.</b></li>';
   const saveTime = formatSharedSaveTime(savedSharedDraft?.lastSavedAt);
   const unsaved = hasUnsavedPlayerChanges(player.id);
-  const locked = isPlayerDraftLocked(player.id);
+  const lifecycleHold = championMode();
+  const locked = isPlayerDraftLocked(player.id) || lifecycleHold;
   const allLocked = bothDraftsLocked();
   const validationErrors = sharedValidationErrors.length ? `<div class="shared-validation-errors" role="alert"><b>Draft cannot be saved</b><ul>${sharedValidationErrors.map((error) => `<li>${escapeHtml(error)}</li>`).join("")}</ul></div>` : "";
   return `
     <section class="page-shell">
-      ${pageIntro("TEAM WORKSPACE", `${player.name}'s roster`, "Move or remove wrestlers directly from their cards. Add new picks from the Banzuke.", `<a class="primary-button" href="#banzuke">Add from Banzuke</a>`)}
-      ${editingBanner(`This roster belongs only to ${player.name}. Use the header selector to edit the other player.`)}
+      ${pageIntro(lifecycleHold ? "CHAMPION MODE · READ ONLY" : "TEAM WORKSPACE", `${player.name}'s roster`, lifecycleHold ? "The previous result is archived and no new roster can be created until Start New Draft is selected from the Champion page." : "Move or remove wrestlers directly from their cards. Add new picks from the Banzuke.", `<a class="primary-button" href="${lifecycleHold ? "#overview" : "#banzuke"}">${lifecycleHold ? "Return to Champion" : "Add from Banzuke"}</a>`)}
+      ${editingBanner(lifecycleHold ? "Draft editing is paused. A newly published banzuke remains browseable, but it does not create a draft automatically." : `This roster belongs only to ${player.name}. Use the header selector to edit the other player.`)}
       <div class="rules-strip reveal">
         <span><b>6</b> starters</span><i></i><span><b>1</b> Sanyaku substitute</span><i></i><span><b>2</b> Maegashira substitutes</span><i></i><span><b>SUBS SCORE</b> only while activated</span>
       </div>
       <section class="shared-draft-bar reveal ${unsaved ? "dirty" : ""}">
-        <div><small>${player.name.toUpperCase()} DRAFT STATUS</small><b>${sharedDraftLoading ? "Loading shared draft..." : sharedDraftError && !savedSharedDraft ? "Connection required" : locked ? "🔒 Permanently locked" : unsaved ? "&#9679; Unsaved Changes" : "&#10003; Ready to edit"}</b></div>
+        <div><small>${player.name.toUpperCase()} DRAFT STATUS</small><b>${sharedDraftLoading ? "Loading shared draft..." : sharedDraftError && !savedSharedDraft ? "Connection required" : lifecycleHold ? "🏆 Champion Mode · editing paused" : locked ? "🔒 Permanently locked" : unsaved ? "&#9679; Unsaved Changes" : "&#10003; Ready to edit"}</b></div>
         <div><small>LAST SAVED</small><b>${saveTime.day}</b><span>${saveTime.time}</span></div>
         <div><small>SAVED BY</small><b>${escapeHtml(savedSharedDraft?.savedBy || "No one yet")}</b><span>Revision ${Number(savedSharedDraft?.revision || 0)}</span></div>
         <div class="shared-draft-actions"><button class="secondary-button" type="button" data-refresh-shared>Refresh</button></div>
@@ -1602,7 +1836,7 @@ function rosterView() {
         ${validationErrors}
         <section class="substitution-log"><div><p class="eyebrow">OFFICIAL JSA AUTOMATION</p><h3>Substitution log</h3></div><ol>${substitutionLog}</ol></section>
         ${sidePredictionBuilder(player, locked || allLocked)}
-        <div class="roster-save-row shared"><p><b>${locked ? `${player.name}'s draft is permanently locked` : unsaved ? `Unsaved ${player.name} working copy` : `${player.name}'s saved picks are up to date`}</b><span>${locked ? "The roster, substitutes, and prediction are read-only." : `Save validates and updates only ${player.name}. The opponent's latest roster is preserved.`}</span></p><div class="roster-save-actions"><button class="primary-button" type="button" data-save-draft ${draftEditingDisabled() || !unsaved ? "disabled" : ""}>${sharedDraftSaving ? "Saving..." : "Save Picks"}</button>${locked ? "" : `<button class="lock-draft-button" type="button" data-lock-my-draft ${unsaved || sharedDraftLoading || sharedDraftSaving ? "disabled" : ""}>🔒 Lock My Draft</button>`}</div></div>
+        <div class="roster-save-row shared"><p><b>${lifecycleHold ? "Champion Mode keeps the draft closed" : locked ? `${player.name}'s draft is permanently locked` : unsaved ? `Unsaved ${player.name} working copy` : `${player.name}'s saved picks are up to date`}</b><span>${lifecycleHold ? "Use Start New Draft on the Champion page after the next official banzuke is released." : locked ? "The roster, substitutes, and prediction are read-only." : `Save validates and updates only ${player.name}. The opponent's latest roster is preserved.`}</span></p><div class="roster-save-actions"><button class="primary-button" type="button" data-save-draft ${draftEditingDisabled() || !unsaved ? "disabled" : ""}>${sharedDraftSaving ? "Saving..." : "Save Picks"}</button>${locked ? "" : `<button class="lock-draft-button" type="button" data-lock-my-draft ${unsaved || sharedDraftLoading || sharedDraftSaving ? "disabled" : ""}>🔒 Lock My Draft</button>`}</div></div>
       </section>
       ${appFooter()}
     </section>`;
@@ -1866,11 +2100,12 @@ function banzukeView() {
   const pool = draftPoolStats(basho);
   const rows = banzukeRankRows(basho);
   const rankOptions = [...new Set(basho.entries.map((entry) => entry.rank))];
-  const readOnly = tournamentStarted() || isPlayerDraftLocked(player.id);
+  const lifecycleHold = championMode();
+  const readOnly = tournamentStarted() || isPlayerDraftLocked(player.id) || lifecycleHold;
   return `
     <section class="page-shell">
-      ${pageIntro(`${escapeHtml(basho.label.toUpperCase())} · ${readOnly ? "TOURNAMENT BANZUKE" : "TEAM BUILDER"}`, readOnly ? "Official banzuke and draft ownership" : "Pick from the complete banzuke", readOnly ? `All ${basho.entries.length} official Makuuchi rikishi remain available to browse. The locked draft is read-only for the rest of the tournament.` : `All ${basho.entries.length} official Makuuchi rikishi. Single-click a wrestler for their profile or double-click to edit ${player.name}'s roster.`, `<label class="search-field"><span>⌕</span><input id="banzuke-search" type="search" placeholder="Find a rikishi or stable" autocomplete="off" /></label>`)}
-      ${readOnly ? `<aside class="banzuke-readonly-notice reveal"><span>🔒</span><div><small>TOURNAMENT MODE · READ ONLY</small><b>The complete official Banzuke remains visible.</b><p>Ownership, records, profiles, search, and filters are available. Draft picks cannot be changed.</p></div></aside>` : editingBanner(`Shared draft · currently editing ${player.name}. A rikishi drafted by either player is locked to the other.`)}
+      ${pageIntro(`${escapeHtml(basho.label.toUpperCase())} · ${readOnly ? lifecycleHold ? "CHAMPION MODE" : "TOURNAMENT BANZUKE" : "TEAM BUILDER"}`, readOnly ? "Official banzuke and draft ownership" : "Pick from the complete banzuke", lifecycleHold ? `All ${basho.entries.length} official Makuuchi rikishi remain browseable, but this publication does not become a draft until Start New Draft is selected.` : readOnly ? `All ${basho.entries.length} official Makuuchi rikishi remain available to browse. The locked draft is read-only for the rest of the tournament.` : `All ${basho.entries.length} official Makuuchi rikishi. Single-click a wrestler for their profile or double-click to edit ${player.name}'s roster.`, `<label class="search-field"><span>⌕</span><input id="banzuke-search" type="search" placeholder="Find a rikishi or stable" autocomplete="off" /></label>`)}
+      ${readOnly ? `<aside class="banzuke-readonly-notice reveal"><span>${lifecycleHold ? "🏆" : "🔒"}</span><div><small>${lifecycleHold ? "CHAMPION MODE · DRAFT CLOSED" : "TOURNAMENT MODE · READ ONLY"}</small><b>The complete official Banzuke remains visible.</b><p>${lifecycleHold ? "Profiles, rankings, records, search, and filters are available. Return to the Champion page to start or skip the newly published basho." : "Ownership, records, profiles, search, and filters are available. Draft picks cannot be changed."}</p></div></aside>` : editingBanner(`Shared draft · currently editing ${player.name}. A rikishi drafted by either player is locked to the other.`)}
       <section class="draft-pool-status reveal" data-draft-available="${pool.available}" data-draft-total="${pool.total}">
         <div class="draft-pool-stat available"><small>AVAILABLE</small><b>${pool.available}</b><span>of ${pool.total} rikishi</span></div>
         <div class="draft-pool-meter" aria-label="${pool.available} available, ${pool.counts.gwazy} drafted by Gwazy, ${pool.counts.jake} drafted by Jake">
@@ -2716,13 +2951,22 @@ function bindViewEvents() {
     saveState();
     setTheme();
   });
-  document.querySelector("#setting-spoilers")?.addEventListener("change", (event) => {
+  document.querySelector("#setting-spoilers")?.addEventListener("change", async (event) => {
     state.spoilerFree = event.target.checked;
     if (state.spoilerFree) initializeSpoilerState();
     else state.selectedDay = Math.max(1, Number(data.meta.day || 1));
     saveState();
     render();
     showToast(state.spoilerFree ? "Spoiler-Free Mode enabled." : "Spoiler-Free Mode disabled. Current results are visible.");
+    if (!state.spoilerFree && officialBashoFinished()) {
+      try {
+        await archiveCompletedTournament();
+        render();
+      } catch (error) {
+        sharedDraftError = error.message || "The completed tournament could not be archived.";
+        showToast(sharedDraftError);
+      }
+    }
   });
   document.querySelector(".test-sound")?.addEventListener("click", () => {
     const wasEnabled = state.sound;

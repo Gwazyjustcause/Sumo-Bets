@@ -7,8 +7,8 @@ const source = readFileSync(new URL("shared-draft.js", root), "utf8");
 const calls = [];
 let queryResult;
 let rpcResult;
-let realtimeHandler;
-let removedChannel = null;
+const realtimeHandlers = new Map();
+const removedChannels = [];
 
 const client = {
   from(table) {
@@ -34,14 +34,14 @@ const client = {
       name,
       on(event, options, handler) {
         calls.push({ type: "channel", event, options });
-        realtimeHandler = handler;
+        realtimeHandlers.set(name, handler);
         return channel;
       },
       subscribe() { return channel; },
     };
     return channel;
   },
-  removeChannel(channel) { removedChannel = channel; },
+  removeChannel(channel) { removedChannels.push(channel); },
 };
 
 const context = vm.createContext({
@@ -108,10 +108,16 @@ await assert.rejects(
 
 let realtimeResult = null;
 const unsubscribe = context.window.SHARED_DRAFT_API.subscribe("nagoya-2026", (result) => { realtimeResult = result; });
-realtimeHandler({ new: { basho_id: "nagoya-2026", revision: 6, document: { ...document, revision: 6 } } });
+let lifecycleResult = null;
+const unsubscribeLifecycle = context.window.SHARED_DRAFT_API.subscribe("sumo-battle-lifecycle", (result) => { lifecycleResult = result; });
+realtimeHandlers.get("shared-draft-nagoya-2026")({ new: { basho_id: "nagoya-2026", revision: 6, document: { ...document, revision: 6 } } });
 assert.equal(realtimeResult.revision, 6, "Realtime database changes must be forwarded to the application");
+realtimeHandlers.get("shared-draft-sumo-battle-lifecycle")({ new: { basho_id: "sumo-battle-lifecycle", revision: 2, document: { kind: "lifecycle", revision: 2 } } });
+assert.equal(lifecycleResult.revision, 2, "The lifecycle row must synchronize independently from the active draft row");
 unsubscribe();
-assert(removedChannel, "Unsubscribing must release the Supabase realtime channel");
+assert.equal(removedChannels.at(-1).name, "shared-draft-nagoya-2026", "Unsubscribing from a draft must not remove the lifecycle channel");
+unsubscribeLifecycle();
+assert.equal(removedChannels.at(-1).name, "shared-draft-sumo-battle-lifecycle", "Unsubscribing must release the matching Supabase realtime channel");
 
 assert.equal(context.window.SHARED_DRAFT_API.token, undefined, "The transport must not expose a personal-token API");
 

@@ -671,9 +671,11 @@ button.dashboard-pick-row:hover { border-color: var(--line-strong); background: 
 .champion-score small, .champion-facts small { color: var(--muted); font-size: 7px; letter-spacing: 0.14em; }
 .champion-score b { font-family: Georgia, serif; font-size: 42px; font-weight: 500; }
 .champion-score i { color: var(--muted-2); font-style: normal; }
-.champion-facts { display: flex; margin-top: 22px; gap: 10px; }
-.champion-facts span { display: grid; min-width: 150px; padding: 11px; border: 1px solid var(--line); border-radius: 10px; background: rgba(6, 10, 19, 0.55); }
+.champion-basho-name { margin-bottom: 4px !important; color: var(--gold-bright) !important; font-size: 10px !important; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+.champion-facts { display: grid; width: min(900px, 100%); margin-top: 22px; grid-template-columns: repeat(4, minmax(140px, 1fr)); gap: 10px; }
+.champion-facts span { display: grid; min-width: 0; padding: 11px; border: 1px solid var(--line); border-radius: 10px; background: rgba(6, 10, 19, 0.55); }
 .champion-facts b { margin-top: 4px; font-size: 11px; }
+.champion-facts em { margin-top: 3px; color: var(--muted); font-size: 7px; font-style: normal; line-height: 1.45; }
 .next-basho-card { display: flex; margin-top: 18px; padding: 24px 28px; align-items: center; justify-content: space-between; gap: 20px; border: 1px solid rgba(230, 184, 92, 0.28); border-radius: var(--radius-xl); background: linear-gradient(110deg, rgba(94, 62, 14, 0.15), var(--panel-soft)); }
 .next-basho-card h2 { margin: 2px 0 6px; font-family: Georgia, serif; font-size: 25px; font-weight: 500; }
 .next-basho-card p:not(.eyebrow) { margin: 0; color: var(--muted); font-size: 9px; }
@@ -1166,6 +1168,7 @@ button.dashboard-pick-row:hover { border-color: var(--line-strong); background: 
   .history-row { grid-template-columns: 1.3fr 0.7fr 0.9fr; gap: 8px; }
   .history-row > *:nth-child(4),
   .history-row > *:nth-child(5) { display: none; }
+  .champion-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
   .app-footer { grid-template-columns: 1fr; gap: 12px; text-align: center; }
   .app-footer .brand { margin: auto; }
@@ -1219,7 +1222,7 @@ button.dashboard-pick-row:hover { border-color: var(--line-strong); background: 
   .overview-lock-grid, .roster-save-actions, .next-basho-card, .next-basho-card > div:last-child { align-items: stretch; flex-direction: column; }
   .roster-save-actions button, .next-basho-card button { width: 100%; }
   .champion-hero { min-height: 450px; padding-inline: 16px; }
-  .champion-facts { width: 100%; flex-direction: column; }
+  .champion-facts { width: 100%; grid-template-columns: 1fr; }
   .side-choice { margin: auto; }
   .rules-strip { align-items: flex-start; flex-direction: column; gap: 8px; }
   .rules-strip i { display: none; }
