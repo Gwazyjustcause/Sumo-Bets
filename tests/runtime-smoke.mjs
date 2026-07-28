@@ -180,17 +180,28 @@ assert.equal(vm.runInContext("officialBashoFinished()", context), true, "Publish
 assert.equal(vm.runInContext("tournamentFinished()", context), false, "Final results must not automatically leave Tournament Mode");
 assert.equal(vm.runInContext("championModeAvailable()", context), true, "Final results must unlock the manual Champion Mode action");
 assert(tournamentOverview.includes("data-champion-entry") && tournamentOverview.includes("🏆 Enter Champion Mode"), "The final Tournament Overview must retain standings while presenting the manual Champion action");
+const championDebugBefore = JSON.parse(vm.runInContext("JSON.stringify(championDebugState())", context));
+assert.equal(championDebugBefore.day15Detected, true, "Champion diagnostics must confirm that the official final day exists");
+assert.equal(championDebugBefore.day15Complete, true, "Champion diagnostics must confirm that official final-day results are complete");
+assert.equal(championDebugBefore.available, true, "Champion diagnostics must report the effective availability result");
+assert.deepEqual(championDebugBefore.falseTerms, [], "An available Champion action must have no false effective terms");
+assert(tournamentOverview.includes("data-champion-debug") && tournamentOverview.includes("BOOLEAN EXPRESSION") && tournamentOverview.includes("PREVIOUS BLOCKING GATE (REMOVED)"), "The final Overview must expose the temporary Champion diagnostic panel");
 const completedLifecycleEntry = JSON.parse(vm.runInContext("JSON.stringify(completedHistoryEntry())", context));
 assert.equal(completedLifecycleEntry.finalDay, hiddenOfficialDay, "The archived result must use the final published official day");
 assert(Object.hasOwn(completedLifecycleEntry, "bestSubstitute") && completedLifecycleEntry.sideResult, "The champion archive must include substitute and side-prediction outcomes");
 vm.runInContext(`globalThis.__manualChampionRows=new Map();
-  globalThis.__manualTournamentDocument={...savedSharedDraft,players:sharedPayloadPlayers()};
+  globalThis.__manualTournamentDocument={...savedSharedDraft,status:'draft',locked:false,playerLocks:{gwazy:false,jake:false},players:sharedPayloadPlayers()};
   __manualChampionRows.set(state.selectedBashoId,{document:JSON.parse(JSON.stringify(__manualTournamentDocument)),revision:Number(savedSharedDraft.revision||0)});
   window.SHARED_DRAFT_API={configured:()=>true,subscribe:()=>()=>{},
     load:async(id)=>__manualChampionRows.has(id)?JSON.parse(JSON.stringify(__manualChampionRows.get(id))):{document:{bashoId:id,revision:0},revision:0},
     save:async(document,expectedRevision)=>{const current=__manualChampionRows.get(document.bashoId);if(Number(current?.revision||0)!==Number(expectedRevision||0)){const error=new Error('stale');error.status=409;throw error;}const revision=Number(expectedRevision||0)+1;const saved={...document,revision};__manualChampionRows.set(document.bashoId,{document:saved,revision});return {document:JSON.parse(JSON.stringify(saved)),revision};}
   };`, context);
 await vm.runInContext("enterChampionMode()", context);
+const championDebugAfter = JSON.parse(vm.runInContext("JSON.stringify(championDebugState())", context));
+assert.equal(championDebugAfter.sharedStatus, "draft", "Champion diagnostics must retain the fresh stale Supabase status that previously blocked entry");
+assert.equal(championDebugAfter.sharedLocked, false, "Champion diagnostics must expose stale remote lock metadata");
+assert.equal(championDebugAfter.legacyRemoteReady, false, "The removed Supabase readiness gate must be shown as false");
+assert(championDebugAfter.legacyFalseTerms.includes('sharedStatus === "tournament"') && championDebugAfter.legacyFalseTerms.includes("bothDraftsLocked"), "Diagnostics must identify every false term in the removed gate");
 assert.equal(vm.runInContext("savedSharedDraft.status", context), "completed", "Enter Champion Mode must atomically freeze the shared tournament document");
 assert.equal(vm.runInContext("savedLifecycle.mode", context), "champion", "The manual action must synchronize the shared lifecycle for both players");
 assert.equal(vm.runInContext("__manualChampionRows.has(LIFECYCLE_DOCUMENT_ID)", context), true, "The manual action must persist the Champion lifecycle in Supabase");

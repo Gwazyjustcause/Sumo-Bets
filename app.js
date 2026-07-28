@@ -189,6 +189,8 @@ let sharedDraftRevision = 0;
 let savedSharedDraft = null;
 let lifecycleRevision = 0;
 let savedLifecycle = null;
+let championDebugDocument = null;
+let championDebugCheckedAt = null;
 let sharedDraftLoading = true;
 let sharedDraftSaving = false;
 let sharedDraftError = null;
@@ -368,14 +370,32 @@ function finalOfficialDay() {
   return officialCompletedDays().at(-1) || 0;
 }
 
-function officialFinalResultsAvailable() {
+function finalOfficialResultsStatus() {
   const finalDay = Number(data.meta.totalDays || 15);
   const officialDay = data.results?.days?.find((day) => Number(day.day) === finalDay);
-  return Boolean(officialDay?.bouts?.length && officialDay.bouts.every((bout) => bout.completed));
+  const bouts = officialDay?.bouts || [];
+  const completedBouts = bouts.filter((bout) => bout.completed || bout.winner).length;
+  const explicitComplete = typeof officialDay?.completed === "boolean" ? officialDay.completed : null;
+  const resultsPublished = Boolean(bouts.length && completedBouts > 0);
+  return {
+    finalDay,
+    officialDay,
+    detected: Boolean(officialDay),
+    completedBouts,
+    totalBouts: bouts.length,
+    explicitComplete,
+    resultsPublished,
+    complete: explicitComplete === null ? resultsPublished : explicitComplete,
+  };
+}
+
+function officialFinalResultsAvailable() {
+  const status = finalOfficialResultsStatus();
+  return status.detected && status.complete;
 }
 
 function officialBashoFinished() {
-  return tournamentStarted() && officialFinalResultsAvailable();
+  return officialFinalResultsAvailable();
 }
 
 function tournamentFinished() {
@@ -383,7 +403,49 @@ function tournamentFinished() {
 }
 
 function championModeAvailable() {
-  return officialBashoFinished() && !tournamentFinished() && savedSharedDraft?.status === "tournament";
+  return officialFinalResultsAvailable() && !tournamentFinished();
+}
+
+function championDebugState(document = championDebugDocument || savedSharedDraft) {
+  const final = finalOfficialResultsStatus();
+  const day15Detected = final.detected;
+  const day15Complete = final.complete;
+  const alreadyChampion = tournamentFinished();
+  const available = day15Detected && day15Complete && !alreadyChampion;
+  const sharedLocks = sharedPlayerLocks(document);
+  const sharedLocked = data.players.every((player) => sharedLocks[player.id]);
+  const legacyRemoteReady = document?.status === "tournament" && sharedLocked;
+  const falseTerms = [
+    !day15Detected ? "day15Detected" : null,
+    !day15Complete ? "day15ResultsComplete" : null,
+    alreadyChampion ? "!alreadyInChampionMode" : null,
+  ].filter(Boolean);
+  const legacyFalseTerms = [
+    document?.status !== "tournament" ? 'sharedStatus === "tournament"' : null,
+    !sharedLocked ? "bothDraftsLocked" : null,
+  ].filter(Boolean);
+  return {
+    currentBashoId: state.selectedBashoId,
+    officialBashoId: data.meta.bashoId,
+    currentDay: Number(data.meta.day || 0),
+    day15Detected,
+    completedBouts: final.completedBouts,
+    totalBouts: final.totalBouts,
+    explicitComplete: final.explicitComplete,
+    resultsPublished: final.resultsPublished,
+    day15Complete,
+    alreadyChampion,
+    available,
+    expression: `day15Detected (${day15Detected}) && day15ResultsComplete (${day15Complete}) && !alreadyInChampionMode (${!alreadyChampion})`,
+    falseTerms,
+    sharedStatus: document?.status || "missing",
+    sharedLocked,
+    sharedLocks,
+    legacyRemoteReady,
+    legacyExpression: `sharedStatus === "tournament" (${document?.status === "tournament"}) && bothDraftsLocked (${sharedLocked})`,
+    legacyFalseTerms,
+    checkedAt: championDebugCheckedAt,
+  };
 }
 
 function latestCompletedHistory(events = savedLifecycle?.history || state.history || []) {
@@ -1115,16 +1177,22 @@ async function enterChampionMode() {
   render();
   try {
     const latest = await window.SHARED_DRAFT_API.load(state.selectedBashoId);
+    championDebugDocument = JSON.parse(JSON.stringify(latest.document));
+    championDebugCheckedAt = new Date().toISOString();
+    console.info("[Champion Mode Debug]", championDebugState(latest.document));
     if (latest.document.status === "completed") {
       applySharedDraft(latest.document, latest.revision);
       await persistChampionLifecycle(latest.document.history || []);
       showToast("Champion Mode was already entered on another device.");
       return;
     }
-    if (latest.document.status !== "tournament" || !bothDraftsLocked(latest.document)) {
-      throw new Error("The shared tournament is not ready to enter Champion Mode.");
-    }
-    applySharedDraft(latest.document, latest.revision);
+    const completionSource = {
+      ...latest.document,
+      status: "tournament",
+      locked: true,
+      playerLocks: Object.fromEntries(data.players.map((player) => [player.id, true])),
+    };
+    applySharedDraft(completionSource, latest.revision);
     const bashoId = spoilerBashoId();
     state.spoilerWatchedDays[bashoId] = officialCompletedDays();
     state.spoilerPromptedDays[bashoId] = officialCompletedDays();
@@ -1132,7 +1200,7 @@ async function enterChampionMode() {
     const history = historyWithCurrentCompletion();
     const completedAt = new Date().toISOString();
     const document = {
-      ...latest.document,
+      ...completionSource,
       schemaVersion: DRAFT_SCHEMA_VERSION,
       revision: Number(latest.document.revision || 0) + 1,
       status: "completed",
@@ -1670,14 +1738,33 @@ function draftWaitingOverview() {
   </section>`;
 }
 
+function championDebugPanel() {
+  const debug = championDebugState();
+  const checkedAt = debug.checkedAt ? new Date(debug.checkedAt).toISOString().replace("T", " ").slice(0, 16) + " UTC" : null;
+  return `<details class="champion-debug-panel reveal" open data-champion-debug>
+    <summary>Champion Mode diagnostics <small>TEMPORARY DEBUG PANEL</small></summary>
+    <div class="champion-debug-grid">
+      <span><small>CURRENT BASHO IDENTIFIER</small><b>${escapeHtml(debug.currentBashoId)}</b><em>JSA ${escapeHtml(debug.officialBashoId)}</em></span>
+      <span><small>CURRENT DETECTED DAY</small><b>Day ${debug.currentDay}</b></span>
+      <span><small>DAY 15 DETECTED</small><b class="${debug.day15Detected ? "pass" : "fail"}">${debug.day15Detected ? "TRUE ✓" : "FALSE ✗"}</b></span>
+      <span><small>DAY 15 RESULTS COMPLETE</small><b class="${debug.day15Complete ? "pass" : "fail"}">${debug.day15Complete ? "TRUE ✓" : "FALSE ✗"}</b><em>${debug.completedBouts} / ${debug.totalBouts} published · explicit state ${debug.explicitComplete === null ? "not supplied" : debug.explicitComplete}</em></span>
+      <span><small>CHAMPION MODE AVAILABLE</small><b class="${debug.available ? "pass" : "fail"}">${debug.available ? "TRUE ✓" : "FALSE ✗"}</b></span>
+      <span><small>SUPABASE SNAPSHOT</small><b>${escapeHtml(debug.sharedStatus)}</b><em>Gwazy lock ${debug.sharedLocks.gwazy} · Jake lock ${debug.sharedLocks.jake} · both ${debug.sharedLocked}</em></span>
+    </div>
+    <div class="champion-debug-expression"><small>BOOLEAN EXPRESSION</small><code>${escapeHtml(debug.expression)}</code><b>${debug.falseTerms.length ? `FALSE TERM${debug.falseTerms.length === 1 ? "" : "S"}: ${escapeHtml(debug.falseTerms.join(", "))}` : "No false terms — Champion Mode is available."}</b>${checkedAt ? `<em>Fresh Supabase check: ${escapeHtml(checkedAt)}</em>` : "<em>Supabase values shown are the current synchronized snapshot. Pressing Enter performs a fresh read.</em>"}</div>
+    <div class="champion-debug-expression legacy"><small>PREVIOUS BLOCKING GATE (REMOVED)</small><code>${escapeHtml(debug.legacyExpression)}</code><b class="${debug.legacyRemoteReady ? "pass" : "fail"}">${debug.legacyFalseTerms.length ? `FALSE TERM${debug.legacyFalseTerms.length === 1 ? "" : "S"}: ${escapeHtml(debug.legacyFalseTerms.join(", "))}` : "The legacy gate currently evaluates true."}</b><em>This stale Supabase lifecycle check is diagnostic only and no longer prevents Champion Mode.</em></div>
+  </details>`;
+}
+
 function championEntryPanel() {
-  if (!championModeAvailable()) return "";
+  if (tournamentFinished()) return "";
+  if (!championModeAvailable()) return Number(data.meta.day || 0) >= Number(data.meta.totalDays || 15) || finalOfficialResultsStatus().detected ? championDebugPanel() : "";
   const hiddenFinalResults = state.spoilerFree && activeHiddenDay();
   return `<section class="champion-entry-card reveal" data-champion-entry>
     <span>🏆</span>
     <div><p class="eyebrow">OFFICIAL DAY 15 RESULTS AVAILABLE</p><h2>The final standings are ready.</h2><p>Tournament Mode remains available until either player freezes the result. ${hiddenFinalResults ? "Entering Champion Mode will reveal all remaining hidden results." : "This one-way action is synchronized for Gwazy and Jake."}</p></div>
     <button class="primary-button" type="button" data-enter-champion ${sharedDraftSaving ? "disabled" : ""}>${sharedDraftSaving ? "Entering Champion Mode..." : "🏆 Enter Champion Mode"}</button>
-  </section>`;
+  </section>${championDebugPanel()}`;
 }
 
 function championOverviewView() {
