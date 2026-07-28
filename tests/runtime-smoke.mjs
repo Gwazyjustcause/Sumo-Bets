@@ -175,17 +175,27 @@ assert(!tournamentOverview.includes("of 18 draft slots filled"), "Tournament mod
 assert.equal((tournamentOverview.match(/data-overview-day=/g) || []).length, 15, "The tournament hero must render all 15 basho days");
 assert(tournamentOverview.includes(`data-overview-day="${officialCurrentDay}"`) && tournamentOverview.includes('current selected'), "The official current day must be highlighted in the hero");
 if (officialCurrentDay < 15) assert(tournamentOverview.includes(`future" type="button" data-overview-day="${officialCurrentDay + 1}"`), "Future hero days must remain visible and disabled");
-vm.runInContext("data.meta.endDate='2000-01-01';data.meta.active=true", context);
-assert.equal(vm.runInContext("officialBashoFinished()", context), true, "The official JSA end date plus complete published results must close a basho even if the live flag is stale");
-vm.runInContext("data.meta.endDate='2099-12-31';data.meta.active=false", context);
-assert.equal(vm.runInContext("officialBashoFinished()", context), true, "Official completion must use the JSA active flag and published results instead of a hard-coded day transition");
-assert.equal(vm.runInContext("tournamentFinished()", context), true, "A fully revealed official completion must enter the completed lifecycle");
+assert.equal(vm.runInContext("officialFinalResultsAvailable()", context), true, "Every official Day 15 bout must be complete before Champion Mode becomes available");
+assert.equal(vm.runInContext("officialBashoFinished()", context), true, "Published final results must mark the shared tournament as eligible for completion");
+assert.equal(vm.runInContext("tournamentFinished()", context), false, "Final results must not automatically leave Tournament Mode");
+assert.equal(vm.runInContext("championModeAvailable()", context), true, "Final results must unlock the manual Champion Mode action");
+assert(tournamentOverview.includes("data-champion-entry") && tournamentOverview.includes("🏆 Enter Champion Mode"), "The final Tournament Overview must retain standings while presenting the manual Champion action");
 const completedLifecycleEntry = JSON.parse(vm.runInContext("JSON.stringify(completedHistoryEntry())", context));
 assert.equal(completedLifecycleEntry.finalDay, hiddenOfficialDay, "The archived result must use the final published official day");
 assert(Object.hasOwn(completedLifecycleEntry, "bestSubstitute") && completedLifecycleEntry.sideResult, "The champion archive must include substitute and side-prediction outcomes");
-vm.runInContext(`savedLifecycle={kind:'lifecycle',acceptedBashoId:data.meta.bashoId,activeBashoId:data.meta.bashoId,mode:'champion',champion:${JSON.stringify(completedLifecycleEntry)},history:[${JSON.stringify(completedLifecycleEntry)}]};savedSharedDraft.status='completed'`, context);
+vm.runInContext(`globalThis.__manualChampionRows=new Map();
+  globalThis.__manualTournamentDocument={...savedSharedDraft,players:sharedPayloadPlayers()};
+  __manualChampionRows.set(state.selectedBashoId,{document:JSON.parse(JSON.stringify(__manualTournamentDocument)),revision:Number(savedSharedDraft.revision||0)});
+  window.SHARED_DRAFT_API={configured:()=>true,subscribe:()=>()=>{},
+    load:async(id)=>__manualChampionRows.has(id)?JSON.parse(JSON.stringify(__manualChampionRows.get(id))):{document:{bashoId:id,revision:0},revision:0},
+    save:async(document,expectedRevision)=>{const current=__manualChampionRows.get(document.bashoId);if(Number(current?.revision||0)!==Number(expectedRevision||0)){const error=new Error('stale');error.status=409;throw error;}const revision=Number(expectedRevision||0)+1;const saved={...document,revision};__manualChampionRows.set(document.bashoId,{document:saved,revision});return {document:JSON.parse(JSON.stringify(saved)),revision};}
+  };`, context);
+await vm.runInContext("enterChampionMode()", context);
+assert.equal(vm.runInContext("savedSharedDraft.status", context), "completed", "Enter Champion Mode must atomically freeze the shared tournament document");
+assert.equal(vm.runInContext("savedLifecycle.mode", context), "champion", "The manual action must synchronize the shared lifecycle for both players");
+assert.equal(vm.runInContext("__manualChampionRows.has(LIFECYCLE_DOCUMENT_ID)", context), true, "The manual action must persist the Champion lifecycle in Supabase");
 const championHtml = vm.runInContext("overviewView()", context);
-assert(championHtml.includes("BASHO CHAMPION") && championHtml.includes("WINNING MARGIN") && championHtml.includes("BEST SUBSTITUTE") && championHtml.includes("SIDE RESULT"), "Champion Mode must replace the tournament dashboard with complete final honors");
+assert(championHtml.includes("champion-page") && championHtml.includes("WINNING MARGIN") && championHtml.includes("BEST SUBSTITUTE") && championHtml.includes("SIDE RESULT"), "Champion Mode must replace the tournament dashboard with complete final honors");
 assert(!championHtml.includes("data-new-banzuke-available"), "Draft controls must stay hidden throughout the off-season until a newer official banzuke exists");
 vm.runInContext("savedLifecycle.acceptedBashoId='previous-basho'", context);
 const nextBanzukeChampionHtml = vm.runInContext("overviewView()", context);
@@ -210,6 +220,7 @@ assert(overviewOrder[0] >= 0 && overviewOrder[0] < overviewOrder[1] && overviewO
 assert.equal((tournamentOverview.match(/class="chart-line /g) || []).length, 2, "Momentum must render a separate point-total line for each player");
 assert(tournamentOverview.includes("D1") && tournamentOverview.includes("D15"), "Momentum must span the complete Day 1 to Day 15 axis");
 assert.equal(vm.runInContext("validateSharedDraft().valid", context), true, "A complete two-player draft with legal substitute categories must save");
+vm.runInContext("savedSharedDraft.players=emptyDraftPlayers()", context);
 assert.equal(vm.runInContext("hasUnsavedDraftChanges()", context), true, "Editing the working copy must raise the unsaved-changes state");
 const fantasyResult = JSON.parse(vm.runInContext("JSON.stringify(resultDraftImpact({east:'hoshoryu',west:'onosato',winner:'hoshoryu',completed:true,importance:5,technique:'yorikiri'}, state.selectedDay))", context));
 assert.equal(fantasyResult.headToHead, true, "A Gwazy-versus-Jake matchup must be identified as a head-to-head draft bout");

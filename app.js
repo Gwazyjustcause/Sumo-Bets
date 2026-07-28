@@ -266,15 +266,6 @@ async function revealSpoilerDay(day) {
   saveState();
   render();
   showToast(`Day ${target} revealed.`);
-  if (officialBashoFinished() && target >= finalOfficialDay()) {
-    try {
-      await archiveCompletedTournament();
-      render();
-    } catch (error) {
-      sharedDraftError = error.message || "The completed tournament could not be archived.";
-      showToast(sharedDraftError);
-    }
-  }
 }
 
 function keepSpoilerDayHidden(day) {
@@ -377,20 +368,22 @@ function finalOfficialDay() {
   return officialCompletedDays().at(-1) || 0;
 }
 
+function officialFinalResultsAvailable() {
+  const finalDay = Number(data.meta.totalDays || 15);
+  const officialDay = data.results?.days?.find((day) => Number(day.day) === finalDay);
+  return Boolean(officialDay?.bouts?.length && officialDay.bouts.every((bout) => bout.completed));
+}
+
 function officialBashoFinished() {
-  const officialEnd = Date.parse(`${data.meta.endDate || ""}T23:59:59Z`);
-  const resultsThroughScheduledDay = finalOfficialDay() >= Number(data.meta.scheduledThroughDay || data.meta.day || 0);
-  const endedByOfficialCalendar = Number.isFinite(officialEnd) && Date.now() > officialEnd && resultsThroughScheduledDay;
-  return tournamentStarted()
-    && finalOfficialDay() > 0
-    && (data.meta.active === false || endedByOfficialCalendar);
+  return tournamentStarted() && officialFinalResultsAvailable();
 }
 
 function tournamentFinished() {
-  if (savedSharedDraft?.status === "completed") return true;
-  const finalDay = finalOfficialDay();
-  return officialBashoFinished()
-    && (!state.spoilerFree || spoilerVisibleDay() >= finalDay);
+  return savedSharedDraft?.status === "completed";
+}
+
+function championModeAvailable() {
+  return officialBashoFinished() && !tournamentFinished() && savedSharedDraft?.status === "tournament";
 }
 
 function latestCompletedHistory(events = savedLifecycle?.history || state.history || []) {
@@ -532,7 +525,7 @@ async function loadSharedDraft({ force = false } = {}) {
     await reconcileSharedPublishedBanzuke();
     const result = await window.SHARED_DRAFT_API.load(state.selectedBashoId);
     applySharedDraft(result.document, result.revision);
-    await archiveCompletedTournament();
+    if (result.document.status === "completed") await persistChampionLifecycle(result.document.history || []);
     subscribeToSharedDraft();
   } catch (error) {
     sharedDraftError = error.message || "The shared draft could not be loaded.";
@@ -555,6 +548,12 @@ function applyRealtimeSharedDraft(result) {
     workingPlayer.substitutes = workingPlayer.substitutes.filter((id) => !blocked.has(id));
     state.drafts[state.selectedBashoId][playerId] = workingPlayer;
     if (conflicts.length) showToast("A wrestler in your working copy was just drafted by the other player.");
+  }
+  if (result.document.status === "completed" && savedLifecycle?.mode !== "champion") {
+    persistChampionLifecycle(result.document.history || []).catch((error) => {
+      sharedDraftError = error.message || "Champion lifecycle synchronization is delayed.";
+      render();
+    });
   }
   render();
 }
@@ -1085,31 +1084,7 @@ function historyWithCurrentCompletion() {
   return history;
 }
 
-async function archiveCompletedTournament() {
-  if (!tournamentFinished() || !savedSharedDraft) return;
-  let history = savedSharedDraft.status === "completed" && Array.isArray(savedSharedDraft.history)
-    ? savedSharedDraft.history
-    : historyWithCurrentCompletion();
-  if (savedSharedDraft.status !== "completed") {
-    const document = {
-      ...savedSharedDraft,
-      schemaVersion: DRAFT_SCHEMA_VERSION,
-      revision: Number(savedSharedDraft.revision || 0) + 1,
-      status: "completed",
-      completedAt: new Date().toISOString(),
-      history,
-    };
-    try {
-      const result = await window.SHARED_DRAFT_API.save(document, sharedDraftRevision);
-      applySharedDraft(result.document, result.revision);
-      history = result.document.history;
-    } catch (error) {
-      if (error.status !== 409) throw error;
-      const latest = await window.SHARED_DRAFT_API.load(state.selectedBashoId);
-      applySharedDraft(latest.document, latest.revision);
-      history = latest.document.history || history;
-    }
-  }
+async function persistChampionLifecycle(history = savedSharedDraft?.history || state.history || []) {
   const champion = history.find((event) => event.id === savedSharedDraft.bashoId && event.status === "completed")
     || latestCompletedHistory(history)
     || completedHistoryEntry();
@@ -1122,6 +1097,70 @@ async function archiveCompletedTournament() {
       history,
       pendingBasho: null,
     });
+  }
+}
+
+async function enterChampionMode() {
+  if (sharedDraftSaving || !savedSharedDraft) return;
+  if (tournamentFinished()) {
+    render();
+    return;
+  }
+  if (!championModeAvailable()) {
+    showToast("Champion Mode unlocks after every official Day 15 bout has a result.");
+    return;
+  }
+  sharedDraftSaving = true;
+  sharedDraftError = null;
+  render();
+  try {
+    const latest = await window.SHARED_DRAFT_API.load(state.selectedBashoId);
+    if (latest.document.status === "completed") {
+      applySharedDraft(latest.document, latest.revision);
+      await persistChampionLifecycle(latest.document.history || []);
+      showToast("Champion Mode was already entered on another device.");
+      return;
+    }
+    if (latest.document.status !== "tournament" || !bothDraftsLocked(latest.document)) {
+      throw new Error("The shared tournament is not ready to enter Champion Mode.");
+    }
+    applySharedDraft(latest.document, latest.revision);
+    const bashoId = spoilerBashoId();
+    state.spoilerWatchedDays[bashoId] = officialCompletedDays();
+    state.spoilerPromptedDays[bashoId] = officialCompletedDays();
+    state.selectedDay = finalOfficialDay();
+    const history = historyWithCurrentCompletion();
+    const completedAt = new Date().toISOString();
+    const document = {
+      ...latest.document,
+      schemaVersion: DRAFT_SCHEMA_VERSION,
+      revision: Number(latest.document.revision || 0) + 1,
+      status: "completed",
+      completedAt,
+      lastSavedAt: completedAt,
+      savedBy: getPlayerDefinition().name,
+      history,
+    };
+    const result = await window.SHARED_DRAFT_API.save(document, latest.revision);
+    applySharedDraft(result.document, result.revision);
+    await persistChampionLifecycle(result.document.history);
+    playBell();
+    showToast(`${completedHistoryEntry(result.document).winner} is the ${selectedBasho().label} champion.`);
+  } catch (error) {
+    if (error.status === 409) {
+      const latest = await window.SHARED_DRAFT_API.load(state.selectedBashoId);
+      applySharedDraft(latest.document, latest.revision);
+      if (latest.document.status === "completed") {
+        await persistChampionLifecycle(latest.document.history || []);
+        showToast("Champion Mode was entered by the other player.");
+        return;
+      }
+    }
+    sharedDraftError = error.message || "Champion Mode could not be entered.";
+    showToast(sharedDraftError);
+  } finally {
+    sharedDraftSaving = false;
+    render();
   }
 }
 
@@ -1631,6 +1670,16 @@ function draftWaitingOverview() {
   </section>`;
 }
 
+function championEntryPanel() {
+  if (!championModeAvailable()) return "";
+  const hiddenFinalResults = state.spoilerFree && activeHiddenDay();
+  return `<section class="champion-entry-card reveal" data-champion-entry>
+    <span>🏆</span>
+    <div><p class="eyebrow">OFFICIAL DAY 15 RESULTS AVAILABLE</p><h2>The final standings are ready.</h2><p>Tournament Mode remains available until either player freezes the result. ${hiddenFinalResults ? "Entering Champion Mode will reveal all remaining hidden results." : "This one-way action is synchronized for Gwazy and Jake."}</p></div>
+    <button class="primary-button" type="button" data-enter-champion ${sharedDraftSaving ? "disabled" : ""}>${sharedDraftSaving ? "Entering Champion Mode..." : "🏆 Enter Champion Mode"}</button>
+  </section>`;
+}
+
 function championOverviewView() {
   const result = savedLifecycle?.champion || latestCompletedHistory() || completedHistoryEntry();
   const winner = result.winner === "Draw" ? null : data.players.find((player) => player.name === result.winner);
@@ -1687,6 +1736,7 @@ function overviewView() {
           ${forecastCard(selectedDay)}
           ${momentumCard(selectedDay)}
         </div>` : draftWaitingOverview()}
+      ${championEntryPanel()}
 
       <section class="content-section picks-preview reveal">
         <div class="section-title spacious"><div><p class="eyebrow">SHARED DRAFT · ${escapeHtml(basho.label.toUpperCase())}</p><h2>Complete rosters</h2><p>Both players' main picks, substitutes, scores, predictions, and completion progress update here automatically.</p></div><a class="text-link" href="#banzuke">Open draft <span>${icons.arrow}</span></a></div>
@@ -2958,15 +3008,6 @@ function bindViewEvents() {
     saveState();
     render();
     showToast(state.spoilerFree ? "Spoiler-Free Mode enabled." : "Spoiler-Free Mode disabled. Current results are visible.");
-    if (!state.spoilerFree && officialBashoFinished()) {
-      try {
-        await archiveCompletedTournament();
-        render();
-      } catch (error) {
-        sharedDraftError = error.message || "The completed tournament could not be archived.";
-        showToast(sharedDraftError);
-      }
-    }
   });
   document.querySelector(".test-sound")?.addEventListener("click", () => {
     const wasEnabled = state.sound;
@@ -3007,6 +3048,7 @@ function bindViewEvents() {
     render();
     showToast(`${button.dataset.bonus} staged as ${getPlayerDefinition().name}'s prediction. Save Picks to publish.`);
   }));
+  document.querySelector("[data-enter-champion]")?.addEventListener("click", enterChampionMode);
   document.querySelector("[data-start-new-draft]")?.addEventListener("click", () => {
     startNewOfficialBashoDraft();
   });

@@ -662,6 +662,10 @@ button.dashboard-pick-row:hover { border-color: var(--line-strong); background: 
 .results-locked-state { grid-template-columns: auto 1fr auto; }
 .results-locked-state > span { font-size: 34px; }
 .champion-page { position: relative; }
+.champion-entry-card { display: grid; margin-top: 18px; padding: 22px 26px; grid-template-columns: auto 1fr auto; align-items: center; gap: 18px; border: 1px solid rgba(230, 184, 92, 0.38); border-radius: var(--radius-xl); background: radial-gradient(circle at 8% 50%, rgba(230, 184, 92, 0.16), transparent 28%), linear-gradient(110deg, rgba(60, 43, 14, 0.55), var(--panel-soft)); box-shadow: 0 18px 50px rgba(0, 0, 0, 0.2); }
+.champion-entry-card > span { display: grid; width: 58px; height: 58px; place-items: center; border: 1px solid rgba(230, 184, 92, 0.4); border-radius: 18px 18px 8px 18px; background: rgba(230, 184, 92, 0.08); font-size: 28px; }
+.champion-entry-card h2 { margin: 2px 0 5px; font-family: Georgia, serif; font-size: 23px; font-weight: 500; }
+.champion-entry-card p:not(.eyebrow) { margin: 0; color: var(--muted); font-size: 9px; line-height: 1.55; }
 .champion-hero { position: relative; display: grid; min-height: 520px; padding: 52px 28px; place-items: center; align-content: center; overflow: hidden; border: 1px solid color-mix(in srgb, var(--player-accent) 48%, var(--line)); border-radius: var(--radius-xl); background: radial-gradient(circle at 50% 30%, var(--player-glow), transparent 42%), linear-gradient(145deg, rgba(13, 19, 34, 0.96), rgba(6, 10, 19, 0.96)); text-align: center; }
 .champion-trophy { font-size: 82px; filter: drop-shadow(0 14px 30px rgba(226, 180, 85, 0.28)); }
 .champion-hero h1 { margin: 5px 0; color: var(--player-accent); font-family: Georgia, serif; font-size: clamp(54px, 9vw, 96px); font-weight: 500; letter-spacing: 0.05em; }
@@ -1169,6 +1173,8 @@ button.dashboard-pick-row:hover { border-color: var(--line-strong); background: 
   .history-row > *:nth-child(4),
   .history-row > *:nth-child(5) { display: none; }
   .champion-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .champion-entry-card { grid-template-columns: auto 1fr; }
+  .champion-entry-card button { grid-column: 1 / -1; width: 100%; }
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
   .app-footer { grid-template-columns: 1fr; gap: 12px; text-align: center; }
   .app-footer .brand { margin: auto; }
@@ -1222,6 +1228,7 @@ button.dashboard-pick-row:hover { border-color: var(--line-strong); background: 
   .overview-lock-grid, .roster-save-actions, .next-basho-card, .next-basho-card > div:last-child { align-items: stretch; flex-direction: column; }
   .roster-save-actions button, .next-basho-card button { width: 100%; }
   .champion-hero { min-height: 450px; padding-inline: 16px; }
+  .champion-entry-card { padding: 20px 16px; }
   .champion-facts { width: 100%; grid-template-columns: 1fr; }
   .side-choice { margin: auto; }
   .rules-strip { align-items: flex-start; flex-direction: column; gap: 8px; }

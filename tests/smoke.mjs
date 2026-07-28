@@ -111,9 +111,10 @@ for (const capability of ["data-save-draft", "validateSharedDraft", "hasUnsavedD
 for (const capability of ["bashoDayTimeline", "tournamentStarted", "tournamentFinished", "championOverviewView", "data-skip-basho", "Tournament Skipped"]) {
   assert(app.includes(capability), `Missing tournament lifecycle capability: ${capability}`);
 }
-for (const capability of ["LIFECYCLE_DOCUMENT_ID", "officialBashoFinished", "latestCompletedHistory", "championMode", "loadLifecycleState", "saveLifecycleState", "subscribeToLifecycle", "reconcileSharedPublishedBanzuke", "pendingBasho", "data-new-banzuke-available", "bestSubstitute", "sideResult"]) {
+for (const capability of ["LIFECYCLE_DOCUMENT_ID", "officialFinalResultsAvailable", "officialBashoFinished", "championModeAvailable", "enterChampionMode", "data-enter-champion", "persistChampionLifecycle", "latestCompletedHistory", "championMode", "loadLifecycleState", "saveLifecycleState", "subscribeToLifecycle", "reconcileSharedPublishedBanzuke", "pendingBasho", "data-new-banzuke-available", "bestSubstitute", "sideResult"]) {
   assert(app.includes(capability), `Missing banzuke-driven Champion lifecycle capability: ${capability}`);
 }
+assert(!app.includes("archiveCompletedTournament"), "Champion Mode must not be entered by an automatic archive path");
 assert(sharedDraftApi.includes("activeChannels = new Map()"), "Draft and lifecycle realtime subscriptions must coexist");
 for (const capability of ["TOURNAMENT PROGRESS", "DRAFT PROGRESS", "data-overview-day", "overviewSelectedDay", "progressDots"]) {
   assert(app.includes(capability), `Missing dynamic Overview hero capability: ${capability}`);
