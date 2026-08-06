@@ -2,7 +2,7 @@
 window.SUMO_DATA = {
   "meta": {
     "bashoId": "636",
-    "dataSignature": "f06a1bddbb2aae80517d6106943e6cf075db0c78a5361ad76494aef5f589623a",
+    "dataSignature": "cf9ea8b63b16df90577d11f9da4d2f74e594301fd3119f669677ee51fb009852",
     "tournament": "Nagoya Basho 2026",
     "shortTournament": "July 2026",
     "day": 15,
@@ -10,9 +10,9 @@ window.SUMO_DATA = {
     "totalDays": 15,
     "dateRange": "12–26 July 2026",
     "venue": "IG Arena, Aichi",
-    "lastUpdated": "Day 15  July 26, 2026 · official snapshot 2026-07-26 13:59 UTC",
+    "lastUpdated": "Day 15  July 26, 2026 · official snapshot 2026-08-06 09:08 UTC",
     "status": "Day 15 official results",
-    "active": true,
+    "active": false,
     "sideTotals": {
       "East": 159,
       "West": 150
@@ -14488,8 +14488,8 @@ window.SUMO_DATA = {
         ]
       }
     ],
-    "generatedAt": "2026-07-26T13:59:52.184Z",
-    "dataSignature": "f06a1bddbb2aae80517d6106943e6cf075db0c78a5361ad76494aef5f589623a"
+    "generatedAt": "2026-08-06T09:08:23.995Z",
+    "dataSignature": "cf9ea8b63b16df90577d11f9da4d2f74e594301fd3119f669677ee51fb009852"
   },
   "history": [],
   "banzuke": {
