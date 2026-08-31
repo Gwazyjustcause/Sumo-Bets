@@ -2728,8 +2728,8 @@ function profileMarkup(rikishi) {
   const owner = ownerId ? getPlayerDefinition(ownerId) : null;
   const location = ownerId ? pickLocation(rikishi.id, ownerId) : null;
   const stats = rikishiDisplayStats(rikishi);
-  const profileLink = rikishi.profile
-    ? `<a class="primary-button profile-link" href="${escapeHtml(rikishi.profile)}" target="_blank" rel="noreferrer">Official profile ${icons.source}</a>`
+  const profileLink = rikishi.profile && rikishi.profileVerified
+    ? `<a class="primary-button profile-link" href="${escapeHtml(rikishi.profile)}" target="_blank" rel="noopener noreferrer" aria-label="View ${escapeHtml(rikishi.name)} on the official Japan Sumo Association website">Official JSA profile ${icons.source}</a>`
     : `<span class="profile-link-unavailable">Official profile unavailable</span>`;
   return `
     <div class="profile-hero">
@@ -2740,7 +2740,7 @@ function profileMarkup(rikishi) {
     <div class="profile-stats">
       <span><small>POINTS</small><b>${stats.points}</b></span><span><small>FORM</small><b>${stats.wins + stats.losses ? `${stats.form}%` : "—"}</b></span><span><small>HEIGHT</small><b>${rikishi.height}</b></span><span><small>WEIGHT</small><b>${rikishi.weight}</b></span>
     </div>
-    <div class="profile-details"><div><small>CAREER HIGH</small><b>${rikishi.careerHigh}</b></div><div><small>SIGNATURE</small><b>${rikishi.technique}</b></div></div>
+    <div class="profile-details"><div><small>CAREER HIGH</small><b>${rikishi.careerHigh || "Not listed"}</b></div><div><small>SIGNATURE MANEUVER</small><b>${rikishi.technique || "Not listed by JSA"}</b></div></div>
     <div class="profile-form"><span style="--width:${stats.form}%"></span></div>
     ${profileLink}`;
 }

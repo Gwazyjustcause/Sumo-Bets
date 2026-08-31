@@ -2,11 +2,13 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { hasUsefulProfile, jsaProfileUrl, mapWithConcurrency, parseJsaProfile, profileRefreshDue } from "./jsa-profile.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const officialDir = path.join(root, "data", "official");
 const draftDir = path.join(root, "data", "draft");
 const scheduled = process.argv.includes("--scheduled");
+const refreshProfiles = process.argv.includes("--refresh-profiles");
 const JSA_ORIGIN = "https://www.sumo.or.jp";
 const headers = {
   "user-agent": "Mozilla/5.0 (compatible; SumoBattleUpdater/2.0; +https://github.com/)",
@@ -43,6 +45,18 @@ const fetchPostJson = (url, body) => fetchJson(url, {
   headers: { "content-type": "application/x-www-form-urlencoded; charset=UTF-8" },
   body: new URLSearchParams(body).toString(),
 });
+
+const fetchPage = async (url) => {
+  const response = await fetch(url, {
+    headers: { ...headers, accept: "text/html,application/xhtml+xml" },
+    redirect: "follow",
+    signal: AbortSignal.timeout(45_000),
+  });
+  if (!response.ok) throw new Error(`JSA profile request failed (${response.status}): ${url}`);
+  const html = await response.text();
+  if (!/Rikishi Profile|Basic Information/i.test(html)) throw new Error(`JSA profile markup was not recognized: ${response.url}`);
+  return { html, finalUrl: response.url };
+};
 
 const writeAtomic = async (file, value) => {
   const temporary = `${file}.tmp`;
@@ -121,6 +135,8 @@ function sourceRikishi(person, idMap, priorByJsaId) {
     shikona: person.shikona,
     name: person.shikona,
     fullName: prior.fullName || person.shikona,
+    birthName: prior.birthName || null,
+    birthday: prior.birthday || null,
     rank,
     rankNumber,
     rankSeat: numeric(person.seat_order) || 1,
@@ -129,8 +145,58 @@ function sourceRikishi(person, idMap, priorByJsaId) {
     birthplace: person.pref_name || prior.birthplace || "Birthplace unavailable",
     photoFile: person.photo || null,
     wikipedia: prior.wikipedia || null,
+    profile: prior.profile || jsaProfileUrl(JSA_ORIGIN, jsaId),
+    profileVerified: prior.profileVerified === true,
+    profileUpdatedAt: prior.profileUpdatedAt || null,
+    height: prior.height || "—",
+    weight: prior.weight || "—",
+    technique: prior.technique || "—",
+    careerHigh: prior.careerHigh || rank,
+    jsaPortrait: prior.jsaPortrait || null,
     sourceIndex: 0,
   };
+}
+
+function cachedProfileFields(person) {
+  return {
+    fullName: person.fullName,
+    stable: person.stable,
+    birthplace: person.birthplace,
+    birthName: person.birthName || null,
+    birthday: person.birthday || null,
+    height: person.height || "—",
+    weight: person.weight || "—",
+    technique: person.technique || "—",
+    careerHigh: person.careerHigh || person.rank,
+    profile: person.profile || jsaProfileUrl(JSA_ORIGIN, person.jsaId),
+    profileVerified: person.profileVerified === true,
+    profileUpdatedAt: person.profileUpdatedAt || null,
+    jsaPortrait: person.jsaPortrait || null,
+  };
+}
+
+async function enrichRikishiProfiles(rikishi) {
+  const refreshedAt = new Date().toISOString();
+  return mapWithConcurrency(rikishi, 6, async (person) => {
+    const cached = cachedProfileFields(person);
+    if (!refreshProfiles && !profileRefreshDue(cached)) return { ...person, ...cached };
+    const requestedUrl = jsaProfileUrl(JSA_ORIGIN, person.jsaId);
+    try {
+      const { html, finalUrl } = await fetchPage(requestedUrl);
+      const parsed = parseJsaProfile(html, { jsaId: person.jsaId, requestedUrl, finalUrl });
+      if (!hasUsefulProfile(parsed)) throw new Error("height, weight, signature maneuver, or canonical URL was missing");
+      console.log(`Profile enriched: ${person.name} (${person.jsaId})`);
+      return {
+        ...person,
+        ...cached,
+        ...Object.fromEntries(Object.entries(parsed).filter(([, value]) => value !== null && value !== "")),
+        profileUpdatedAt: refreshedAt,
+      };
+    } catch (error) {
+      console.warn(`Profile enrichment unavailable for ${person.name} (${person.jsaId}): ${error.message}`);
+      return { ...person, ...cached, profile: cached.profile || requestedUrl };
+    }
+  });
 }
 
 function normalizeBout(raw, day, idByJsaId) {
@@ -201,7 +267,8 @@ async function main() {
   const previousRikishi = await jsonFile(path.join(officialDir, "rikishi.json"), { rikishi: [] });
   const priorByJsaId = new Map((previousRikishi.rikishi || []).map((person) => [String(person.jsaId), person]));
   const idMap = await jsonFile(path.join(officialDir, "id-map.json"), {});
-  const rikishiBase = officialRows.map((row, sourceIndex) => ({ ...sourceRikishi(row, idMap, priorByJsaId), sourceIndex }));
+  const basicRikishi = officialRows.map((row, sourceIndex) => ({ ...sourceRikishi(row, idMap, priorByJsaId), sourceIndex }));
+  const rikishiBase = await enrichRikishiProfiles(basicRikishi);
   const idByJsaId = new Map(rikishiBase.map((person) => [person.jsaId, person.id]));
   const rankById = new Map(rikishiBase.map((person) => [person.id, person.rank]));
 
@@ -283,7 +350,7 @@ async function main() {
     const scheduledReturn = scheduledThroughDay > completedDay && Boolean(record[scheduledThroughDay]?.opponent_rikishi_id);
     const currentKyujo = dailyResults[Math.max(0, completedDay - 1)]?.kyujo === true && !scheduledReturn;
     const kyujoDays = dailyResults.filter((result) => result.kyujo).map((result) => result.day);
-    const jsaPortrait = person.photoFile ? `${JSA_ORIGIN}/img/sumo_data/rikishi/270x474/${person.photoFile}` : null;
+    const jsaPortrait = person.jsaPortrait || (person.photoFile ? `${JSA_ORIGIN}/img/sumo_data/rikishi/270x474/${person.photoFile}` : null);
     return {
       ...person,
       record: `${wins}–${losses}${absences ? `–${absences}` : ""}`,
@@ -299,12 +366,14 @@ async function main() {
       dailyResults,
       jsaPortrait,
       photo: jsaPortrait,
-      profile: `${JSA_ORIGIN}/EnSumoDataRikishi/profile/${person.jsaId}/`,
+      profile: person.profile,
+      profileVerified: person.profileVerified,
+      profileUpdatedAt: person.profileUpdatedAt,
       image: null,
-      height: "—",
-      weight: "—",
-      careerHigh: priorByJsaId.get(person.jsaId)?.careerHigh || person.rank,
-      technique: "See official profile",
+      height: person.height || "—",
+      weight: person.weight || "—",
+      careerHigh: person.careerHigh || person.rank,
+      technique: person.technique || "—",
       form: Math.round((wins / Math.max(1, wins + losses)) * 100),
       badge: kinboshi ? `${kinboshi} kinboshi` : null,
     };
