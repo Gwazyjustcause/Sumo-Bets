@@ -83,10 +83,11 @@ const localStorage = {
 };
 
 const location = { hash: "#overview" };
+const scrollCalls = [];
 const window = {
   listeners: {},
   addEventListener(name, handler) { this.listeners[name] = handler; },
-  scrollTo() {},
+  scrollTo(options) { scrollCalls.push(options); },
 };
 const browserConsole = { errors: [], warnings: [], info: [] };
 const sandboxConsole = {
@@ -114,6 +115,10 @@ vm.runInContext(load("app.js"), context, { filename: "app.js" });
 await new Promise((resolve) => setTimeout(resolve, 240));
 const publishedOfficialDay = vm.runInContext("data.meta.day", context);
 vm.runInContext("data.meta.endDate='2099-12-31'", context);
+assert.equal(scrollCalls.length, 1, "Initial rendering must position the page at the top once");
+vm.runInContext("render()", context);
+await new Promise((resolve) => setTimeout(resolve, 120));
+assert.equal(scrollCalls.length, 1, "A same-route state or realtime rerender must preserve the user's scroll position");
 
 assert(!app.innerHTML.includes("JAKE'S SIDE PREDICTION"), `Overview must no longer contain the editable prediction control. Browser errors: ${browserConsole.errors.join(" | ")}`);
 assert(vm.runInContext("rosterView().includes(\"JAKE'S SIDE PREDICTION\")", context), "Roster must contain the selected player's prediction control");

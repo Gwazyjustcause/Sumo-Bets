@@ -191,6 +191,8 @@ let lifecycleRevision = 0;
 let savedLifecycle = null;
 let championDebugDocument = null;
 let championDebugCheckedAt = null;
+let renderedRoute = null;
+let renderTimer = null;
 let sharedDraftLoading = true;
 let sharedDraftSaving = false;
 let sharedDraftError = null;
@@ -2769,8 +2771,9 @@ function animateNumbers() {
   });
 }
 
-function render() {
+function render({ scrollToTop = false } = {}) {
   const route = routeName();
+  const shouldScrollToTop = scrollToTop || renderedRoute === null || renderedRoute !== route;
   setActiveNav(route);
   const views = {
     overview: overviewView,
@@ -2781,11 +2784,14 @@ function render() {
     settings: settingsView,
   };
   app.classList.add("route-leave");
-  setTimeout(() => {
+  if (renderTimer) clearTimeout(renderTimer);
+  renderTimer = setTimeout(() => {
     app.innerHTML = `${newBashoNotice()}${spoilerNotice()}${views[route]()}${spoilerFirstTimeGate()}`;
     app.classList.remove("route-leave");
     app.dataset.route = route;
-    window.scrollTo({ top: 0, behavior: state.reducedMotion ? "auto" : "smooth" });
+    renderedRoute = route;
+    renderTimer = null;
+    if (shouldScrollToTop) window.scrollTo({ top: 0, behavior: state.reducedMotion ? "auto" : "smooth" });
     bindViewEvents();
     if (route === "banzuke") verifyBanzukeIntegrity();
     window.RIKISHI_IMAGES?.bind(app);
@@ -3294,12 +3300,12 @@ playerSelect.addEventListener("change", () => {
   showToast(`Now playing as ${getPlayerDefinition().name}. Player-only data has been switched.`);
 });
 
-window.addEventListener("hashchange", render);
+window.addEventListener("hashchange", () => render({ scrollToTop: true }));
 window.addEventListener("beforeunload", (event) => {
   if (!hasUnsavedDraftChanges()) return;
   event.preventDefault();
   event.returnValue = "You have unsaved changes. Do you want to discard them?";
 });
 setTheme();
-render();
+render({ scrollToTop: true });
 loadSharedDraft();
