@@ -692,8 +692,12 @@ button.dashboard-pick-row:hover { border-color: var(--line-strong); background: 
 .overview-draft-mode, .results-locked-state { display: grid; margin: 18px 0 24px; padding: 24px; grid-template-columns: 1fr auto; align-items: center; gap: 20px; border: 1px solid var(--line-strong); border-radius: var(--radius-xl); background: radial-gradient(circle at 12% 0, rgba(168, 105, 255, 0.1), transparent 36%), var(--panel-soft); }
 .overview-draft-mode h2, .results-locked-state h2 { margin: 3px 0 7px; font-family: Georgia, serif; font-size: 23px; font-weight: 500; }
 .overview-draft-mode p:not(.eyebrow), .results-locked-state p { margin: 0; color: var(--muted); font-size: 9px; line-height: 1.55; }
-.overview-lock-grid { display: flex; gap: 8px; }
-.overview-lock-grid span { display: grid; min-width: 110px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: rgba(8, 13, 24, 0.65); }
+.overview-lock-grid { display: grid; min-width: 156px; grid-row: 1 / span 2; grid-column: 2; align-self: stretch; gap: 8px; }
+.overview-lock-grid span { display: grid; min-width: 0; padding: 11px 13px; align-content: center; border: 1px solid var(--line); border-radius: 10px; background: rgba(8, 13, 24, 0.65); }
+.overview-lock-grid span.violet { border-color: rgba(168, 105, 255, 0.27); box-shadow: inset 3px 0 0 var(--violet); }
+.overview-lock-grid span.gold { border-color: rgba(230, 184, 92, 0.25); box-shadow: inset 3px 0 0 var(--gold); }
+.overview-lock-grid span.violet b { color: var(--violet-bright); }
+.overview-lock-grid span.gold b { color: var(--gold-bright); }
 .overview-lock-grid span.locked { border-color: color-mix(in srgb, var(--player-accent) 45%, var(--line)); }
 .overview-lock-grid small { margin-top: 3px; color: var(--muted); font-size: 7px; }
 .results-locked-state { grid-template-columns: auto 1fr auto; }
@@ -1279,7 +1283,8 @@ button.dashboard-pick-row:hover { border-color: var(--line-strong); background: 
   .achievement-points { display: none; }
   .bonus-prediction { grid-template-columns: 1fr; }
   .roster-side-prediction, .overview-draft-mode, .results-locked-state { grid-template-columns: 1fr; }
-  .overview-lock-grid, .roster-save-actions, .next-basho-card, .next-basho-card > div:last-child { align-items: stretch; flex-direction: column; }
+  .overview-lock-grid { min-width: 0; grid-row: auto; grid-column: auto; }
+  .roster-save-actions, .next-basho-card, .next-basho-card > div:last-child { align-items: stretch; flex-direction: column; }
   .roster-save-actions button, .next-basho-card button { width: 100%; }
   .champion-hero { min-height: 450px; padding-inline: 16px; }
   .champion-entry-card { padding: 20px 16px; }
