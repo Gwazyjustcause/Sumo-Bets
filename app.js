@@ -8,6 +8,7 @@ const toast = document.querySelector("#toast");
 const soundButton = document.querySelector("#sound-toggle");
 const playerSelect = document.querySelector("#active-player-select");
 const playerLabel = document.querySelector("#active-player-label");
+const backToTopButton = document.querySelector("#back-to-top");
 
 const icons = {
   spark: "✦",
@@ -3300,12 +3301,26 @@ playerSelect.addEventListener("change", () => {
   showToast(`Now playing as ${getPlayerDefinition().name}. Player-only data has been switched.`);
 });
 
+function updateBackToTopVisibility() {
+  if (!backToTopButton) return;
+  const visible = window.scrollY > 520;
+  backToTopButton.classList.toggle("visible", visible);
+  backToTopButton.setAttribute("aria-hidden", String(!visible));
+  backToTopButton.tabIndex = visible ? 0 : -1;
+}
+
+backToTopButton?.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: state.reducedMotion ? "auto" : "smooth" });
+});
+
 window.addEventListener("hashchange", () => render({ scrollToTop: true }));
+window.addEventListener("scroll", updateBackToTopVisibility, { passive: true });
 window.addEventListener("beforeunload", (event) => {
   if (!hasUnsavedDraftChanges()) return;
   event.preventDefault();
   event.returnValue = "You have unsaved changes. Do you want to discard them?";
 });
 setTheme();
+updateBackToTopVisibility();
 render({ scrollToTop: true });
 loadSharedDraft();

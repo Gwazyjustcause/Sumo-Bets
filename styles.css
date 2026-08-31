@@ -112,6 +112,43 @@ textarea:focus-visible { outline: 2px solid var(--player-accent); outline-offset
 .ambient-one { top: 18%; left: -160px; background: var(--violet); }
 .ambient-two { top: 52%; right: -180px; background: var(--blue); }
 
+.back-to-top {
+  position: fixed;
+  z-index: 110;
+  right: max(22px, env(safe-area-inset-right));
+  bottom: max(22px, env(safe-area-inset-bottom));
+  display: grid;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--player-accent) 52%, var(--line));
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--panel-solid) 88%, transparent);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4), 0 0 22px var(--player-glow);
+  color: var(--player-accent);
+  opacity: 0;
+  pointer-events: none;
+  cursor: pointer;
+  transform: translateY(12px) scale(0.92);
+  transition: opacity 160ms ease, transform 160ms ease, border-color 160ms ease, background 160ms ease;
+  backdrop-filter: blur(16px);
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.back-to-top:hover {
+  border-color: var(--player-accent);
+  background: color-mix(in srgb, var(--panel-solid) 78%, var(--player-accent) 22%);
+  transform: translateY(-2px) scale(1.03);
+}
+
+.back-to-top svg { width: 23px; height: 23px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
 .app-header {
   position: sticky;
   top: 0;
@@ -1138,6 +1175,7 @@ button.dashboard-pick-row:hover { border-color: var(--line-strong); background: 
   .app-header .brand-mon { width: 40px; height: 40px; }
   .main-nav { display: none; }
   .mobile-nav { position: fixed; z-index: 100; right: 0; bottom: 0; left: 0; display: grid; height: 64px; padding-bottom: env(safe-area-inset-bottom); grid-template-columns: repeat(6, 1fr); border-top: 1px solid var(--line); background: rgba(7, 10, 18, 0.94); backdrop-filter: blur(20px); }
+  .back-to-top { right: 14px; bottom: calc(76px + env(safe-area-inset-bottom)); width: 44px; height: 44px; border-radius: 14px; }
   .mobile-nav a { position: relative; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px; color: var(--muted); font-size: 8px; }
   .mobile-nav a span { font-family: Georgia, serif; font-size: 17px; }
   .mobile-nav a.active { color: var(--violet-bright); }

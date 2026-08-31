@@ -14,7 +14,15 @@ class FakeElement {
     this.value = "";
     this.dataset = {};
     this.listeners = {};
-    this.classList = { add() {}, remove() {}, toggle() {} };
+    this.classes = new Set();
+    this.classList = {
+      add: (...names) => names.forEach((name) => this.classes.add(name)),
+      remove: (...names) => names.forEach((name) => this.classes.delete(name)),
+      toggle: (name, force) => force === undefined
+        ? (this.classes.has(name) ? (this.classes.delete(name), false) : (this.classes.add(name), true))
+        : (force ? this.classes.add(name) : this.classes.delete(name), force),
+      contains: (name) => this.classes.has(name),
+    };
   }
 
   addEventListener(name, handler) { this.listeners[name] = handler; }
@@ -46,6 +54,7 @@ const playerSelect = new FakeElement("player-select");
 const playerLabel = new FakeElement("player-label");
 const playerSelector = new FakeElement("player-selector");
 const dialogClose = new FakeElement("dialog-close");
+const backToTopButton = new FakeElement("back-to-top");
 playerSelect.closest = () => playerSelector;
 
 const elements = new Map([
@@ -57,6 +66,7 @@ const elements = new Map([
   ["#active-player-select", playerSelect],
   ["#active-player-label", playerLabel],
   [".dialog-close", dialogClose],
+  ["#back-to-top", backToTopButton],
 ]);
 
 const documentElement = new FakeElement("html");
@@ -86,6 +96,7 @@ const location = { hash: "#overview" };
 const scrollCalls = [];
 const window = {
   listeners: {},
+  scrollY: 0,
   addEventListener(name, handler) { this.listeners[name] = handler; },
   scrollTo(options) { scrollCalls.push(options); },
 };
@@ -119,6 +130,12 @@ assert.equal(scrollCalls.length, 1, "Initial rendering must position the page at
 vm.runInContext("render()", context);
 await new Promise((resolve) => setTimeout(resolve, 120));
 assert.equal(scrollCalls.length, 1, "A same-route state or realtime rerender must preserve the user's scroll position");
+window.scrollY = 900;
+window.listeners.scroll();
+assert(backToTopButton.classList.contains("visible"), "Back-to-top control must appear after scrolling down");
+backToTopButton.listeners.click();
+assert.equal(scrollCalls.at(-1).top, 0, "Back-to-top control must return to the page top");
+assert.equal(scrollCalls.at(-1).behavior, "smooth", "Back-to-top control must use smooth scrolling when reduced motion is off");
 
 assert(!app.innerHTML.includes("JAKE'S SIDE PREDICTION"), `Overview must no longer contain the editable prediction control. Browser errors: ${browserConsole.errors.join(" | ")}`);
 assert(vm.runInContext("rosterView().includes(\"JAKE'S SIDE PREDICTION\")", context), "Roster must contain the selected player's prediction control");
