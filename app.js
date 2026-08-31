@@ -1086,7 +1086,7 @@ function hasNewOfficialBasho() {
 
 function newBashoNotice() {
   if (!hasNewOfficialBasho() || championMode()) return "";
-  return `<aside class="new-basho-notice" role="status"><span>新</span><div><small>OFFICIAL BASHO DETECTED</small><b>${escapeHtml(data.meta.tournament)} is available.</b><p>Choose whether to create a shared draft or record this tournament as skipped.</p></div><div><button class="primary-button" type="button" data-start-new-draft>Start New Draft</button><button class="secondary-button" type="button" data-skip-basho>Skip Tournament</button></div></aside>`;
+  return `<aside class="new-basho-notice" role="status"><span>新</span><div><small>OFFICIAL BASHO DETECTED</small><b>${escapeHtml(data.meta.tournament)} is available.</b><p>Choose whether to create a shared draft or record this tournament as skipped.</p>${sharedDraftError ? `<p class="new-basho-error" role="alert">${escapeHtml(sharedDraftError)}</p>` : ""}</div><div><button class="primary-button" type="button" data-start-new-draft ${sharedDraftSaving ? "disabled" : ""}>${sharedDraftSaving ? "Starting…" : "Start New Draft"}</button><button class="secondary-button" type="button" data-skip-basho ${sharedDraftSaving ? "disabled" : ""}>Skip Tournament</button></div></aside>`;
 }
 
 function spoilerNotice() {
@@ -1259,34 +1259,45 @@ async function startNewOfficialBashoDraft({ skipped = false } = {}) {
     history.unshift({ ...blankHistoryEvent(), id: newBashoId, basho: data.meta.tournament, status: "skipped", winner: null, gwazyScore: 0, jakeScore: 0, badge: "SKIPPED", skippedAt: new Date().toISOString() });
   }
   sharedDraftSaving = true;
+  sharedDraftError = null;
   render();
   try {
     const latest = await window.SHARED_DRAFT_API.load(newBashoId);
-    if (Number(latest.revision || 0) > 0 && ["draft", "skipped"].includes(latest.document.status)) {
-      throw Object.assign(new Error(latest.document.status === "skipped"
+    const existingStatus = Number(latest.revision || 0) > 0 ? latest.document.status : null;
+    const compatibleExisting = skipped
+      ? existingStatus === "skipped"
+      : ["draft", "tournament", "completed"].includes(existingStatus);
+    if (existingStatus && !compatibleExisting) {
+      throw Object.assign(new Error(existingStatus === "skipped"
         ? `${data.meta.tournament} has already been marked as skipped.`
-        : `The ${data.meta.tournament} draft has already been started.`), { status: 409 });
+        : `The ${data.meta.tournament} lifecycle conflicts with the requested decision.`), { status: 409 });
     }
-    const document = {
+    const now = new Date().toISOString();
+    const result = compatibleExisting ? latest : await window.SHARED_DRAFT_API.save({
       ...latest.document, schemaVersion: DRAFT_SCHEMA_VERSION, bashoId: newBashoId,
       revision: Number(latest.document.revision || 0) + 1, locked: false,
       playerLocks: { gwazy: false, jake: false }, status: skipped ? "skipped" : "draft",
-      startedAt: null, completedAt: null, history, lastSavedAt: new Date().toISOString(),
+      startedAt: skipped ? null : now, completedAt: null, history, lastSavedAt: now,
       savedBy: getPlayerDefinition().name, players: emptyDraftPlayers(),
-    };
-    const result = await window.SHARED_DRAFT_API.save(document, latest.revision);
-    const champion = latestCompletedHistory(history);
+    }, latest.revision);
+    const resolvedHistory = Array.isArray(result.document.history) && result.document.history.length
+      ? result.document.history
+      : history;
+    const resolvedMode = result.document.status === "completed" || result.document.status === "skipped"
+      ? "champion"
+      : result.document.status === "tournament" ? "tournament" : "draft";
+    const champion = latestCompletedHistory(resolvedHistory);
     await saveLifecycleState({
       acceptedBashoId: data.meta.bashoId,
       activeBashoId: newBashoId,
-      mode: skipped ? "champion" : "draft",
+      mode: resolvedMode,
       champion,
-      history,
+      history: resolvedHistory,
       pendingBasho: null,
       lastDecision: {
         bashoId: newBashoId,
-        decision: skipped ? "skipped" : "started",
-        decidedAt: new Date().toISOString(),
+        decision: result.document.status === "skipped" ? "skipped" : compatibleExisting ? "adopted" : "started",
+        decidedAt: now,
         decidedBy: getPlayerDefinition().name,
       },
     });
@@ -1297,7 +1308,11 @@ async function startNewOfficialBashoDraft({ skipped = false } = {}) {
     state.selectedDay = Math.max(1, data.meta.day);
     applySharedDraft(result.document, result.revision);
     subscribeToSharedDraft();
-    showToast(skipped ? `${data.meta.tournament} recorded as skipped. The champion remains on the homepage.` : `${data.meta.tournament} is ready for a new shared draft.`);
+    showToast(result.document.status === "skipped"
+      ? `${data.meta.tournament} recorded as skipped. The champion remains on the homepage.`
+      : compatibleExisting
+        ? `${data.meta.tournament}'s existing shared draft is now active.`
+        : `${data.meta.tournament} is ready for a new shared draft.`);
   } catch (error) {
     if (error.status === 409) {
       await loadLifecycleState().catch(() => {});

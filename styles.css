@@ -1384,6 +1384,7 @@ button.dashboard-pick-row:hover { border-color: var(--line-strong); background: 
 .new-basho-notice small { color: #f5b748; letter-spacing: 0.12em; }
 .new-basho-notice b { display: block; margin-top: 2px; font-size: 1.05rem; }
 .new-basho-notice p { margin: 3px 0 0; color: var(--muted); }
+.new-basho-notice .new-basho-error { margin-top: 7px; color: var(--red); font-size: 8px; font-weight: 750; }
 .spoiler-notice { position: relative; z-index: 5; display: grid; width: min(1180px, calc(100% - 36px)); min-height: 72px; margin: 14px auto 0; padding: 13px 17px; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; border: 1px solid rgba(230, 184, 92, 0.42); border-radius: 15px; background: linear-gradient(110deg, rgba(74, 53, 17, 0.96), rgba(15, 18, 31, 0.98)); box-shadow: 0 14px 38px rgba(0, 0, 0, 0.24); }
 .spoiler-notice > span { display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid rgba(230, 184, 92, 0.42); border-radius: 50%; color: var(--gold-bright); font-size: 18px; }
 .spoiler-notice small { color: var(--gold-bright); font-size: 7px; font-weight: 850; letter-spacing: 0.13em; }

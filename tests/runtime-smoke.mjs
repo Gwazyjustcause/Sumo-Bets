@@ -440,4 +440,21 @@ assert(app.innerHTML.includes("NO ARCHIVED BASHO"), "History must render a clean
 assert(!app.innerHTML.includes("EDITING ARCHIVED BASHO"), "Empty history must not expose a demo editor");
 assert.equal(vm.runInContext("calculateHistoryStats().average", context), 0, "Empty history must calculate no statistics");
 
+vm.runInContext(`globalThis.__startRows=new Map();
+  globalThis.__existingStartPlayers=emptyDraftPlayers(); __existingStartPlayers.gwazy.mainPicks=['onosato'];
+  __startRows.set(data.banzuke.currentBashoId,{document:{schemaVersion:4,bashoId:data.banzuke.currentBashoId,revision:3,status:'draft',locked:false,playerLocks:{gwazy:false,jake:false},players:JSON.parse(JSON.stringify(__existingStartPlayers)),history:[]},revision:3});
+  __startRows.set(LIFECYCLE_DOCUMENT_ID,{document:{kind:'lifecycle',schemaVersion:1,bashoId:LIFECYCLE_DOCUMENT_ID,revision:1,acceptedBashoId:'636',activeBashoId:'nagoya-2026',mode:'champion',history:[],champion:null},revision:1});
+  savedLifecycle=JSON.parse(JSON.stringify(__startRows.get(LIFECYCLE_DOCUMENT_ID).document)); lifecycleRevision=1; savedSharedDraft=null; sharedDraftRevision=0; sharedDraftLoading=false; sharedDraftSaving=false; sharedDraftError=null;
+  window.SHARED_DRAFT_API={configured:()=>true,subscribe:()=>()=>{},
+    load:async(id)=>JSON.parse(JSON.stringify(__startRows.get(id)||{document:{bashoId:id,revision:0},revision:0})),
+    save:async(document,expectedRevision)=>{const current=__startRows.get(document.bashoId);if(Number(current?.revision||0)!==Number(expectedRevision||0)){const error=new Error('stale');error.status=409;throw error;}const revision=Number(expectedRevision||0)+1;const saved={...document,revision};__startRows.set(document.bashoId,{document:saved,revision});return {document:JSON.parse(JSON.stringify(saved)),revision};}
+  };`, context);
+await vm.runInContext("startNewOfficialBashoDraft()", context);
+assert.equal(vm.runInContext("savedLifecycle.acceptedBashoId", context), vm.runInContext("String(data.meta.bashoId)", context), "Start New Draft must repair a stale lifecycle row when the basho draft already exists");
+assert.equal(vm.runInContext("savedLifecycle.mode", context), "draft", "An existing draft row must be adopted as the active draft lifecycle");
+assert.equal(vm.runInContext("savedLifecycle.lastDecision.decision", context), "adopted", "The repaired lifecycle must record that the existing shared draft was adopted");
+assert.equal(vm.runInContext("savedSharedDraft.players.gwazy.mainPicks[0]", context), "onosato", "Idempotent Start must preserve already-saved player picks");
+assert.equal(vm.runInContext("__startRows.get(data.banzuke.currentBashoId).revision", context), 3, "Adopting an existing draft must not overwrite or revise its shared row");
+assert.equal(vm.runInContext("hasNewOfficialBasho()", context), false, "The repaired lifecycle must remove the stale new-basho prompt");
+
 console.log("Runtime smoke checks passed: Version 3 migration, blank state, staged shared draft, and six routes.");
