@@ -16,17 +16,17 @@ assert(currentBasho, "The data layer needs a current banzuke");
 assert.equal(currentBasho.division, "Makuuchi", "The current banzuke must be Makuuchi");
 assert.equal(currentBasho.entries.length, currentBasho.expectedRikishi, "Every official entry must be present in the dataset");
 assert.equal(currentBasho.officialRikishi.length, currentBasho.expectedRikishi, "The untouched official source list must remain available for comparison");
-assert.equal(currentBasho.entries.length, 42, "Nagoya 2026 must contain all 42 Makuuchi rikishi");
+assert.equal(currentBasho.entries.length, 42, "The current official banzuke must contain all 42 Makuuchi rikishi");
 assert.deepEqual(
   [...new Set(currentBasho.entries.map((entry) => entry.rikishiId))].sort(),
   [...ids].sort(),
   "The current Makuuchi dataset and rikishi layer must match exactly",
 );
-assert.equal(currentBasho.entries.filter((entry) => entry.side === "East").length, 21, "Every East position must be present");
-assert.equal(currentBasho.entries.filter((entry) => entry.side === "West").length, 21, "Every West position must be present");
-assert(currentBasho.entries.some((entry) => entry.rank === "Maegashira 16" && entry.side === "East"), "M16 East must render");
-assert(currentBasho.entries.some((entry) => entry.rank === "Maegashira 16" && entry.side === "West"), "M16 West must render");
-assert.equal(currentBasho.entries.filter((entry) => entry.rank === "Sekiwake").length, 4, "Variable Sekiwake seats must remain in the data");
+assert.equal(currentBasho.entries.filter((entry) => ["East", "West"].includes(entry.side)).length, currentBasho.expectedRikishi, "Every official side assignment must be preserved");
+assert(currentBasho.entries.some((entry) => entry.side === "East") && currentBasho.entries.some((entry) => entry.side === "West"), "The banzuke must retain both East and West wrestlers");
+const lastMaegashira = Math.max(...currentBasho.entries.map((entry) => entry.rankNumber || 0));
+assert(currentBasho.entries.some((entry) => entry.rankNumber === lastMaegashira), "The final official Maegashira rank must render even when it has only one side");
+assert(currentBasho.entries.some((entry) => entry.rank === "Sekiwake"), "Published Sekiwake seats must remain in the data without assuming a fixed count");
 assert(currentBasho.entries.some((entry) => entry.shikona === "Yoshinofuji"), "Yoshinofuji must reach the parsed dataset");
 assert.deepEqual(
   [...new Set(currentBasho.officialRikishi.map((entry) => entry.shikona))].sort(),
@@ -35,7 +35,6 @@ assert.deepEqual(
 );
 assert.equal(data.meta.totalDays, 15, "A basho has fifteen days");
 assert(data.meta.day >= 0 && data.meta.day <= 15, "The official layer must expose a valid current day");
-assert(data.meta.day > 0, "The restored JSA snapshot must not erase published tournament days");
 assert.equal(data.players.length, 2, "The league has exactly two players");
 assert.deepEqual([...data.players.map((player) => player.id)].sort(), ["gwazy", "jake"], "Only Gwazy and Jake may be players");
 
@@ -53,11 +52,13 @@ for (const player of data.players) {
   }
 }
 
-assert(data.rikishi.some((rikishi) => rikishi.wins > 0 || rikishi.losses > 0), "Published official records must survive a draft reset");
+if (data.meta.day > 0) assert(data.rikishi.some((rikishi) => rikishi.wins > 0 || rikishi.losses > 0), "Published official records must survive a draft reset");
+else assert(data.rikishi.every((rikishi) => rikishi.wins === 0 && rikishi.losses === 0), "The new banzuke must not carry July records into September");
 assert(data.rikishi.every((rikishi) => Number.isFinite(rikishi.wins) && Number.isFinite(rikishi.losses)), "Every rikishi needs numeric official records");
 assert(data.rikishi.every((rikishi) => Array.isArray(rikishi.kyujoDays) && typeof rikishi.currentKyujo === "boolean"), "Every official rikishi needs day-specific Kyujo status");
-assert(data.rikishi.some((rikishi) => rikishi.currentKyujo && rikishi.dailyResults.some((result) => result.kyujo)), "The current snapshot must preserve official withdrawal days");
-assert(data.bouts.length > 0, "The official layer must include the latest published Makuuchi results");
+if (data.meta.day === 0) assert(data.rikishi.every((rikishi) => !rikishi.currentKyujo && rikishi.kyujoDays.length === 0), "A new banzuke must begin without stale prior-basho withdrawal state");
+if (data.meta.day > 0) assert(data.bouts.length > 0, "The official layer must include the latest published Makuuchi results");
+else assert.equal(data.bouts.length, 0, "A pre-basho snapshot must not invent official results");
 assert.equal(data.history.length, 0, "Version 3 must not ship previous basho history");
 
 for (const bout of data.bouts) {

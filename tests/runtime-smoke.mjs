@@ -112,9 +112,7 @@ vm.runInContext(load("data/sumo-data.js"), context, { filename: "data/sumo-data.
 vm.runInContext(load("image-resolver.js"), context, { filename: "image-resolver.js" });
 vm.runInContext(load("app.js"), context, { filename: "app.js" });
 await new Promise((resolve) => setTimeout(resolve, 240));
-const officialCurrentDay = vm.runInContext("data.meta.day", context);
-const hiddenOfficialDay = vm.runInContext("officialCompletedDays().at(-1)", context);
-const lastWatchedDay = Math.max(0, hiddenOfficialDay - 1);
+const publishedOfficialDay = vm.runInContext("data.meta.day", context);
 vm.runInContext("data.meta.endDate='2099-12-31'", context);
 
 assert(!app.innerHTML.includes("JAKE'S SIDE PREDICTION"), `Overview must no longer contain the editable prediction control. Browser errors: ${browserConsole.errors.join(" | ")}`);
@@ -123,6 +121,13 @@ assert(app.innerHTML.includes("The draft has not started yet."), "A clean save m
 assert(app.innerHTML.includes("DRAFT MODE") && !app.innerHTML.includes("data-overview-analytics"), "Analytics must wait until both drafts are locked");
 assert(app.innerHTML.includes("DRAFT PROGRESS") && app.innerHTML.includes("draft-progress") && !app.innerHTML.includes("TOURNAMENT PROGRESS"), "The draft-phase hero must show only shared slot progress");
 assert(vm.runInContext("resultsView().includes('Daily results unlock with the tournament')", context), "Results and day navigation must wait until both drafts are locked");
+assert.equal(vm.runInContext("championModeAvailable()", context), false, "Official final results must never offer Champion Mode without a complete shared tournament roster");
+vm.runInContext("savedLifecycle={kind:'lifecycle',acceptedBashoId:'previous-official-basho',activeBashoId:'previous-draft',mode:'champion',history:[],champion:null}", context);
+assert.equal(vm.runInContext("hasNewOfficialBasho()", context), true, "A changed official banzuke identifier must create a pending shared decision");
+assert.equal(vm.runInContext("draftEditingDisabled()", context), true, "A newly published banzuke must remain read-only until Start New Draft is selected");
+assert(vm.runInContext("banzukeView().includes('NEW BANZUKE · AWAITING START')", context), "The complete new banzuke must explain why drafting is not open yet");
+assert(!vm.runInContext("banzukeView().includes('Add to Main')", context), "The new banzuke must not expose draft-add controls before the shared Start decision");
+vm.runInContext("savedLifecycle=null", context);
 vm.runInContext("savedSharedDraft={schemaVersion:4,bashoId:state.selectedBashoId,revision:0,playerLocks:{gwazy:true,jake:false},locked:false,status:'draft',players:emptyDraftPlayers()}", context);
 assert.equal(vm.runInContext("draftEditingDisabled('gwazy')", context), true, "Gwazy's lock must make only Gwazy read-only");
 assert.equal(vm.runInContext("draftEditingDisabled('jake')", context), false, "Jake must remain editable while only Gwazy is locked");
@@ -135,8 +140,15 @@ assert.equal(Object.hasOwn(migratedSave, "drafts"), false, "Repository-backed ro
 assert.equal(JSON.parse(storage.get("sumoBattleHistoryCache")).events.length, 0, "The one-time migration must clear legacy history cache data");
 assert.equal(vm.runInContext("state.history.length", context), 0, "The live Version 3 state must have no archived basho");
 assert.equal(vm.runInContext("data.players.every((player) => player.score === 0 && player.sidePrediction === null)", context), true, "Scores and side predictions must start blank");
-assert.equal(vm.runInContext("data.meta.day", context), officialCurrentDay, "A draft migration must not erase the restored official day");
+assert.equal(vm.runInContext("data.meta.day", context), publishedOfficialDay, "A draft migration must not erase the official day");
 assert.equal(vm.runInContext("state.spoilerFree", context), true, "Spoiler-Free Mode must be enabled by default");
+vm.runInContext(`data.meta.day=15; data.meta.scheduledThroughDay=15; data.meta.active=false;
+  data.results.days=Array.from({length:15},(_,index)=>({day:index+1,label:'Day '+(index+1),completed:true,bouts:[{id:(index+1)+'-test',day:index+1,east:'onosato',west:'hoshoryu',eastJsaId:'4227',westJsaId:'3842',eastName:'Onosato',westName:'Hoshoryu',completed:true,winner:'onosato',winnerJsaId:'4227',technique:'yorikiri',importance:5}]}));
+  data.bouts=data.results.days[14].bouts; data.rikishi.forEach((rikishi)=>{rikishi.dailyResults=Array.from({length:15},(_,index)=>({day:index+1,completed:['onosato','hoshoryu'].includes(rikishi.id),status:rikishi.id==='onosato'?'win':rikishi.id==='hoshoryu'?'loss':null,result:rikishi.id==='onosato'?'win':rikishi.id==='hoshoryu'?'loss':null,kyujo:false}));rikishi.wins=rikishi.id==='onosato'?15:0;rikishi.losses=rikishi.id==='hoshoryu'?15:0;rikishi.record=rikishi.wins+'–'+rikishi.losses;});
+  state.spoilerWatchedDays={}; state.spoilerPromptedDays={}; initializeSpoilerState(); render();`, context);
+const officialCurrentDay = vm.runInContext("data.meta.day", context);
+const hiddenOfficialDay = vm.runInContext("officialCompletedDays().at(-1)", context);
+const lastWatchedDay = Math.max(0, hiddenOfficialDay - 1);
 assert.equal(vm.runInContext("spoilerVisibleDay()", context), lastWatchedDay, "A newly available official day must remain hidden by default");
 assert.equal(vm.runInContext("activeHiddenDay()", context), hiddenOfficialDay, "The newest unwatched result day must be detected automatically");
 assert(vm.runInContext(`spoilerFirstTimeGate().includes('Day ${hiddenOfficialDay} results are available')`, context), "A new result day must trigger the first-time spoiler choice");
@@ -159,9 +171,9 @@ assert.deepEqual(JSON.parse(vm.runInContext("JSON.stringify(getRoster('jake'))",
 assert.equal(vm.runInContext("draftPoolStats().available", context), 42, "Every rikishi must start available");
 
 vm.runInContext(`savedSharedDraft={schemaVersion:4,bashoId:state.selectedBashoId,revision:0,locked:true,playerLocks:{gwazy:true,jake:true},status:'tournament',lastSavedAt:null,savedBy:null,players:emptyDraftPlayers()}; state.drafts[state.selectedBashoId]={
-  gwazy:{mainPicks:['hoshoryu','kirishima','fujinokawa','gonoyama','hiradoumi','nishikifuji'],substitutes:['yoshinofuji','daieisho','ura'],sidePrediction:'East',substitutionEvents:[]},
-  jake:{mainPicks:['onosato','kotozakura','takanosho','churanoumi','hakunofuji','takerufuji'],substitutes:['oho','ichiyamamoto','oshoma'],sidePrediction:'West',substitutionEvents:[]}
-};`, context);
+  gwazy:{mainPicks:['hoshoryu','kirishima','gonoyama','hiradoumi','nishikifuji','asakoryu'],substitutes:['fujinokawa','ura','shishi'],sidePrediction:'East',substitutionEvents:[]},
+  jake:{mainPicks:['onosato','kotozakura','takanosho','churanoumi','takerufuji','abi'],substitutes:['hakunofuji','ichiyamamoto','oshoma'],sidePrediction:'West',substitutionEvents:[]}
+}; savedSharedDraft.players=sharedPayloadPlayers();`, context);
 const hiddenTournamentOverview = vm.runInContext("overviewView()", context);
 assert(hiddenTournamentOverview.includes(`data-spoiler-hidden-day="${hiddenOfficialDay}"`) && !hiddenTournamentOverview.includes("data-overview-analytics"), "Unwatched results must replace Overview scores and analytics with a spoiler-safe placeholder");
 assert(vm.runInContext("resultsView().includes('Results hidden')", context), "The current unwatched Results day must not render bouts or scoring");
@@ -212,9 +224,9 @@ vm.runInContext("savedLifecycle.acceptedBashoId='previous-basho'", context);
 const nextBanzukeChampionHtml = vm.runInContext("overviewView()", context);
 assert(nextBanzukeChampionHtml.includes("A new official banzuke has been released.") && nextBanzukeChampionHtml.includes("Start New Draft") && nextBanzukeChampionHtml.includes("Skip Tournament"), "A newer published banzuke must add explicit Start and Skip choices over the Champion page");
 assert.equal(vm.runInContext("draftEditingDisabled('gwazy')", context), true, "A published next banzuke must never reopen draft editing automatically");
-assert(vm.runInContext("banzukeView().includes('CHAMPION MODE · DRAFT CLOSED')", context), "The newly published Banzuke must remain browseable but clearly read-only before Start New Draft");
+assert(vm.runInContext("banzukeView().includes('NEW BANZUKE · AWAITING START')", context), "The newly published Banzuke must remain browseable but clearly read-only before Start New Draft");
 const championRosterHtml = vm.runInContext("rosterView()", context);
-assert(championRosterHtml.includes("Champion Mode · editing paused") && !championRosterHtml.includes("data-lock-my-draft"), "Roster controls must stay closed while the Champion page owns the lifecycle decision");
+assert(championRosterHtml.includes("New draft not started") && !championRosterHtml.includes("data-lock-my-draft"), "Roster controls must stay closed while the Champion page owns the lifecycle decision");
 vm.runInContext("savedLifecycle=null;savedSharedDraft.status='tournament';data.meta.active=true", context);
 const lockedBanzuke = vm.runInContext("banzukeView()", context);
 assert.equal((lockedBanzuke.match(/data-banzuke-id=/g) || []).length, 42, "The complete official Banzuke must remain visible after both drafts lock");
@@ -296,23 +308,23 @@ vm.runInContext("state.drafts[state.selectedBashoId]=emptyDraftPlayers(); savedS
 
 assert.equal(vm.runInContext("substituteRules(['onosato','takayasu','abi']).valid", context), true, "A legal substitute roster needs one Sanyaku and two Maegashira");
 assert.equal(vm.runInContext("substituteRules(['onosato','hoshoryu','abi']).valid", context), false, "A second Sanyaku substitute must be rejected");
-vm.runInContext(`state.activePlayer='gwazy'; savedSharedDraft.playerLocks={gwazy:true,jake:true};savedSharedDraft.locked=true;savedSharedDraft.status='tournament'; state.drafts[state.selectedBashoId].gwazy={mainPicks:['wakatakakage','wakanosho'],substitutes:['onosato','takayasu','abi'],sidePrediction:null,substitutionEvents:[]}; saveState();`, context);
+vm.runInContext(`state.activePlayer='gwazy'; savedSharedDraft.playerLocks={gwazy:true,jake:true};savedSharedDraft.locked=true;savedSharedDraft.status='tournament'; state.drafts[state.selectedBashoId].gwazy={mainPicks:['kirishima','wakanosho'],substitutes:['onosato','takayasu','abi'],sidePrediction:null,substitutionEvents:[]}; for(const id of ['kirishima','wakanosho']){const result=getRikishi(id).dailyResults.find((item)=>item.day===8);result.status='absent';result.kyujo=true;result.completed=false;result.result=null;} saveState();`, context);
 const liveSubstitutions = JSON.parse(vm.runInContext("JSON.stringify(substitutionTimeline('gwazy'))", context));
-assert(liveSubstitutions.assignments.some((entry) => entry.mainId === "wakatakakage" && entry.subId === "onosato"), "A Kyujo Sanyaku main pick must activate the Sanyaku substitute");
+assert(liveSubstitutions.assignments.some((entry) => entry.mainId === "kirishima" && entry.subId === "onosato"), "A Kyujo Sanyaku main pick must activate the Sanyaku substitute");
 assert(liveSubstitutions.assignments.some((entry) => entry.mainId === "wakanosho" && entry.subId === "takayasu"), "A Kyujo Maegashira main pick must activate the first Maegashira substitute");
 assert(liveSubstitutions.standbySubIds.includes("abi"), "An unused Maegashira substitute must remain on standby");
 assert.equal(vm.runInContext("countedPointsForRikishi('gwazy','abi')", context), 0, "A standby substitute must contribute zero points");
-assert.equal(vm.runInContext("countedPointsForRikishi('gwazy','onosato')", context), vm.runInContext("pointsThroughDay(getRikishi('onosato'))", context), "An activated substitute must count points only while active");
+assert.equal(vm.runInContext("countedPointsForRikishi('gwazy','onosato')", context), vm.runInContext("pointsThroughDay(getRikishi('onosato'),15)-pointsThroughDay(getRikishi('onosato'),7)", context), "An activated substitute must count points only from its activation day");
 assert(liveSubstitutions.events.some((event) => event.type === "activated"), "Automatic activations must be present in the live substitution log");
 vm.runInContext(`globalThis.__subTestBackup={tobizaru:JSON.parse(JSON.stringify(getRikishi('tobizaru').dailyResults)),takayasu:JSON.parse(JSON.stringify(getRikishi('takayasu').dailyResults))}; for(const day of [8,9]){const result=getRikishi('tobizaru').dailyResults.find((item)=>item.day===day); result.status='absent'; result.kyujo=true; result.completed=false; result.result=null; result.opponentId=null; result.opponentJsaId=null;} getDraftPlayer('gwazy').mainPicks=['wakanosho','tobizaru'];`, context);
 const twoMaegashiraReplacements = JSON.parse(vm.runInContext("JSON.stringify(substitutionTimeline('gwazy',9))", context));
 assert(twoMaegashiraReplacements.assignments.some((entry) => entry.mainId === "wakanosho" && entry.subId === "takayasu"), "The first withdrawn Maegashira must use the first Maegashira substitute");
 assert(twoMaegashiraReplacements.assignments.some((entry) => entry.mainId === "tobizaru" && entry.subId === "abi"), "A second withdrawn Maegashira must use the second Maegashira substitute");
-vm.runInContext(`getDraftPlayer('gwazy').mainPicks=['wakanosho']; for(const day of [8,9]){const result=getRikishi('takayasu').dailyResults.find((item)=>item.day===day); result.status='absent'; result.kyujo=true; result.completed=false; result.result=null; result.opponentId=null; result.opponentJsaId=null;}`, context);
+vm.runInContext(`getDraftPlayer('gwazy').mainPicks=['wakanosho']; for(const day of [9]){const result=getRikishi('takayasu').dailyResults.find((item)=>item.day===day); result.status='absent'; result.kyujo=true; result.completed=false; result.result=null; result.opponentId=null; result.opponentJsaId=null;}`, context);
 const unavailableSubstitute = JSON.parse(vm.runInContext("JSON.stringify(substitutionTimeline('gwazy',9))", context));
 assert(unavailableSubstitute.assignments.some((entry) => entry.mainId === "wakanosho" && entry.subId === "abi"), "A withdrawn substitute must be released and the next eligible substitute activated");
 assert(unavailableSubstitute.events.some((event) => event.type === "substitute-kyujo" && event.subId === "takayasu"), "A substitute withdrawal must be logged");
-vm.runInContext(`getRikishi('tobizaru').dailyResults=__subTestBackup.tobizaru; getRikishi('takayasu').dailyResults=__subTestBackup.takayasu; getDraftPlayer('gwazy').mainPicks=['wakatakakage','wakanosho']; delete globalThis.__subTestBackup;`, context);
+vm.runInContext(`getRikishi('tobizaru').dailyResults=__subTestBackup.tobizaru; getRikishi('takayasu').dailyResults=__subTestBackup.takayasu; getDraftPlayer('gwazy').mainPicks=['kirishima','wakanosho']; delete globalThis.__subTestBackup;`, context);
 location.hash = "#roster";
 window.listeners.hashchange();
 await new Promise((resolve) => setTimeout(resolve, 160));
@@ -372,8 +384,10 @@ for (const route of ["roster", "banzuke", "results", "history", "settings"]) {
   }
   if (route === "banzuke") {
     assert.equal((app.innerHTML.match(/data-banzuke-id=/g) || []).length, 42, "The view must render every current Makuuchi rikishi");
-    assert.equal(vm.runInContext("banzukeRankRows().length", context), 21, "The data layer must generate all 21 East/West rows");
-    assert(app.innerHTML.includes("Daiseizan") && app.innerHTML.includes("Asakoryu"), "The Banzuke must continue through M16 East and West");
+    const expectedRankRows = vm.runInContext("new Set(selectedBasho().entries.map((entry)=>entry.rank+'|'+(entry.rankSeat||1))).size", context);
+    assert.equal(vm.runInContext("banzukeRankRows().length", context), expectedRankRows, "The data layer must generate every official rank seat without assuming paired East/West rows");
+    const finalMaegashiraNames = JSON.parse(vm.runInContext("JSON.stringify(selectedBasho().entries.filter((entry)=>entry.rankNumber===Math.max(...selectedBasho().entries.map((item)=>item.rankNumber||0))).map((entry)=>entry.shikona))", context));
+    assert(finalMaegashiraNames.every((name) => app.innerHTML.includes(name)), "The Banzuke must continue through every wrestler at the final official Maegashira rank");
     assert(app.innerHTML.includes('data-banzuke-shikona="Yoshinofuji"'), "Yoshinofuji must render from the official dataset");
     assert(app.innerHTML.includes('data-draft-owner="jake"') && app.innerHTML.includes("🔒 Jake"), "The active player must see the other player's picks as locked");
     assert(app.innerHTML.includes('data-draft-available="40"'), "Draft availability must update immediately after two picks");

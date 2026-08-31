@@ -188,7 +188,12 @@ async function main() {
     throw new Error("The JSA did not return a successful Makuuchi dataset.");
   }
 
-  const officialRows = arrayify(banzukeSource.BanzukeTable);
+  const sourceRows = arrayify(banzukeSource.BanzukeTable);
+  const structuralRows = sourceRows.filter((row) => !String(row?.rikishi_id || "").trim());
+  const officialRows = sourceRows.filter((row) => String(row?.rikishi_id || "").trim());
+  if (structuralRows.length) {
+    console.log(`Ignored ${structuralRows.length} blank structural banzuke row${structuralRows.length === 1 ? "" : "s"}.`);
+  }
   if (!officialRows.length) throw new Error("The official Makuuchi banzuke is empty.");
   const duplicateJsaIds = officialRows.filter((row, index) => officialRows.findIndex((other) => other.rikishi_id === row.rikishi_id) !== index);
   if (duplicateJsaIds.length) throw new Error(`Duplicate JSA rikishi IDs: ${duplicateJsaIds.map((row) => row.rikishi_id).join(", ")}`);

@@ -402,20 +402,34 @@ function tournamentFinished() {
   return savedSharedDraft?.status === "completed";
 }
 
+function sharedTournamentHasCompleteRosters(document = savedSharedDraft) {
+  if (!document?.players) return false;
+  const players = normalizedSharedPlayers(document.players);
+  const drafted = [];
+  for (const player of data.players) {
+    const draft = players[player.id];
+    if (draft.mainPicks.length !== 6 || draft.substitutes.length !== 3) return false;
+    drafted.push(...draft.mainPicks, ...draft.substitutes);
+  }
+  return drafted.length === new Set(drafted).size;
+}
+
 function championModeAvailable() {
-  return officialFinalResultsAvailable() && !tournamentFinished();
+  return sharedTournamentHasCompleteRosters() && officialFinalResultsAvailable() && !tournamentFinished();
 }
 
 function championDebugState(document = championDebugDocument || savedSharedDraft) {
   const final = finalOfficialResultsStatus();
   const day15Detected = final.detected;
   const day15Complete = final.complete;
+  const completeSharedRosters = sharedTournamentHasCompleteRosters(document);
   const alreadyChampion = tournamentFinished();
-  const available = day15Detected && day15Complete && !alreadyChampion;
+  const available = completeSharedRosters && day15Detected && day15Complete && !alreadyChampion;
   const sharedLocks = sharedPlayerLocks(document);
   const sharedLocked = data.players.every((player) => sharedLocks[player.id]);
   const legacyRemoteReady = document?.status === "tournament" && sharedLocked;
   const falseTerms = [
+    !completeSharedRosters ? "completeSharedRosters" : null,
     !day15Detected ? "day15Detected" : null,
     !day15Complete ? "day15ResultsComplete" : null,
     alreadyChampion ? "!alreadyInChampionMode" : null,
@@ -434,9 +448,10 @@ function championDebugState(document = championDebugDocument || savedSharedDraft
     explicitComplete: final.explicitComplete,
     resultsPublished: final.resultsPublished,
     day15Complete,
+    completeSharedRosters,
     alreadyChampion,
     available,
-    expression: `day15Detected (${day15Detected}) && day15ResultsComplete (${day15Complete}) && !alreadyInChampionMode (${!alreadyChampion})`,
+    expression: `completeSharedRosters (${completeSharedRosters}) && day15Detected (${day15Detected}) && day15ResultsComplete (${day15Complete}) && !alreadyInChampionMode (${!alreadyChampion})`,
     falseTerms,
     sharedStatus: document?.status || "missing",
     sharedLocked,
@@ -461,7 +476,7 @@ function championMode() {
 }
 
 function draftEditingDisabled(playerId = state.activePlayer) {
-  return sharedDraftLoading || sharedDraftSaving || isPlayerDraftLocked(playerId) || tournamentFinished() || championMode();
+  return sharedDraftLoading || sharedDraftSaving || isPlayerDraftLocked(playerId) || tournamentFinished() || championMode() || hasNewOfficialBasho();
 }
 
 function applySharedDraft(document, revision = Number(document.revision || 0)) {
@@ -1748,6 +1763,7 @@ function championDebugPanel() {
       <span><small>CURRENT DETECTED DAY</small><b>Day ${debug.currentDay}</b></span>
       <span><small>DAY 15 DETECTED</small><b class="${debug.day15Detected ? "pass" : "fail"}">${debug.day15Detected ? "TRUE ✓" : "FALSE ✗"}</b></span>
       <span><small>DAY 15 RESULTS COMPLETE</small><b class="${debug.day15Complete ? "pass" : "fail"}">${debug.day15Complete ? "TRUE ✓" : "FALSE ✗"}</b><em>${debug.completedBouts} / ${debug.totalBouts} published · explicit state ${debug.explicitComplete === null ? "not supplied" : debug.explicitComplete}</em></span>
+      <span><small>COMPLETE SHARED ROSTERS</small><b class="${debug.completeSharedRosters ? "pass" : "fail"}">${debug.completeSharedRosters ? "TRUE ✓" : "FALSE ✗"}</b><em>Required before a completed tournament can enter Champion Mode</em></span>
       <span><small>CHAMPION MODE AVAILABLE</small><b class="${debug.available ? "pass" : "fail"}">${debug.available ? "TRUE ✓" : "FALSE ✗"}</b></span>
       <span><small>SUPABASE SNAPSHOT</small><b>${escapeHtml(debug.sharedStatus)}</b><em>Gwazy lock ${debug.sharedLocks.gwazy} · Jake lock ${debug.sharedLocks.jake} · both ${debug.sharedLocked}</em></span>
     </div>
@@ -1934,19 +1950,20 @@ function rosterView() {
     : '<li class="empty"><span>LIVE</span><b>No substitutions have been required.</b></li>';
   const saveTime = formatSharedSaveTime(savedSharedDraft?.lastSavedAt);
   const unsaved = hasUnsavedPlayerChanges(player.id);
-  const lifecycleHold = championMode();
+  const pendingDecision = hasNewOfficialBasho();
+  const lifecycleHold = championMode() || pendingDecision;
   const locked = isPlayerDraftLocked(player.id) || lifecycleHold;
   const allLocked = bothDraftsLocked();
   const validationErrors = sharedValidationErrors.length ? `<div class="shared-validation-errors" role="alert"><b>Draft cannot be saved</b><ul>${sharedValidationErrors.map((error) => `<li>${escapeHtml(error)}</li>`).join("")}</ul></div>` : "";
   return `
     <section class="page-shell">
-      ${pageIntro(lifecycleHold ? "CHAMPION MODE · READ ONLY" : "TEAM WORKSPACE", `${player.name}'s roster`, lifecycleHold ? "The previous result is archived and no new roster can be created until Start New Draft is selected from the Champion page." : "Move or remove wrestlers directly from their cards. Add new picks from the Banzuke.", `<a class="primary-button" href="${lifecycleHold ? "#overview" : "#banzuke"}">${lifecycleHold ? "Return to Champion" : "Add from Banzuke"}</a>`)}
+      ${pageIntro(lifecycleHold ? pendingDecision ? "NEW BANZUKE · AWAITING DECISION" : "CHAMPION MODE · READ ONLY" : "TEAM WORKSPACE", `${player.name}'s roster`, lifecycleHold ? pendingDecision ? "The new official banzuke is available, but roster editing begins only after Start New Draft is selected." : "The previous result is archived and no new roster can be created until Start New Draft is selected from the Champion page." : "Move or remove wrestlers directly from their cards. Add new picks from the Banzuke.", `<a class="primary-button" href="${lifecycleHold ? "#overview" : "#banzuke"}">${lifecycleHold ? "Review New Basho" : "Add from Banzuke"}</a>`)}
       ${editingBanner(lifecycleHold ? "Draft editing is paused. A newly published banzuke remains browseable, but it does not create a draft automatically." : `This roster belongs only to ${player.name}. Use the header selector to edit the other player.`)}
       <div class="rules-strip reveal">
         <span><b>6</b> starters</span><i></i><span><b>1</b> Sanyaku substitute</span><i></i><span><b>2</b> Maegashira substitutes</span><i></i><span><b>SUBS SCORE</b> only while activated</span>
       </div>
       <section class="shared-draft-bar reveal ${unsaved ? "dirty" : ""}">
-        <div><small>${player.name.toUpperCase()} DRAFT STATUS</small><b>${sharedDraftLoading ? "Loading shared draft..." : sharedDraftError && !savedSharedDraft ? "Connection required" : lifecycleHold ? "🏆 Champion Mode · editing paused" : locked ? "🔒 Permanently locked" : unsaved ? "&#9679; Unsaved Changes" : "&#10003; Ready to edit"}</b></div>
+        <div><small>${player.name.toUpperCase()} DRAFT STATUS</small><b>${sharedDraftLoading ? "Loading shared draft..." : sharedDraftError && !savedSharedDraft ? "Connection required" : pendingDecision ? "New draft not started" : lifecycleHold ? "🏆 Champion Mode · editing paused" : locked ? "🔒 Permanently locked" : unsaved ? "&#9679; Unsaved Changes" : "&#10003; Ready to edit"}</b></div>
         <div><small>LAST SAVED</small><b>${saveTime.day}</b><span>${saveTime.time}</span></div>
         <div><small>SAVED BY</small><b>${escapeHtml(savedSharedDraft?.savedBy || "No one yet")}</b><span>Revision ${Number(savedSharedDraft?.revision || 0)}</span></div>
         <div class="shared-draft-actions"><button class="secondary-button" type="button" data-refresh-shared>Refresh</button></div>
@@ -1973,7 +1990,7 @@ function rosterView() {
         ${validationErrors}
         <section class="substitution-log"><div><p class="eyebrow">OFFICIAL JSA AUTOMATION</p><h3>Substitution log</h3></div><ol>${substitutionLog}</ol></section>
         ${sidePredictionBuilder(player, locked || allLocked)}
-        <div class="roster-save-row shared"><p><b>${lifecycleHold ? "Champion Mode keeps the draft closed" : locked ? `${player.name}'s draft is permanently locked` : unsaved ? `Unsaved ${player.name} working copy` : `${player.name}'s saved picks are up to date`}</b><span>${lifecycleHold ? "Use Start New Draft on the Champion page after the next official banzuke is released." : locked ? "The roster, substitutes, and prediction are read-only." : `Save validates and updates only ${player.name}. The opponent's latest roster is preserved.`}</span></p><div class="roster-save-actions"><button class="primary-button" type="button" data-save-draft ${draftEditingDisabled() || !unsaved ? "disabled" : ""}>${sharedDraftSaving ? "Saving..." : "Save Picks"}</button>${locked ? "" : `<button class="lock-draft-button" type="button" data-lock-my-draft ${unsaved || sharedDraftLoading || sharedDraftSaving ? "disabled" : ""}>🔒 Lock My Draft</button>`}</div></div>
+        <div class="roster-save-row shared"><p><b>${pendingDecision ? "The new draft has not started" : lifecycleHold ? "Champion Mode keeps the draft closed" : locked ? `${player.name}'s draft is permanently locked` : unsaved ? `Unsaved ${player.name} working copy` : `${player.name}'s saved picks are up to date`}</b><span>${pendingDecision ? "Choose Start New Draft or Skip Tournament from the Overview before editing either roster." : lifecycleHold ? "Use Start New Draft on the Champion page after the next official banzuke is released." : locked ? "The roster, substitutes, and prediction are read-only." : `Save validates and updates only ${player.name}. The opponent's latest roster is preserved.`}</span></p><div class="roster-save-actions"><button class="primary-button" type="button" data-save-draft ${draftEditingDisabled() || !unsaved ? "disabled" : ""}>${sharedDraftSaving ? "Saving..." : "Save Picks"}</button>${locked ? "" : `<button class="lock-draft-button" type="button" data-lock-my-draft ${unsaved || sharedDraftLoading || sharedDraftSaving ? "disabled" : ""}>🔒 Lock My Draft</button>`}</div></div>
       </section>
       ${appFooter()}
     </section>`;
@@ -2237,12 +2254,13 @@ function banzukeView() {
   const pool = draftPoolStats(basho);
   const rows = banzukeRankRows(basho);
   const rankOptions = [...new Set(basho.entries.map((entry) => entry.rank))];
-  const lifecycleHold = championMode();
+  const pendingDecision = hasNewOfficialBasho();
+  const lifecycleHold = championMode() || pendingDecision;
   const readOnly = tournamentStarted() || isPlayerDraftLocked(player.id) || lifecycleHold;
   return `
     <section class="page-shell">
-      ${pageIntro(`${escapeHtml(basho.label.toUpperCase())} · ${readOnly ? lifecycleHold ? "CHAMPION MODE" : "TOURNAMENT BANZUKE" : "TEAM BUILDER"}`, readOnly ? "Official banzuke and draft ownership" : "Pick from the complete banzuke", lifecycleHold ? `All ${basho.entries.length} official Makuuchi rikishi remain browseable, but this publication does not become a draft until Start New Draft is selected.` : readOnly ? `All ${basho.entries.length} official Makuuchi rikishi remain available to browse. The locked draft is read-only for the rest of the tournament.` : `All ${basho.entries.length} official Makuuchi rikishi. Single-click a wrestler for their profile or double-click to edit ${player.name}'s roster.`, `<label class="search-field"><span>⌕</span><input id="banzuke-search" type="search" placeholder="Find a rikishi or stable" autocomplete="off" /></label>`)}
-      ${readOnly ? `<aside class="banzuke-readonly-notice reveal"><span>${lifecycleHold ? "🏆" : "🔒"}</span><div><small>${lifecycleHold ? "CHAMPION MODE · DRAFT CLOSED" : "TOURNAMENT MODE · READ ONLY"}</small><b>The complete official Banzuke remains visible.</b><p>${lifecycleHold ? "Profiles, rankings, records, search, and filters are available. Return to the Champion page to start or skip the newly published basho." : "Ownership, records, profiles, search, and filters are available. Draft picks cannot be changed."}</p></div></aside>` : editingBanner(`Shared draft · currently editing ${player.name}. A rikishi drafted by either player is locked to the other.`)}
+      ${pageIntro(`${escapeHtml(basho.label.toUpperCase())} · ${readOnly ? lifecycleHold ? pendingDecision ? "DRAFT NOT STARTED" : "CHAMPION MODE" : "TOURNAMENT BANZUKE" : "TEAM BUILDER"}`, readOnly ? "Official banzuke and draft ownership" : "Pick from the complete banzuke", lifecycleHold ? `All ${basho.entries.length} official Makuuchi rikishi remain browseable, but this publication does not become a draft until Start New Draft is selected.` : readOnly ? `All ${basho.entries.length} official Makuuchi rikishi remain available to browse. The locked draft is read-only for the rest of the tournament.` : `All ${basho.entries.length} official Makuuchi rikishi. Single-click a wrestler for their profile or double-click to edit ${player.name}'s roster.`, `<label class="search-field"><span>⌕</span><input id="banzuke-search" type="search" placeholder="Find a rikishi or stable" autocomplete="off" /></label>`)}
+      ${readOnly ? `<aside class="banzuke-readonly-notice reveal"><span>${lifecycleHold ? pendingDecision ? "新" : "🏆" : "🔒"}</span><div><small>${lifecycleHold ? pendingDecision ? "NEW BANZUKE · AWAITING START" : "CHAMPION MODE · DRAFT CLOSED" : "TOURNAMENT MODE · READ ONLY"}</small><b>The complete official Banzuke remains visible.</b><p>${lifecycleHold ? "Profiles, rankings, records, search, and filters are available. Return to the Overview to start or skip the newly published basho." : "Ownership, records, profiles, search, and filters are available. Draft picks cannot be changed."}</p></div></aside>` : editingBanner(`Shared draft · currently editing ${player.name}. A rikishi drafted by either player is locked to the other.`)}
       <section class="draft-pool-status reveal" data-draft-available="${pool.available}" data-draft-total="${pool.total}">
         <div class="draft-pool-stat available"><small>AVAILABLE</small><b>${pool.available}</b><span>of ${pool.total} rikishi</span></div>
         <div class="draft-pool-meter" aria-label="${pool.available} available, ${pool.counts.gwazy} drafted by Gwazy, ${pool.counts.jake} drafted by Jake">
