@@ -32,17 +32,51 @@ function definitionValue(html, label) {
   return plainText(match?.[1]);
 }
 
+export function parseBashoRecords(html, { excludeBashoLabel = null, limit = 6 } = {}) {
+  const records = [];
+  const cells = String(html).matchAll(/<td[^>]*class=["'][^"']*\bplayer\b[^"']*["'][^>]*>[\s\S]*?<div[^>]*class=["'][^"']*\bbox\b[^"']*["'][^>]*>([\s\S]*?)<\/div>[\s\S]*?<\/td>/gi);
+  for (const cell of cells) {
+    const values = [...cell[1].matchAll(/<span[^>]*>([\s\S]*?)<\/span>/gi)].map((match) => plainText(match[1]));
+    const basho = values[0] || "";
+    const recordMatch = (values[3] || "").match(/^(\d+)\s*-\s*(\d+)(?:\s*-\s*(\d+))?$/);
+    if (!recordMatch || (excludeBashoLabel && basho.toLowerCase() === excludeBashoLabel.toLowerCase())) continue;
+    const wins = Number(recordMatch[1]);
+    const losses = Number(recordMatch[2]);
+    const absences = Number(recordMatch[3] || 0);
+    if (wins + losses + absences === 0) continue;
+    records.push({ basho, rank: values[1] || "", shikona: values[2] || "", record: values[3], wins, losses, absences });
+    if (records.length === limit) break;
+  }
+  return records;
+}
+
+export function summarizeBashoForm(records = []) {
+  const totals = records.reduce((result, record) => ({
+    wins: result.wins + record.wins,
+    losses: result.losses + record.losses,
+    absences: result.absences + record.absences,
+  }), { wins: 0, losses: 0, absences: 0 });
+  const contested = totals.wins + totals.losses;
+  return {
+    percentage: contested ? Math.round((totals.wins / contested) * 100) : null,
+    ...totals,
+    bashos: records.length,
+    records,
+  };
+}
+
 export function jsaProfileUrl(origin, jsaId) {
   return new URL(`/EnSumoDataRikishi/profile/${encodeURIComponent(String(jsaId))}/`, origin).toString();
 }
 
-export function parseJsaProfile(html, { jsaId, requestedUrl, finalUrl = requestedUrl } = {}) {
+export function parseJsaProfile(html, { jsaId, requestedUrl, finalUrl = requestedUrl, excludeBashoLabel = null } = {}) {
   const source = String(html || "");
   const fullNameMatch = source.match(/<td[^>]*class=["'][^"']*fntXL[^"']*["'][^>]*>([\s\S]*?)<\/td>/i);
   const portraitMatch = source.match(/<img[^>]+src=["']([^"']*\/img\/sumo_data\/rikishi\/[^"']+)["'][^>]*>/i);
   const profile = finalUrl || requestedUrl || null;
   const origin = profile ? new URL(profile).origin : null;
   const portraitPath = portraitMatch?.[1] ? decodeHtml(portraitMatch[1]) : null;
+  const recentForm = summarizeBashoForm(parseBashoRecords(source, { excludeBashoLabel, limit: 6 }));
   return {
     jsaId: String(jsaId || ""),
     fullName: plainText(fullNameMatch?.[1]),
@@ -54,6 +88,8 @@ export function parseJsaProfile(html, { jsaId, requestedUrl, finalUrl = requeste
     weight: tableValue(source, "Weight"),
     technique: tableValue(source, "Signature Maneuver"),
     careerHigh: definitionValue(source, "Highest Rank"),
+    recentForm,
+    form: recentForm.percentage,
     profile,
     profileVerified: Boolean(profile && /\/EnSumoDataRikishi\/profile\/\d+\/?$/i.test(new URL(profile).pathname)),
     jsaPortrait: portraitPath && origin ? new URL(portraitPath, origin).toString() : null,
@@ -62,7 +98,8 @@ export function parseJsaProfile(html, { jsaId, requestedUrl, finalUrl = requeste
 
 export function hasUsefulProfile(profile = {}) {
   return [profile.height, profile.weight, profile.technique].every((value) => !EMPTY_VALUES.has(String(value || "").trim()))
-    && profile.profileVerified === true;
+    && profile.profileVerified === true
+    && Number.isFinite(profile.recentForm?.percentage);
 }
 
 export function profileRefreshDue(profile = {}, now = Date.now(), maxAgeDays = 7) {

@@ -161,6 +161,7 @@ assert(data.rikishi.every((rikishi) => rikishi.photo?.includes("sumo.or.jp/img/s
 assert(data.rikishi.every((rikishi) => rikishi.id && rikishi.shikona && rikishi.jsaId && rikishi.profile), "Every rikishi needs stable JSA identity metadata");
 assert(data.rikishi.every((rikishi) => rikishi.profileVerified === true && new URL(rikishi.profile).pathname === `/EnSumoDataRikishi/profile/${rikishi.jsaId}/`), "Every rikishi must have a verified canonical JSA profile URL");
 assert(data.rikishi.every((rikishi) => rikishi.height !== "—" && rikishi.weight !== "—" && rikishi.technique !== "See official profile"), "Every rikishi must contain enriched official measurements and signature data");
+assert(data.rikishi.every((rikishi) => rikishi.recentForm?.bashos === 6 && Number.isFinite(rikishi.recentForm.percentage)), "Every rikishi must contain an official six-basho form percentage");
 assert(data.rikishi.every((rikishi) => Object.hasOwn(rikishi, "wikipedia")), "Every rikishi needs a stable Wikipedia resolver slot, even when unresolved");
 assert(app.includes('loading="lazy"') && app.includes("data-rikishi-image"), "Rikishi images must use lazy resolver markup");
 assert(!app.includes("fallback-initials"), "The single-letter image fallback must be removed");

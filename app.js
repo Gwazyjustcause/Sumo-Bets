@@ -1031,7 +1031,9 @@ function rikishiDisplayStats(rikishi, day = spoilerVisibleDay()) {
   const losses = results.filter((result) => result.result === "loss").length;
   const absences = results.filter((result) => result.kyujo || result.status === "absent").length;
   const decided = wins + losses;
-  const form = decided ? Math.round((wins / decided) * 100) : 0;
+  const form = Number.isFinite(rikishi?.recentForm?.percentage)
+    ? rikishi.recentForm.percentage
+    : decided ? Math.round((wins / decided) * 100) : 0;
   return {
     wins,
     losses,
@@ -2738,7 +2740,7 @@ function profileMarkup(rikishi) {
       <div class="profile-owner"><small>DRAFT OWNERSHIP</small><span class="player-avatar ${owner ? owner.color : "neutral"}">${owner ? owner.initials : "—"}</span><b>${owner ? `${owner.name} · ${location === "main" ? "Main pick" : "Substitute"}` : "Available"}</b></div>
     </div>
     <div class="profile-stats">
-      <span><small>POINTS</small><b>${stats.points}</b></span><span><small>FORM</small><b>${stats.wins + stats.losses ? `${stats.form}%` : "—"}</b></span><span><small>HEIGHT</small><b>${rikishi.height}</b></span><span><small>WEIGHT</small><b>${rikishi.weight}</b></span>
+      <span><small>6-BASHO FORM</small><b>${Number.isFinite(rikishi.recentForm?.percentage) ? `${stats.form}%` : "—"}</b></span><span><small>POINTS</small><b>${stats.points}</b></span><span><small>HEIGHT</small><b>${rikishi.height}</b></span><span><small>WEIGHT</small><b>${rikishi.weight}</b></span>
     </div>
     <div class="profile-details"><div><small>CAREER HIGH</small><b>${rikishi.careerHigh || "Not listed"}</b></div><div><small>SIGNATURE MANEUVER</small><b>${rikishi.technique || "Not listed by JSA"}</b></div></div>
     <div class="profile-form"><span style="--width:${stats.form}%"></span></div>

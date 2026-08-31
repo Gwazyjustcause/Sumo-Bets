@@ -153,6 +153,8 @@ function sourceRikishi(person, idMap, priorByJsaId) {
     technique: prior.technique || "—",
     careerHigh: prior.careerHigh || rank,
     jsaPortrait: prior.jsaPortrait || null,
+    recentForm: prior.recentForm || null,
+    form: Number.isFinite(prior.form) ? prior.form : null,
     sourceIndex: 0,
   };
 }
@@ -168,6 +170,8 @@ function cachedProfileFields(person) {
     weight: person.weight || "—",
     technique: person.technique || "—",
     careerHigh: person.careerHigh || person.rank,
+    recentForm: person.recentForm || null,
+    form: Number.isFinite(person.form) ? person.form : null,
     profile: person.profile || jsaProfileUrl(JSA_ORIGIN, person.jsaId),
     profileVerified: person.profileVerified === true,
     profileUpdatedAt: person.profileUpdatedAt || null,
@@ -175,7 +179,7 @@ function cachedProfileFields(person) {
   };
 }
 
-async function enrichRikishiProfiles(rikishi) {
+async function enrichRikishiProfiles(rikishi, excludeBashoLabel) {
   const refreshedAt = new Date().toISOString();
   return mapWithConcurrency(rikishi, 6, async (person) => {
     const cached = cachedProfileFields(person);
@@ -183,7 +187,7 @@ async function enrichRikishiProfiles(rikishi) {
     const requestedUrl = jsaProfileUrl(JSA_ORIGIN, person.jsaId);
     try {
       const { html, finalUrl } = await fetchPage(requestedUrl);
-      const parsed = parseJsaProfile(html, { jsaId: person.jsaId, requestedUrl, finalUrl });
+      const parsed = parseJsaProfile(html, { jsaId: person.jsaId, requestedUrl, finalUrl, excludeBashoLabel });
       if (!hasUsefulProfile(parsed)) throw new Error("height, weight, signature maneuver, or canonical URL was missing");
       console.log(`Profile enriched: ${person.name} (${person.jsaId})`);
       return {
@@ -268,9 +272,8 @@ async function main() {
   const priorByJsaId = new Map((previousRikishi.rikishi || []).map((person) => [String(person.jsaId), person]));
   const idMap = await jsonFile(path.join(officialDir, "id-map.json"), {});
   const basicRikishi = officialRows.map((row, sourceIndex) => ({ ...sourceRikishi(row, idMap, priorByJsaId), sourceIndex }));
-  const rikishiBase = await enrichRikishiProfiles(basicRikishi);
-  const idByJsaId = new Map(rikishiBase.map((person) => [person.jsaId, person.id]));
-  const rankById = new Map(rikishiBase.map((person) => [person.id, person.rank]));
+  const idByJsaId = new Map(basicRikishi.map((person) => [person.jsaId, person.id]));
+  const rankById = new Map(basicRikishi.map((person) => [person.id, person.rank]));
 
   const recordsByJsaId = new Map();
   for (const side of ["E", "W"]) {
@@ -288,6 +291,9 @@ async function main() {
       if (record[day]?.opponent_rikishi_id) scheduledThroughDay = Math.max(scheduledThroughDay, day);
     }
   }
+  const bashoInfo = banzukeSource.BashoInfo || {};
+  const currentBashoLabel = `${String(bashoInfo.year_eng || new Date().getUTCFullYear())} ${bashoInfo.basho_name_eng || banzukeSource.basho_name || "Grand Sumo"}`;
+  const rikishiBase = await enrichRikishiProfiles(basicRikishi, completedDay < 15 ? currentBashoLabel : null);
   const fetchThroughDay = Math.min(15, Math.max(completedDay, scheduledThroughDay));
   const dayPayloads = await Promise.all(Array.from({ length: fetchThroughDay }, (_, index) => {
     const day = index + 1;
@@ -374,12 +380,12 @@ async function main() {
       weight: person.weight || "—",
       careerHigh: person.careerHigh || person.rank,
       technique: person.technique || "—",
-      form: Math.round((wins / Math.max(1, wins + losses)) * 100),
+      recentForm: person.recentForm,
+      form: Number.isFinite(person.recentForm?.percentage) ? person.recentForm.percentage : Math.round((wins / Math.max(1, wins + losses)) * 100),
       badge: kinboshi ? `${kinboshi} kinboshi` : null,
     };
   });
 
-  const bashoInfo = banzukeSource.BashoInfo || {};
   const year = String(bashoInfo.year_eng || new Date().getUTCFullYear());
   const month = bashoInfo.basho_name_eng || banzukeSource.basho_name || "Grand Sumo";
   const naming = monthMetadata[month] || { slug: slugify(month), title: `${month} Basho` };
