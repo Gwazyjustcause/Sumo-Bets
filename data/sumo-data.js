@@ -2,16 +2,16 @@
 window.SUMO_DATA = {
   "meta": {
     "bashoId": "637",
-    "dataSignature": "7f5c1610a77efb139cd03b15264567f696f0a0ca3a7ab20107af56d21a4c364e",
+    "dataSignature": "ed7937659389f6b912183ebc8e01f3df1d5a1344d6262725f0959c902e18a254",
     "tournament": "Aki Basho 2026",
     "shortTournament": "September 2026",
-    "day": 0,
+    "day": 1,
     "scheduledThroughDay": 2,
     "totalDays": 15,
     "dateRange": "13–27 September 2026",
     "venue": "Ryogoku Kokugikan, Tokyo",
-    "lastUpdated": "Banzuke published · official snapshot 2026-09-11 04:45 UTC",
-    "status": "Banzuke published · draft open",
+    "lastUpdated": "Day 1  September 13, 2026 · official snapshot 2026-09-12 15:34 UTC",
+    "status": "Day 1 official results",
     "active": false,
     "sideTotals": {
       "East": 0,
@@ -444,14 +444,16 @@ window.SUMO_DATA = {
       },
       "form": 70,
       "sourceIndex": 1,
-      "record": "0–0",
+      "record": "0–0–1",
       "wins": 0,
       "losses": 0,
-      "absences": 0,
-      "kyujoDays": [],
-      "currentKyujo": false,
-      "status": "Active",
-      "available": true,
+      "absences": 1,
+      "kyujoDays": [
+        1
+      ],
+      "currentKyujo": true,
+      "status": "Kyujo · injured / withdrawn",
+      "available": false,
       "kinboshi": 0,
       "points": 0,
       "dailyResults": [
@@ -460,10 +462,10 @@ window.SUMO_DATA = {
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -8574,14 +8576,16 @@ window.SUMO_DATA = {
       },
       "form": 57,
       "sourceIndex": 31,
-      "record": "0–0",
+      "record": "0–0–1",
       "wins": 0,
       "losses": 0,
-      "absences": 0,
-      "kyujoDays": [],
-      "currentKyujo": false,
-      "status": "Active",
-      "available": true,
+      "absences": 1,
+      "kyujoDays": [
+        1
+      ],
+      "currentKyujo": true,
+      "status": "Kyujo · injured / withdrawn",
+      "available": false,
       "kinboshi": 0,
       "points": 0,
       "dailyResults": [
@@ -8590,10 +8594,10 @@ window.SUMO_DATA = {
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -10742,14 +10746,16 @@ window.SUMO_DATA = {
       },
       "form": 68,
       "sourceIndex": 39,
-      "record": "0–0",
+      "record": "0–0–1",
       "wins": 0,
       "losses": 0,
-      "absences": 0,
-      "kyujoDays": [],
-      "currentKyujo": false,
-      "status": "Active",
-      "available": true,
+      "absences": 1,
+      "kyujoDays": [
+        1
+      ],
+      "currentKyujo": true,
+      "status": "Kyujo · injured / withdrawn",
+      "available": false,
       "kinboshi": 0,
       "points": 0,
       "dailyResults": [
@@ -10758,10 +10764,10 @@ window.SUMO_DATA = {
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -11472,13 +11478,44 @@ window.SUMO_DATA = {
     "bashoId": "637",
     "bashoSlug": "aki-2026",
     "division": "Makuuchi",
-    "currentDay": 0,
+    "currentDay": 1,
     "scheduledThroughDay": 2,
     "sideTotals": {
       "East": 0,
       "West": 0
     },
-    "injuries": [],
+    "injuries": [
+      {
+        "id": "hoshoryu",
+        "jsaId": "3842",
+        "name": "Hoshoryu",
+        "absences": 1,
+        "kyujoDays": [
+          1
+        ],
+        "status": "Kyujo · injured / withdrawn"
+      },
+      {
+        "id": "wakatakakage",
+        "jsaId": "3761",
+        "name": "Wakatakakage",
+        "absences": 1,
+        "kyujoDays": [
+          1
+        ],
+        "status": "Kyujo · injured / withdrawn"
+      },
+      {
+        "id": "wakanosho",
+        "jsaId": "4121",
+        "name": "Wakanosho",
+        "absences": 1,
+        "kyujoDays": [
+          1
+        ],
+        "status": "Kyujo · injured / withdrawn"
+      }
+    ],
     "source": "https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/1/",
     "days": [
       {
@@ -12176,8 +12213,8 @@ window.SUMO_DATA = {
         ]
       }
     ],
-    "generatedAt": "2026-09-11T04:45:46.752Z",
-    "dataSignature": "7f5c1610a77efb139cd03b15264567f696f0a0ca3a7ab20107af56d21a4c364e"
+    "generatedAt": "2026-09-12T15:34:33.246Z",
+    "dataSignature": "ed7937659389f6b912183ebc8e01f3df1d5a1344d6262725f0959c902e18a254"
   },
   "history": [],
   "banzuke": {

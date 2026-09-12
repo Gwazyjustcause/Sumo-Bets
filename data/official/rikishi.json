@@ -365,14 +365,16 @@
       },
       "form": 70,
       "sourceIndex": 1,
-      "record": "0–0",
+      "record": "0–0–1",
       "wins": 0,
       "losses": 0,
-      "absences": 0,
-      "kyujoDays": [],
-      "currentKyujo": false,
-      "status": "Active",
-      "available": true,
+      "absences": 1,
+      "kyujoDays": [
+        1
+      ],
+      "currentKyujo": true,
+      "status": "Kyujo · injured / withdrawn",
+      "available": false,
       "kinboshi": 0,
       "points": 0,
       "dailyResults": [
@@ -381,10 +383,10 @@
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -8495,14 +8497,16 @@
       },
       "form": 57,
       "sourceIndex": 31,
-      "record": "0–0",
+      "record": "0–0–1",
       "wins": 0,
       "losses": 0,
-      "absences": 0,
-      "kyujoDays": [],
-      "currentKyujo": false,
-      "status": "Active",
-      "available": true,
+      "absences": 1,
+      "kyujoDays": [
+        1
+      ],
+      "currentKyujo": true,
+      "status": "Kyujo · injured / withdrawn",
+      "available": false,
       "kinboshi": 0,
       "points": 0,
       "dailyResults": [
@@ -8511,10 +8515,10 @@
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -10663,14 +10667,16 @@
       },
       "form": 68,
       "sourceIndex": 39,
-      "record": "0–0",
+      "record": "0–0–1",
       "wins": 0,
       "losses": 0,
-      "absences": 0,
-      "kyujoDays": [],
-      "currentKyujo": false,
-      "status": "Active",
-      "available": true,
+      "absences": 1,
+      "kyujoDays": [
+        1
+      ],
+      "currentKyujo": true,
+      "status": "Kyujo · injured / withdrawn",
+      "available": false,
       "kinboshi": 0,
       "points": 0,
       "dailyResults": [
@@ -10679,10 +10685,10 @@
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -11387,6 +11393,6 @@
       "badge": null
     }
   ],
-  "generatedAt": "2026-09-11T04:45:46.752Z",
-  "dataSignature": "7f5c1610a77efb139cd03b15264567f696f0a0ca3a7ab20107af56d21a4c364e"
+  "generatedAt": "2026-09-12T15:34:33.246Z",
+  "dataSignature": "ed7937659389f6b912183ebc8e01f3df1d5a1344d6262725f0959c902e18a254"
 }
