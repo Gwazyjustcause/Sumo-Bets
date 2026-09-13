@@ -2,7 +2,7 @@
 window.SUMO_DATA = {
   "meta": {
     "bashoId": "637",
-    "dataSignature": "ed7937659389f6b912183ebc8e01f3df1d5a1344d6262725f0959c902e18a254",
+    "dataSignature": "cb700ca0f7426377e1ff1c0963ba2e6d36cb60f985517a43d7165051f77f8dc0",
     "tournament": "Aki Basho 2026",
     "shortTournament": "September 2026",
     "day": 1,
@@ -10,9 +10,9 @@ window.SUMO_DATA = {
     "totalDays": 15,
     "dateRange": "13–27 September 2026",
     "venue": "Ryogoku Kokugikan, Tokyo",
-    "lastUpdated": "Day 1  September 13, 2026 · official snapshot 2026-09-12 15:34 UTC",
+    "lastUpdated": "Day 1  September 13, 2026 · official snapshot 2026-09-13 04:53 UTC",
     "status": "Day 1 official results",
-    "active": false,
+    "active": true,
     "sideTotals": {
       "East": 0,
       "West": 0
@@ -12213,8 +12213,8 @@ window.SUMO_DATA = {
         ]
       }
     ],
-    "generatedAt": "2026-09-12T15:34:33.246Z",
-    "dataSignature": "ed7937659389f6b912183ebc8e01f3df1d5a1344d6262725f0959c902e18a254"
+    "generatedAt": "2026-09-13T04:53:22.512Z",
+    "dataSignature": "cb700ca0f7426377e1ff1c0963ba2e6d36cb60f985517a43d7165051f77f8dc0"
   },
   "history": [],
   "banzuke": {
