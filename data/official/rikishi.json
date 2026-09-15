@@ -365,14 +365,15 @@
       },
       "form": 70,
       "sourceIndex": 1,
-      "record": "0–0–3",
+      "record": "0–0–4",
       "wins": 0,
       "losses": 0,
-      "absences": 3,
+      "absences": 4,
       "kyujoDays": [
         1,
         2,
-        3
+        3,
+        4
       ],
       "currentKyujo": true,
       "status": "Kyujo · injured / withdrawn",
@@ -418,10 +419,10 @@
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -8499,14 +8500,15 @@
       },
       "form": 57,
       "sourceIndex": 31,
-      "record": "0–0–3",
+      "record": "0–0–4",
       "wins": 0,
       "losses": 0,
-      "absences": 3,
+      "absences": 4,
       "kyujoDays": [
         1,
         2,
-        3
+        3,
+        4
       ],
       "currentKyujo": true,
       "status": "Kyujo · injured / withdrawn",
@@ -8552,10 +8554,10 @@
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -10671,14 +10673,15 @@
       },
       "form": 68,
       "sourceIndex": 39,
-      "record": "0–0–3",
+      "record": "0–0–4",
       "wins": 0,
       "losses": 0,
-      "absences": 3,
+      "absences": 4,
       "kyujoDays": [
         1,
         2,
-        3
+        3,
+        4
       ],
       "currentKyujo": true,
       "status": "Kyujo · injured / withdrawn",
@@ -10724,10 +10727,10 @@
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -11399,6 +11402,6 @@
       "badge": null
     }
   ],
-  "generatedAt": "2026-09-15T11:49:23.123Z",
-  "dataSignature": "662637b56c6c28aa4b3edf71b630f02cb3be4cd92fa7d1e28607037a9d67ba04"
+  "generatedAt": "2026-09-15T17:03:09.165Z",
+  "dataSignature": "8d7df2dfa20fac4319c5687a24f11ed3d4a445f68d2fc8a8241df928198088aa"
 }
