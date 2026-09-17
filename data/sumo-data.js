@@ -2,7 +2,7 @@
 window.SUMO_DATA = {
   "meta": {
     "bashoId": "637",
-    "dataSignature": "797b4acf96bd14342b39b3039960d31b5762feea4276a4f88ca52072363fe741",
+    "dataSignature": "f11f8c381fd2a3ece5de7330e3f6efed869c33a1f8b518b51bc7bb5e8cb4ff72",
     "tournament": "Aki Basho 2026",
     "shortTournament": "September 2026",
     "day": 5,
@@ -10,12 +10,12 @@ window.SUMO_DATA = {
     "totalDays": 15,
     "dateRange": "13–27 September 2026",
     "venue": "Ryogoku Kokugikan, Tokyo",
-    "lastUpdated": "Day 5  September 17, 2026 · official snapshot 2026-09-17 04:56 UTC",
+    "lastUpdated": "Day 5  September 17, 2026 · official snapshot 2026-09-17 11:47 UTC",
     "status": "Day 5 official results",
     "active": true,
     "sideTotals": {
-      "East": 47,
-      "West": 33
+      "East": 60,
+      "West": 40
     },
     "sources": [
       {
@@ -173,8 +173,8 @@ window.SUMO_DATA = {
       },
       "form": 67,
       "sourceIndex": 0,
-      "record": "3–1",
-      "wins": 3,
+      "record": "4–1",
+      "wins": 4,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -182,7 +182,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 3,
+      "points": 4,
       "dailyResults": [
         {
           "day": 1,
@@ -233,11 +233,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4279",
           "opponentId": "yoshinofuji",
           "opponent": "Yoshinofuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 6,
@@ -721,8 +721,8 @@ window.SUMO_DATA = {
       },
       "form": 71,
       "sourceIndex": 2,
-      "record": "3–1",
-      "wins": 3,
+      "record": "4–1",
+      "wins": 4,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -730,7 +730,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 3,
+      "points": 4,
       "dailyResults": [
         {
           "day": 1,
@@ -781,11 +781,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3265",
           "opponentId": "takanosho",
           "opponent": "Takanosho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 16
         },
         {
           "day": 6,
@@ -992,9 +992,9 @@ window.SUMO_DATA = {
       },
       "form": 53,
       "sourceIndex": 3,
-      "record": "4–0",
+      "record": "4–1",
       "wins": 4,
-      "losses": 0,
+      "losses": 1,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -1052,11 +1052,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3711",
           "opponentId": "churanoumi",
           "opponent": "Churanoumi",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 6,
@@ -1263,9 +1263,9 @@ window.SUMO_DATA = {
       },
       "form": 72,
       "sourceIndex": 4,
-      "record": "3–1",
+      "record": "3–2",
       "wins": 3,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -1323,11 +1323,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4079",
           "opponentId": "gonoyama",
           "opponent": "Gonoyama",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 17
         },
         {
           "day": 6,
@@ -1534,8 +1534,8 @@ window.SUMO_DATA = {
       },
       "form": 61,
       "sourceIndex": 5,
-      "record": "3–1",
-      "wins": 3,
+      "record": "4–1",
+      "wins": 4,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -1543,7 +1543,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 3,
+      "points": 4,
       "dailyResults": [
         {
           "day": 1,
@@ -1594,11 +1594,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3376",
           "opponentId": "daieisho",
           "opponent": "Daieisho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 6,
@@ -1805,8 +1805,8 @@ window.SUMO_DATA = {
       },
       "form": 53,
       "sourceIndex": 6,
-      "record": "2–2",
-      "wins": 2,
+      "record": "3–2",
+      "wins": 3,
       "losses": 2,
       "absences": 0,
       "kyujoDays": [],
@@ -1814,7 +1814,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 2,
+      "points": 3,
       "dailyResults": [
         {
           "day": 1,
@@ -1865,11 +1865,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4187",
           "opponentId": "hakunofuji",
           "opponent": "Hakunofuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 6,
@@ -2076,9 +2076,9 @@ window.SUMO_DATA = {
       },
       "form": 52,
       "sourceIndex": 7,
-      "record": "1–3",
+      "record": "1–4",
       "wins": 1,
-      "losses": 3,
+      "losses": 4,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -2136,11 +2136,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4191",
           "opponentId": "fujinokawa",
           "opponent": "Fujinokawa",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 6,
@@ -2347,9 +2347,9 @@ window.SUMO_DATA = {
       },
       "form": 53,
       "sourceIndex": 8,
-      "record": "1–3",
+      "record": "1–4",
       "wins": 1,
-      "losses": 3,
+      "losses": 4,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -2407,11 +2407,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4055",
           "opponentId": "atamifuji",
           "opponent": "Atamifuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 6,
@@ -2618,8 +2618,8 @@ window.SUMO_DATA = {
       },
       "form": 50,
       "sourceIndex": 9,
-      "record": "1–3",
-      "wins": 1,
+      "record": "2–3",
+      "wins": 2,
       "losses": 3,
       "absences": 0,
       "kyujoDays": [],
@@ -2627,7 +2627,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 1,
+      "points": 2,
       "dailyResults": [
         {
           "day": 1,
@@ -2678,11 +2678,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "2775",
           "opponentId": "takayasu",
           "opponent": "Takayasu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 6,
@@ -2889,9 +2889,9 @@ window.SUMO_DATA = {
       },
       "form": 61,
       "sourceIndex": 10,
-      "record": "1–3",
+      "record": "1–4",
       "wins": 1,
-      "losses": 3,
+      "losses": 4,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -2949,11 +2949,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4336",
           "opponentId": "fujiryoga",
           "opponent": "Fujiryoga",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 6,
@@ -3160,9 +3160,9 @@ window.SUMO_DATA = {
       },
       "form": 54,
       "sourceIndex": 11,
-      "record": "2–2",
+      "record": "2–3",
       "wins": 2,
-      "losses": 2,
+      "losses": 3,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -3220,11 +3220,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3840",
           "opponentId": "kotoshoho",
           "opponent": "Kotoshoho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 6,
@@ -3431,9 +3431,9 @@ window.SUMO_DATA = {
       },
       "form": 54,
       "sourceIndex": 12,
-      "record": "0–4",
+      "record": "0–5",
       "wins": 0,
-      "losses": 4,
+      "losses": 5,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -3491,11 +3491,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4227",
           "opponentId": "onosato",
           "opponent": "Onosato",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 6,
@@ -3702,8 +3702,8 @@ window.SUMO_DATA = {
       },
       "form": 47,
       "sourceIndex": 13,
-      "record": "1–3",
-      "wins": 1,
+      "record": "2–3",
+      "wins": 2,
       "losses": 3,
       "absences": 0,
       "kyujoDays": [],
@@ -3711,7 +3711,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 1,
+      "points": 2,
       "dailyResults": [
         {
           "day": 1,
@@ -3762,11 +3762,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4230",
           "opponentId": "aonishiki",
           "opponent": "Aonishiki",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 17
         },
         {
           "day": 6,
@@ -3973,8 +3973,8 @@ window.SUMO_DATA = {
       },
       "form": 51,
       "sourceIndex": 14,
-      "record": "3–1",
-      "wins": 3,
+      "record": "4–1",
+      "wins": 4,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -3982,7 +3982,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 3,
+      "points": 4,
       "dailyResults": [
         {
           "day": 1,
@@ -4033,11 +4033,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3661",
           "opponentId": "kotozakura",
           "opponent": "Kotozakura",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 6,
@@ -4244,9 +4244,9 @@ window.SUMO_DATA = {
       },
       "form": 49,
       "sourceIndex": 15,
-      "record": "3–1",
+      "record": "3–2",
       "wins": 3,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -4304,11 +4304,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3622",
           "opponentId": "kirishima",
           "opponent": "Kirishima",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 16
         },
         {
           "day": 6,
@@ -4515,8 +4515,8 @@ window.SUMO_DATA = {
       },
       "form": 67,
       "sourceIndex": 16,
-      "record": "1–3",
-      "wins": 1,
+      "record": "2–3",
+      "wins": 2,
       "losses": 3,
       "absences": 0,
       "kyujoDays": [],
@@ -4524,7 +4524,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 1,
+      "points": 2,
       "dailyResults": [
         {
           "day": 1,
@@ -4575,11 +4575,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4120",
           "opponentId": "kotoeiho",
           "opponent": "Kotoeiho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 6,
@@ -4786,8 +4786,8 @@ window.SUMO_DATA = {
       },
       "form": 50,
       "sourceIndex": 17,
-      "record": "3–1",
-      "wins": 3,
+      "record": "4–1",
+      "wins": 4,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -4795,7 +4795,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 3,
+      "points": 4,
       "dailyResults": [
         {
           "day": 1,
@@ -4846,11 +4846,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4093",
           "opponentId": "fujiseiun",
           "opponent": "Fujiseiun",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 17
         },
         {
           "day": 6,
@@ -5057,8 +5057,8 @@ window.SUMO_DATA = {
       },
       "form": 46,
       "sourceIndex": 18,
-      "record": "2–2",
-      "wins": 2,
+      "record": "3–2",
+      "wins": 3,
       "losses": 2,
       "absences": 0,
       "kyujoDays": [],
@@ -5066,7 +5066,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 2,
+      "points": 3,
       "dailyResults": [
         {
           "day": 1,
@@ -5117,11 +5117,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3742",
           "opponentId": "nishikifuji",
           "opponent": "Nishikifuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 6,
@@ -5328,8 +5328,8 @@ window.SUMO_DATA = {
       },
       "form": 66,
       "sourceIndex": 19,
-      "record": "3–1",
-      "wins": 3,
+      "record": "4–1",
+      "wins": 4,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -5337,7 +5337,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 3,
+      "points": 4,
       "dailyResults": [
         {
           "day": 1,
@@ -5388,11 +5388,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4171",
           "opponentId": "takerufuji",
           "opponent": "Takerufuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 53
         },
         {
           "day": 6,
@@ -5599,9 +5599,9 @@ window.SUMO_DATA = {
       },
       "form": 44,
       "sourceIndex": 20,
-      "record": "0–4",
+      "record": "0–5",
       "wins": 0,
-      "losses": 4,
+      "losses": 5,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -5659,11 +5659,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3705",
           "opponentId": "hiradoumi",
           "opponent": "Hiradoumi",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 6,
@@ -5870,9 +5870,9 @@ window.SUMO_DATA = {
       },
       "form": 59,
       "sourceIndex": 21,
-      "record": "3–1",
+      "record": "3–2",
       "wins": 3,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -5930,11 +5930,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3907",
           "opponentId": "roga",
           "opponent": "Roga",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 17
         },
         {
           "day": 6,
@@ -6141,9 +6141,9 @@ window.SUMO_DATA = {
       },
       "form": 57,
       "sourceIndex": 22,
-      "record": "1–3",
+      "record": "1–4",
       "wins": 1,
-      "losses": 3,
+      "losses": 4,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -6201,11 +6201,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4108",
           "opponentId": "oshoma",
           "opponent": "Oshoma",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 6,
@@ -6412,9 +6412,9 @@ window.SUMO_DATA = {
       },
       "form": 60,
       "sourceIndex": 23,
-      "record": "3–1",
+      "record": "3–2",
       "wins": 3,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -6472,11 +6472,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3682",
           "opponentId": "asanoyama",
           "opponent": "Asanoyama",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 53
         },
         {
           "day": 6,
@@ -6683,8 +6683,8 @@ window.SUMO_DATA = {
       },
       "form": 43,
       "sourceIndex": 24,
-      "record": "2–2",
-      "wins": 2,
+      "record": "3–2",
+      "wins": 3,
       "losses": 2,
       "absences": 0,
       "kyujoDays": [],
@@ -6692,7 +6692,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 2,
+      "points": 3,
       "dailyResults": [
         {
           "day": 1,
@@ -6743,11 +6743,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3753",
           "opponentId": "ichiyamamoto",
           "opponent": "Ichiyamamoto",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 6,
@@ -6954,8 +6954,8 @@ window.SUMO_DATA = {
       },
       "form": 47,
       "sourceIndex": 25,
-      "record": "3–1",
-      "wins": 3,
+      "record": "4–1",
+      "wins": 4,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -6963,7 +6963,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 3,
+      "points": 4,
       "dailyResults": [
         {
           "day": 1,
@@ -7014,11 +7014,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3371",
           "opponentId": "wakamotoharu",
           "opponent": "Wakamotoharu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 46
         },
         {
           "day": 6,
@@ -7225,8 +7225,8 @@ window.SUMO_DATA = {
       },
       "form": 52,
       "sourceIndex": 26,
-      "record": "1–3",
-      "wins": 1,
+      "record": "2–3",
+      "wins": 2,
       "losses": 3,
       "absences": 0,
       "kyujoDays": [],
@@ -7234,7 +7234,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 1,
+      "points": 2,
       "dailyResults": [
         {
           "day": 1,
@@ -7285,11 +7285,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3844",
           "opponentId": "oho",
           "opponent": "Oho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 6,
@@ -7496,9 +7496,9 @@ window.SUMO_DATA = {
       },
       "form": 43,
       "sourceIndex": 27,
-      "record": "1–3",
+      "record": "1–4",
       "wins": 1,
-      "losses": 3,
+      "losses": 4,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -7556,11 +7556,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3990",
           "opponentId": "shishi",
           "opponent": "Shishi",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 6,
@@ -7767,9 +7767,9 @@ window.SUMO_DATA = {
       },
       "form": 47,
       "sourceIndex": 28,
-      "record": "3–1",
+      "record": "3–2",
       "wins": 3,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -7827,11 +7827,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4175",
           "opponentId": "asahakuryu",
           "opponent": "Asahakuryu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 6,
@@ -8038,9 +8038,9 @@ window.SUMO_DATA = {
       },
       "form": 43,
       "sourceIndex": 29,
-      "record": "3–1",
+      "record": "3–2",
       "wins": 3,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -8098,11 +8098,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3616",
           "opponentId": "ura",
           "opponent": "Ura",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 46
         },
         {
           "day": 6,
@@ -8309,9 +8309,9 @@ window.SUMO_DATA = {
       },
       "form": 44,
       "sourceIndex": 30,
-      "record": "0–4",
+      "record": "0–5",
       "wins": 0,
-      "losses": 4,
+      "losses": 5,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -8369,11 +8369,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3485",
           "opponentId": "abi",
           "opponent": "Abi",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 6,
@@ -8857,8 +8857,8 @@ window.SUMO_DATA = {
       },
       "form": 59,
       "sourceIndex": 32,
-      "record": "2–2",
-      "wins": 2,
+      "record": "3–2",
+      "wins": 3,
       "losses": 2,
       "absences": 0,
       "kyujoDays": [],
@@ -8866,7 +8866,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 2,
+      "points": 3,
       "dailyResults": [
         {
           "day": 1,
@@ -8917,11 +8917,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4112",
           "opponentId": "kinbozan",
           "opponent": "Kinbozan",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 6,
@@ -9128,9 +9128,9 @@ window.SUMO_DATA = {
       },
       "form": 54,
       "sourceIndex": 33,
-      "record": "3–1",
+      "record": "3–2",
       "wins": 3,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -9188,11 +9188,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3933",
           "opponentId": "tokihayate",
           "opponent": "Tokihayate",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 62
         },
         {
           "day": 6,
@@ -9399,8 +9399,8 @@ window.SUMO_DATA = {
       },
       "form": 40,
       "sourceIndex": 34,
-      "record": "2–2",
-      "wins": 2,
+      "record": "3–2",
+      "wins": 3,
       "losses": 2,
       "absences": 0,
       "kyujoDays": [],
@@ -9408,7 +9408,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 2,
+      "points": 3,
       "dailyResults": [
         {
           "day": 1,
@@ -9459,11 +9459,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3521",
           "opponentId": "shodai",
           "opponent": "Shodai",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 6,
@@ -9670,8 +9670,8 @@ window.SUMO_DATA = {
       },
       "form": 47,
       "sourceIndex": 35,
-      "record": "1–3",
-      "wins": 1,
+      "record": "2–3",
+      "wins": 2,
       "losses": 3,
       "absences": 0,
       "kyujoDays": [],
@@ -9679,7 +9679,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 1,
+      "points": 2,
       "dailyResults": [
         {
           "day": 1,
@@ -9730,11 +9730,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4285",
           "opponentId": "asasuiryu",
           "opponent": "Asasuiryu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 64
         },
         {
           "day": 6,
@@ -9941,8 +9941,8 @@ window.SUMO_DATA = {
       },
       "form": 50,
       "sourceIndex": 36,
-      "record": "2–2",
-      "wins": 2,
+      "record": "3–2",
+      "wins": 3,
       "losses": 2,
       "absences": 0,
       "kyujoDays": [],
@@ -9950,7 +9950,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 2,
+      "points": 3,
       "dailyResults": [
         {
           "day": 1,
@@ -10001,11 +10001,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "2629",
           "opponentId": null,
           "opponent": "Tamawashi",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 6,
@@ -10212,9 +10212,9 @@ window.SUMO_DATA = {
       },
       "form": 59,
       "sourceIndex": 37,
-      "record": "3–1",
+      "record": "3–2",
       "wins": 3,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -10272,11 +10272,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3594",
           "opponentId": "tobizaru",
           "opponent": "Tobizaru",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 64
         },
         {
           "day": 6,
@@ -10483,8 +10483,8 @@ window.SUMO_DATA = {
       },
       "form": 48,
       "sourceIndex": 38,
-      "record": "2–2",
-      "wins": 2,
+      "record": "3–2",
+      "wins": 3,
       "losses": 2,
       "absences": 0,
       "kyujoDays": [],
@@ -10492,7 +10492,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 2,
+      "points": 3,
       "dailyResults": [
         {
           "day": 1,
@@ -10543,11 +10543,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4101",
           "opponentId": "asakoryu",
           "opponent": "Asakoryu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 62
         },
         {
           "day": 6,
@@ -11031,8 +11031,8 @@ window.SUMO_DATA = {
       },
       "form": 67,
       "sourceIndex": 40,
-      "record": "3–1",
-      "wins": 3,
+      "record": "4–1",
+      "wins": 4,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -11040,7 +11040,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 3,
+      "points": 4,
       "dailyResults": [
         {
           "day": 1,
@@ -11091,11 +11091,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3553",
           "opponentId": "shonannoumi",
           "opponent": "Shonannoumi",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 6,
@@ -11302,9 +11302,9 @@ window.SUMO_DATA = {
       },
       "form": 48,
       "sourceIndex": 41,
-      "record": "0–4",
+      "record": "0–5",
       "wins": 0,
-      "losses": 4,
+      "losses": 5,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -11362,11 +11362,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4243",
           "opponentId": "toshinofuji",
           "opponent": "Toshinofuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 6,
@@ -11484,7 +11484,350 @@ window.SUMO_DATA = {
       "badge": null
     }
   ],
-  "bouts": [],
+  "bouts": [
+    {
+      "id": "5-3553-4243",
+      "day": 5,
+      "east": "shonannoumi",
+      "west": "toshinofuji",
+      "eastJsaId": "3553",
+      "westJsaId": "4243",
+      "eastName": "Shonannoumi",
+      "westName": "Toshinofuji",
+      "completed": true,
+      "winner": "toshinofuji",
+      "winnerJsaId": "4243",
+      "technique": "yorikiri",
+      "techniqueId": 70,
+      "eastRecord": "0–5",
+      "westRecord": "4–1",
+      "importance": 1
+    },
+    {
+      "id": "5-3594-4285",
+      "day": 5,
+      "east": "tobizaru",
+      "west": "asasuiryu",
+      "eastJsaId": "3594",
+      "westJsaId": "4285",
+      "eastName": "Tobizaru",
+      "westName": "Asasuiryu",
+      "completed": true,
+      "winner": "tobizaru",
+      "winnerJsaId": "3594",
+      "technique": "hikiotoshi",
+      "techniqueId": 64,
+      "eastRecord": "2–3",
+      "westRecord": "3–2",
+      "importance": 1
+    },
+    {
+      "id": "5-4101-3933",
+      "day": 5,
+      "east": "asakoryu",
+      "west": "tokihayate",
+      "eastJsaId": "4101",
+      "westJsaId": "3933",
+      "eastName": "Asakoryu",
+      "westName": "Tokihayate",
+      "completed": true,
+      "winner": "tokihayate",
+      "winnerJsaId": "3933",
+      "technique": "hatakikomi",
+      "techniqueId": 62,
+      "eastRecord": "3–2",
+      "westRecord": "3–2",
+      "importance": 1
+    },
+    {
+      "id": "5-3485-3521",
+      "day": 5,
+      "east": "abi",
+      "west": "shodai",
+      "eastJsaId": "3485",
+      "westJsaId": "3521",
+      "eastName": "Abi",
+      "westName": "Shodai",
+      "completed": true,
+      "winner": "abi",
+      "winnerJsaId": "3485",
+      "technique": "oshidashi",
+      "techniqueId": 18,
+      "eastRecord": "3–2",
+      "westRecord": "0–5",
+      "importance": 1
+    },
+    {
+      "id": "5-4175-4112",
+      "day": 5,
+      "east": "asahakuryu",
+      "west": "kinbozan",
+      "eastJsaId": "4175",
+      "westJsaId": "4112",
+      "eastName": "Asahakuryu",
+      "westName": "Kinbozan",
+      "completed": true,
+      "winner": "asahakuryu",
+      "winnerJsaId": "4175",
+      "technique": "yorikiri",
+      "techniqueId": 70,
+      "eastRecord": "3–2",
+      "westRecord": "3–2",
+      "importance": 1
+    },
+    {
+      "id": "5-3844-3990",
+      "day": 5,
+      "east": "oho",
+      "west": "shishi",
+      "eastJsaId": "3844",
+      "westJsaId": "3990",
+      "eastName": "Oho",
+      "westName": "Shishi",
+      "completed": true,
+      "winner": "shishi",
+      "winnerJsaId": "3990",
+      "technique": "yorikiri",
+      "techniqueId": 70,
+      "eastRecord": "1–4",
+      "westRecord": "2–3",
+      "importance": 1
+    },
+    {
+      "id": "5-3616-3371",
+      "day": 5,
+      "east": "ura",
+      "west": "wakamotoharu",
+      "eastJsaId": "3616",
+      "westJsaId": "3371",
+      "eastName": "Ura",
+      "westName": "Wakamotoharu",
+      "completed": true,
+      "winner": "ura",
+      "winnerJsaId": "3616",
+      "technique": "sotogake",
+      "techniqueId": 46,
+      "eastRecord": "4–1",
+      "westRecord": "3–2",
+      "importance": 1
+    },
+    {
+      "id": "5-3705-3753",
+      "day": 5,
+      "east": "hiradoumi",
+      "west": "ichiyamamoto",
+      "eastJsaId": "3705",
+      "westJsaId": "3753",
+      "eastName": "Hiradoumi",
+      "westName": "Ichiyamamoto",
+      "completed": true,
+      "winner": "hiradoumi",
+      "winnerJsaId": "3705",
+      "technique": "oshidashi",
+      "techniqueId": 18,
+      "eastRecord": "3–2",
+      "westRecord": "0–5",
+      "importance": 1
+    },
+    {
+      "id": "5-3682-4171",
+      "day": 5,
+      "east": "asanoyama",
+      "west": "takerufuji",
+      "eastJsaId": "3682",
+      "westJsaId": "4171",
+      "eastName": "Asanoyama",
+      "westName": "Takerufuji",
+      "completed": true,
+      "winner": "asanoyama",
+      "winnerJsaId": "3682",
+      "technique": "tsukiotoshi",
+      "techniqueId": 53,
+      "eastRecord": "4–1",
+      "westRecord": "3–2",
+      "importance": 1
+    },
+    {
+      "id": "5-3742-4108",
+      "day": 5,
+      "east": "nishikifuji",
+      "west": "oshoma",
+      "eastJsaId": "3742",
+      "westJsaId": "4108",
+      "eastName": "Nishikifuji",
+      "westName": "Oshoma",
+      "completed": true,
+      "winner": "oshoma",
+      "winnerJsaId": "4108",
+      "technique": "oshidashi",
+      "techniqueId": 18,
+      "eastRecord": "1–4",
+      "westRecord": "3–2",
+      "importance": 1
+    },
+    {
+      "id": "5-3907-4093",
+      "day": 5,
+      "east": "roga",
+      "west": "fujiseiun",
+      "eastJsaId": "3907",
+      "westJsaId": "4093",
+      "eastName": "Roga",
+      "westName": "Fujiseiun",
+      "completed": true,
+      "winner": "roga",
+      "winnerJsaId": "3907",
+      "technique": "oshitaoshi",
+      "techniqueId": 17,
+      "eastRecord": "4–1",
+      "westRecord": "3–2",
+      "importance": 1
+    },
+    {
+      "id": "5-4336-4120",
+      "day": 5,
+      "east": "fujiryoga",
+      "west": "kotoeiho",
+      "eastJsaId": "4336",
+      "westJsaId": "4120",
+      "eastName": "Fujiryoga",
+      "westName": "Kotoeiho",
+      "completed": true,
+      "winner": "fujiryoga",
+      "winnerJsaId": "4336",
+      "technique": "yorikiri",
+      "techniqueId": 70,
+      "eastRecord": "2–3",
+      "westRecord": "1–4",
+      "importance": 1
+    },
+    {
+      "id": "5-3840-2775",
+      "day": 5,
+      "east": "kotoshoho",
+      "west": "takayasu",
+      "eastJsaId": "3840",
+      "westJsaId": "2775",
+      "eastName": "Kotoshoho",
+      "westName": "Takayasu",
+      "completed": true,
+      "winner": "kotoshoho",
+      "winnerJsaId": "3840",
+      "technique": "oshidashi",
+      "techniqueId": 18,
+      "eastRecord": "2–3",
+      "westRecord": "2–3",
+      "importance": 1
+    },
+    {
+      "id": "5-4187-4191",
+      "day": 5,
+      "east": "hakunofuji",
+      "west": "fujinokawa",
+      "eastJsaId": "4187",
+      "westJsaId": "4191",
+      "eastName": "Hakunofuji",
+      "westName": "Fujinokawa",
+      "completed": true,
+      "winner": "fujinokawa",
+      "winnerJsaId": "4191",
+      "technique": "oshidashi",
+      "techniqueId": 18,
+      "eastRecord": "1–4",
+      "westRecord": "3–2",
+      "importance": 3
+    },
+    {
+      "id": "5-4055-3376",
+      "day": 5,
+      "east": "atamifuji",
+      "west": "daieisho",
+      "eastJsaId": "4055",
+      "westJsaId": "3376",
+      "eastName": "Atamifuji",
+      "westName": "Daieisho",
+      "completed": true,
+      "winner": "atamifuji",
+      "winnerJsaId": "4055",
+      "technique": "oshidashi",
+      "techniqueId": 18,
+      "eastRecord": "4–1",
+      "westRecord": "1–4",
+      "importance": 3
+    },
+    {
+      "id": "5-3622-3265",
+      "day": 5,
+      "east": "kirishima",
+      "west": "takanosho",
+      "eastJsaId": "3622",
+      "westJsaId": "3265",
+      "eastName": "Kirishima",
+      "westName": "Takanosho",
+      "completed": true,
+      "winner": "kirishima",
+      "winnerJsaId": "3622",
+      "technique": "okuridashi",
+      "techniqueId": 16,
+      "eastRecord": "4–1",
+      "westRecord": "3–2",
+      "importance": 4
+    },
+    {
+      "id": "5-4230-4079",
+      "day": 5,
+      "east": "aonishiki",
+      "west": "gonoyama",
+      "eastJsaId": "4230",
+      "westJsaId": "4079",
+      "eastName": "Aonishiki",
+      "westName": "Gonoyama",
+      "completed": true,
+      "winner": "gonoyama",
+      "winnerJsaId": "4079",
+      "technique": "oshitaoshi",
+      "techniqueId": 17,
+      "eastRecord": "3–2",
+      "westRecord": "2–3",
+      "importance": 4
+    },
+    {
+      "id": "5-3711-3661",
+      "day": 5,
+      "east": "churanoumi",
+      "west": "kotozakura",
+      "eastJsaId": "3711",
+      "westJsaId": "3661",
+      "eastName": "Churanoumi",
+      "westName": "Kotozakura",
+      "completed": true,
+      "winner": "churanoumi",
+      "winnerJsaId": "3711",
+      "technique": "oshidashi",
+      "techniqueId": 18,
+      "eastRecord": "4–1",
+      "westRecord": "4–1",
+      "importance": 4
+    },
+    {
+      "id": "5-4227-4279",
+      "day": 5,
+      "east": "onosato",
+      "west": "yoshinofuji",
+      "eastJsaId": "4227",
+      "westJsaId": "4279",
+      "eastName": "Onosato",
+      "westName": "Yoshinofuji",
+      "completed": true,
+      "winner": "onosato",
+      "winnerJsaId": "4227",
+      "technique": "yorikiri",
+      "techniqueId": 70,
+      "eastRecord": "4–1",
+      "westRecord": "0–5",
+      "importance": 5
+    }
+  ],
   "results": {
     "schemaVersion": 1,
     "bashoId": "637",
@@ -11493,8 +11836,8 @@ window.SUMO_DATA = {
     "currentDay": 5,
     "scheduledThroughDay": 6,
     "sideTotals": {
-      "East": 47,
-      "West": 33
+      "East": 60,
+      "West": 40
     },
     "injuries": [
       {
@@ -12933,7 +13276,7 @@ window.SUMO_DATA = {
       {
         "day": 5,
         "label": "Day 5  September 17, 2026",
-        "completed": false,
+        "completed": true,
         "bouts": [
           {
             "id": "5-3553-4243",
@@ -12944,13 +13287,13 @@ window.SUMO_DATA = {
             "westJsaId": "4243",
             "eastName": "Shonannoumi",
             "westName": "Toshinofuji",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "0–4",
-            "westRecord": "3–1"
+            "completed": true,
+            "winner": "toshinofuji",
+            "winnerJsaId": "4243",
+            "technique": "yorikiri",
+            "techniqueId": 70,
+            "eastRecord": "0–5",
+            "westRecord": "4–1"
           },
           {
             "id": "5-2629-3207",
@@ -12961,13 +13304,13 @@ window.SUMO_DATA = {
             "westJsaId": "3207",
             "eastName": "Tamawashi",
             "westName": "Chiyoshoma",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–3",
-            "westRecord": "2–2"
+            "completed": true,
+            "winner": "chiyoshoma",
+            "winnerJsaId": "3207",
+            "technique": "yorikiri",
+            "techniqueId": 70,
+            "eastRecord": "1–4",
+            "westRecord": "3–2"
           },
           {
             "id": "5-3594-4285",
@@ -12978,13 +13321,13 @@ window.SUMO_DATA = {
             "westJsaId": "4285",
             "eastName": "Tobizaru",
             "westName": "Asasuiryu",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–3",
-            "westRecord": "3–1"
+            "completed": true,
+            "winner": "tobizaru",
+            "winnerJsaId": "3594",
+            "technique": "hikiotoshi",
+            "techniqueId": 64,
+            "eastRecord": "2–3",
+            "westRecord": "3–2"
           },
           {
             "id": "5-4101-3933",
@@ -12995,13 +13338,13 @@ window.SUMO_DATA = {
             "westJsaId": "3933",
             "eastName": "Asakoryu",
             "westName": "Tokihayate",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "2–2"
+            "completed": true,
+            "winner": "tokihayate",
+            "winnerJsaId": "3933",
+            "technique": "hatakikomi",
+            "techniqueId": 62,
+            "eastRecord": "3–2",
+            "westRecord": "3–2"
           },
           {
             "id": "5-3485-3521",
@@ -13012,13 +13355,13 @@ window.SUMO_DATA = {
             "westJsaId": "3521",
             "eastName": "Abi",
             "westName": "Shodai",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "2–2",
-            "westRecord": "0–4"
+            "completed": true,
+            "winner": "abi",
+            "winnerJsaId": "3485",
+            "technique": "oshidashi",
+            "techniqueId": 18,
+            "eastRecord": "3–2",
+            "westRecord": "0–5"
           },
           {
             "id": "5-4175-4112",
@@ -13029,13 +13372,13 @@ window.SUMO_DATA = {
             "westJsaId": "4112",
             "eastName": "Asahakuryu",
             "westName": "Kinbozan",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "2–2",
-            "westRecord": "3–1"
+            "completed": true,
+            "winner": "asahakuryu",
+            "winnerJsaId": "4175",
+            "technique": "yorikiri",
+            "techniqueId": 70,
+            "eastRecord": "3–2",
+            "westRecord": "3–2"
           },
           {
             "id": "5-3844-3990",
@@ -13046,13 +13389,13 @@ window.SUMO_DATA = {
             "westJsaId": "3990",
             "eastName": "Oho",
             "westName": "Shishi",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–3",
-            "westRecord": "1–3"
+            "completed": true,
+            "winner": "shishi",
+            "winnerJsaId": "3990",
+            "technique": "yorikiri",
+            "techniqueId": 70,
+            "eastRecord": "1–4",
+            "westRecord": "2–3"
           },
           {
             "id": "5-3616-3371",
@@ -13063,13 +13406,13 @@ window.SUMO_DATA = {
             "westJsaId": "3371",
             "eastName": "Ura",
             "westName": "Wakamotoharu",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "3–1"
+            "completed": true,
+            "winner": "ura",
+            "winnerJsaId": "3616",
+            "technique": "sotogake",
+            "techniqueId": 46,
+            "eastRecord": "4–1",
+            "westRecord": "3–2"
           },
           {
             "id": "5-3705-3753",
@@ -13080,13 +13423,13 @@ window.SUMO_DATA = {
             "westJsaId": "3753",
             "eastName": "Hiradoumi",
             "westName": "Ichiyamamoto",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "2–2",
-            "westRecord": "0–4"
+            "completed": true,
+            "winner": "hiradoumi",
+            "winnerJsaId": "3705",
+            "technique": "oshidashi",
+            "techniqueId": 18,
+            "eastRecord": "3–2",
+            "westRecord": "0–5"
           },
           {
             "id": "5-3682-4171",
@@ -13097,13 +13440,13 @@ window.SUMO_DATA = {
             "westJsaId": "4171",
             "eastName": "Asanoyama",
             "westName": "Takerufuji",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "3–1"
+            "completed": true,
+            "winner": "asanoyama",
+            "winnerJsaId": "3682",
+            "technique": "tsukiotoshi",
+            "techniqueId": 53,
+            "eastRecord": "4–1",
+            "westRecord": "3–2"
           },
           {
             "id": "5-3742-4108",
@@ -13114,13 +13457,13 @@ window.SUMO_DATA = {
             "westJsaId": "4108",
             "eastName": "Nishikifuji",
             "westName": "Oshoma",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–3",
-            "westRecord": "2–2"
+            "completed": true,
+            "winner": "oshoma",
+            "winnerJsaId": "4108",
+            "technique": "oshidashi",
+            "techniqueId": 18,
+            "eastRecord": "1–4",
+            "westRecord": "3–2"
           },
           {
             "id": "5-3907-4093",
@@ -13131,13 +13474,13 @@ window.SUMO_DATA = {
             "westJsaId": "4093",
             "eastName": "Roga",
             "westName": "Fujiseiun",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "3–1"
+            "completed": true,
+            "winner": "roga",
+            "winnerJsaId": "3907",
+            "technique": "oshitaoshi",
+            "techniqueId": 17,
+            "eastRecord": "4–1",
+            "westRecord": "3–2"
           },
           {
             "id": "5-4336-4120",
@@ -13148,13 +13491,13 @@ window.SUMO_DATA = {
             "westJsaId": "4120",
             "eastName": "Fujiryoga",
             "westName": "Kotoeiho",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–3",
-            "westRecord": "1–3"
+            "completed": true,
+            "winner": "fujiryoga",
+            "winnerJsaId": "4336",
+            "technique": "yorikiri",
+            "techniqueId": 70,
+            "eastRecord": "2–3",
+            "westRecord": "1–4"
           },
           {
             "id": "5-3840-2775",
@@ -13165,13 +13508,13 @@ window.SUMO_DATA = {
             "westJsaId": "2775",
             "eastName": "Kotoshoho",
             "westName": "Takayasu",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–3",
-            "westRecord": "2–2"
+            "completed": true,
+            "winner": "kotoshoho",
+            "winnerJsaId": "3840",
+            "technique": "oshidashi",
+            "techniqueId": 18,
+            "eastRecord": "2–3",
+            "westRecord": "2–3"
           },
           {
             "id": "5-4187-4191",
@@ -13182,13 +13525,13 @@ window.SUMO_DATA = {
             "westJsaId": "4191",
             "eastName": "Hakunofuji",
             "westName": "Fujinokawa",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–3",
-            "westRecord": "2–2"
+            "completed": true,
+            "winner": "fujinokawa",
+            "winnerJsaId": "4191",
+            "technique": "oshidashi",
+            "techniqueId": 18,
+            "eastRecord": "1–4",
+            "westRecord": "3–2"
           },
           {
             "id": "5-4055-3376",
@@ -13199,13 +13542,13 @@ window.SUMO_DATA = {
             "westJsaId": "3376",
             "eastName": "Atamifuji",
             "westName": "Daieisho",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "1–3"
+            "completed": true,
+            "winner": "atamifuji",
+            "winnerJsaId": "4055",
+            "technique": "oshidashi",
+            "techniqueId": 18,
+            "eastRecord": "4–1",
+            "westRecord": "1–4"
           },
           {
             "id": "5-3622-3265",
@@ -13216,13 +13559,13 @@ window.SUMO_DATA = {
             "westJsaId": "3265",
             "eastName": "Kirishima",
             "westName": "Takanosho",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "3–1"
+            "completed": true,
+            "winner": "kirishima",
+            "winnerJsaId": "3622",
+            "technique": "okuridashi",
+            "techniqueId": 16,
+            "eastRecord": "4–1",
+            "westRecord": "3–2"
           },
           {
             "id": "5-4230-4079",
@@ -13233,13 +13576,13 @@ window.SUMO_DATA = {
             "westJsaId": "4079",
             "eastName": "Aonishiki",
             "westName": "Gonoyama",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "1–3"
+            "completed": true,
+            "winner": "gonoyama",
+            "winnerJsaId": "4079",
+            "technique": "oshitaoshi",
+            "techniqueId": 17,
+            "eastRecord": "3–2",
+            "westRecord": "2–3"
           },
           {
             "id": "5-3711-3661",
@@ -13250,13 +13593,13 @@ window.SUMO_DATA = {
             "westJsaId": "3661",
             "eastName": "Churanoumi",
             "westName": "Kotozakura",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "4–0"
+            "completed": true,
+            "winner": "churanoumi",
+            "winnerJsaId": "3711",
+            "technique": "oshidashi",
+            "techniqueId": 18,
+            "eastRecord": "4–1",
+            "westRecord": "4–1"
           },
           {
             "id": "5-4227-4279",
@@ -13267,13 +13610,13 @@ window.SUMO_DATA = {
             "westJsaId": "4279",
             "eastName": "Onosato",
             "westName": "Yoshinofuji",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "0–4"
+            "completed": true,
+            "winner": "onosato",
+            "winnerJsaId": "4227",
+            "technique": "yorikiri",
+            "techniqueId": 70,
+            "eastRecord": "4–1",
+            "westRecord": "0–5"
           }
         ]
       },
@@ -13296,8 +13639,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "0–4",
-            "westRecord": "2–2"
+            "eastRecord": "0–5",
+            "westRecord": "3–2"
           },
           {
             "id": "6-3594-4231",
@@ -13313,8 +13656,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "1–3",
-            "westRecord": "2–2"
+            "eastRecord": "2–3",
+            "westRecord": "3–2"
           },
           {
             "id": "6-4243-3207",
@@ -13330,8 +13673,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "2–2"
+            "eastRecord": "4–1",
+            "westRecord": "3–2"
           },
           {
             "id": "6-4285-3485",
@@ -13347,8 +13690,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "2–2"
+            "eastRecord": "3–2",
+            "westRecord": "3–2"
           },
           {
             "id": "6-3844-3371",
@@ -13364,8 +13707,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "1–3",
-            "westRecord": "3–1"
+            "eastRecord": "1–4",
+            "westRecord": "3–2"
           },
           {
             "id": "6-4101-4112",
@@ -13381,8 +13724,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "3–1"
+            "eastRecord": "3–2",
+            "westRecord": "3–2"
           },
           {
             "id": "6-3616-4175",
@@ -13398,8 +13741,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "2–2"
+            "eastRecord": "4–1",
+            "westRecord": "3–2"
           },
           {
             "id": "6-3521-3990",
@@ -13415,8 +13758,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "0–4",
-            "westRecord": "1–3"
+            "eastRecord": "0–5",
+            "westRecord": "2–3"
           },
           {
             "id": "6-3682-3705",
@@ -13432,8 +13775,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "2–2"
+            "eastRecord": "4–1",
+            "westRecord": "3–2"
           },
           {
             "id": "6-4171-3753",
@@ -13449,8 +13792,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "0–4"
+            "eastRecord": "3–2",
+            "westRecord": "0–5"
           },
           {
             "id": "6-3907-3742",
@@ -13466,8 +13809,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "1–3"
+            "eastRecord": "4–1",
+            "westRecord": "1–4"
           },
           {
             "id": "6-4093-4108",
@@ -13483,8 +13826,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "2–2"
+            "eastRecord": "3–2",
+            "westRecord": "3–2"
           },
           {
             "id": "6-4336-3711",
@@ -13500,8 +13843,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "1–3",
-            "westRecord": "3–1"
+            "eastRecord": "2–3",
+            "westRecord": "4–1"
           },
           {
             "id": "6-2775-4120",
@@ -13517,8 +13860,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "2–2",
-            "westRecord": "1–3"
+            "eastRecord": "2–3",
+            "westRecord": "1–4"
           },
           {
             "id": "6-4187-3376",
@@ -13534,8 +13877,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "1–3",
-            "westRecord": "1–3"
+            "eastRecord": "1–4",
+            "westRecord": "1–4"
           },
           {
             "id": "6-4055-3840",
@@ -13551,8 +13894,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "1–3"
+            "eastRecord": "4–1",
+            "westRecord": "2–3"
           },
           {
             "id": "6-3265-3661",
@@ -13568,8 +13911,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "4–0"
+            "eastRecord": "3–2",
+            "westRecord": "4–1"
           },
           {
             "id": "6-3622-4279",
@@ -13585,8 +13928,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "0–4"
+            "eastRecord": "4–1",
+            "westRecord": "0–5"
           },
           {
             "id": "6-4230-4191",
@@ -13602,8 +13945,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "2–2"
+            "eastRecord": "3–2",
+            "westRecord": "3–2"
           },
           {
             "id": "6-4227-4079",
@@ -13619,14 +13962,14 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "3–1",
-            "westRecord": "1–3"
+            "eastRecord": "4–1",
+            "westRecord": "2–3"
           }
         ]
       }
     ],
-    "generatedAt": "2026-09-17T04:56:48.498Z",
-    "dataSignature": "797b4acf96bd14342b39b3039960d31b5762feea4276a4f88ca52072363fe741"
+    "generatedAt": "2026-09-17T11:47:05.092Z",
+    "dataSignature": "f11f8c381fd2a3ece5de7330e3f6efed869c33a1f8b518b51bc7bb5e8cb4ff72"
   },
   "history": [],
   "banzuke": {
