@@ -3,7 +3,7 @@
   "bashoId": "637",
   "bashoSlug": "aki-2026",
   "division": "Makuuchi",
-  "currentDay": 6,
+  "currentDay": 7,
   "scheduledThroughDay": 7,
   "sideTotals": {
     "East": 68,
@@ -14,14 +14,15 @@
       "id": "hoshoryu",
       "jsaId": "3842",
       "name": "Hoshoryu",
-      "absences": 6,
+      "absences": 7,
       "kyujoDays": [
         1,
         2,
         3,
         4,
         5,
-        6
+        6,
+        7
       ],
       "status": "Kyujo · injured / withdrawn"
     },
@@ -29,14 +30,15 @@
       "id": "wakatakakage",
       "jsaId": "3761",
       "name": "Wakatakakage",
-      "absences": 6,
+      "absences": 7,
       "kyujoDays": [
         1,
         2,
         3,
         4,
         5,
-        6
+        6,
+        7
       ],
       "status": "Kyujo · injured / withdrawn"
     },
@@ -44,19 +46,20 @@
       "id": "wakanosho",
       "jsaId": "4121",
       "name": "Wakanosho",
-      "absences": 6,
+      "absences": 7,
       "kyujoDays": [
         1,
         2,
         3,
         4,
         5,
-        6
+        6,
+        7
       ],
       "status": "Kyujo · injured / withdrawn"
     }
   ],
-  "source": "https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/6/",
+  "source": "https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/7/",
   "days": [
     {
       "day": 1,
@@ -2488,6 +2491,6 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-18T11:21:23.687Z",
-  "dataSignature": "9ab83b1a259109ef64d93d8747af211652078cde729cc2bfdccb84cf56b13f05"
+  "generatedAt": "2026-09-18T16:27:55.396Z",
+  "dataSignature": "6cbe1c0b90ed3f77399e017ced57b09d03f073574acf8682836c03d5a4663eba"
 }
