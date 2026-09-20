@@ -365,10 +365,10 @@
       },
       "form": 70,
       "sourceIndex": 1,
-      "record": "0–0–8",
+      "record": "0–0–9",
       "wins": 0,
       "losses": 0,
-      "absences": 8,
+      "absences": 9,
       "kyujoDays": [
         1,
         2,
@@ -377,7 +377,8 @@
         5,
         6,
         7,
-        8
+        8,
+        9
       ],
       "currentKyujo": true,
       "status": "Kyujo · injured / withdrawn",
@@ -478,10 +479,10 @@
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -8504,10 +8505,10 @@
       },
       "form": 57,
       "sourceIndex": 31,
-      "record": "0–0–8",
+      "record": "0–0–9",
       "wins": 0,
       "losses": 0,
-      "absences": 8,
+      "absences": 9,
       "kyujoDays": [
         1,
         2,
@@ -8516,7 +8517,8 @@
         5,
         6,
         7,
-        8
+        8,
+        9
       ],
       "currentKyujo": true,
       "status": "Kyujo · injured / withdrawn",
@@ -8617,10 +8619,10 @@
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -10681,10 +10683,10 @@
       },
       "form": 68,
       "sourceIndex": 39,
-      "record": "0–0–8",
+      "record": "0–0–9",
       "wins": 0,
       "losses": 0,
-      "absences": 8,
+      "absences": 9,
       "kyujoDays": [
         1,
         2,
@@ -10693,7 +10695,8 @@
         5,
         6,
         7,
-        8
+        8,
+        9
       ],
       "currentKyujo": true,
       "status": "Kyujo · injured / withdrawn",
@@ -10794,10 +10797,10 @@
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -11414,6 +11417,6 @@
       "badge": null
     }
   ],
-  "generatedAt": "2026-09-20T11:29:39.439Z",
-  "dataSignature": "489076c30b462521d3f304ffb72d60d93158477e33fca983fee0f3587b891820"
+  "generatedAt": "2026-09-20T16:11:06.928Z",
+  "dataSignature": "9e23d461c85f922d3b52f35ca22dd83baafde8235935c5a16dccd2ee88df11d4"
 }

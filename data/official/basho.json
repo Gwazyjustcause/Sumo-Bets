@@ -14,11 +14,11 @@
     "dateRange": "13–27 September 2026",
     "venueId": 1,
     "venue": "Ryogoku Kokugikan, Tokyo",
-    "currentDay": 8,
+    "currentDay": 9,
     "scheduledThroughDay": 9,
     "totalDays": 15,
     "active": true
   },
-  "generatedAt": "2026-09-20T11:29:39.439Z",
-  "dataSignature": "489076c30b462521d3f304ffb72d60d93158477e33fca983fee0f3587b891820"
+  "generatedAt": "2026-09-20T16:11:06.928Z",
+  "dataSignature": "9e23d461c85f922d3b52f35ca22dd83baafde8235935c5a16dccd2ee88df11d4"
 }
