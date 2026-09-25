@@ -3,7 +3,7 @@
   "bashoId": "637",
   "bashoSlug": "aki-2026",
   "division": "Makuuchi",
-  "currentDay": 13,
+  "currentDay": 14,
   "scheduledThroughDay": 14,
   "sideTotals": {
     "East": 137,
@@ -14,7 +14,7 @@
       "id": "hoshoryu",
       "jsaId": "3842",
       "name": "Hoshoryu",
-      "absences": 13,
+      "absences": 14,
       "kyujoDays": [
         1,
         2,
@@ -28,7 +28,8 @@
         10,
         11,
         12,
-        13
+        13,
+        14
       ],
       "status": "Kyujo · injured / withdrawn"
     },
@@ -36,10 +37,11 @@
       "id": "kotoshoho",
       "jsaId": "3840",
       "name": "Kotoshoho",
-      "absences": 1,
+      "absences": 2,
       "kyujoDays": [
         12,
-        13
+        13,
+        14
       ],
       "status": "Kyujo · injured / withdrawn"
     },
@@ -47,9 +49,10 @@
       "id": "takanosho",
       "jsaId": "3265",
       "name": "Takanosho",
-      "absences": 0,
+      "absences": 1,
       "kyujoDays": [
-        13
+        13,
+        14
       ],
       "status": "Kyujo · injured / withdrawn"
     },
@@ -57,7 +60,7 @@
       "id": "wakatakakage",
       "jsaId": "3761",
       "name": "Wakatakakage",
-      "absences": 13,
+      "absences": 14,
       "kyujoDays": [
         1,
         2,
@@ -71,7 +74,8 @@
         10,
         11,
         12,
-        13
+        13,
+        14
       ],
       "status": "Kyujo · injured / withdrawn"
     },
@@ -79,7 +83,7 @@
       "id": "wakanosho",
       "jsaId": "4121",
       "name": "Wakanosho",
-      "absences": 13,
+      "absences": 14,
       "kyujoDays": [
         1,
         2,
@@ -93,12 +97,13 @@
         10,
         11,
         12,
-        13
+        13,
+        14
       ],
       "status": "Kyujo · injured / withdrawn"
     }
   ],
-  "source": "https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/13/",
+  "source": "https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/14/",
   "days": [
     {
       "day": 1,
@@ -4925,6 +4930,6 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-25T11:55:03.946Z",
-  "dataSignature": "d4258ff35380a2d04693b677bbf1a6df867db3097b3ed49a245131df9ef60296"
+  "generatedAt": "2026-09-25T17:15:43.042Z",
+  "dataSignature": "6c0f9499f3539a685f3dc88d18457b85345b5fd4d88edfdf48dbfb3f0d19b9c3"
 }
