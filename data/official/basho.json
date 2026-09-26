@@ -15,10 +15,10 @@
     "venueId": 1,
     "venue": "Ryogoku Kokugikan, Tokyo",
     "currentDay": 14,
-    "scheduledThroughDay": 14,
+    "scheduledThroughDay": 15,
     "totalDays": 15,
     "active": true
   },
-  "generatedAt": "2026-09-25T17:15:43.042Z",
-  "dataSignature": "6c0f9499f3539a685f3dc88d18457b85345b5fd4d88edfdf48dbfb3f0d19b9c3"
+  "generatedAt": "2026-09-26T11:29:29.298Z",
+  "dataSignature": "4c2c6eb828a5051abe9fc5ed66520c24d197b149bfffeea8b51913dcffd7b3d7"
 }
