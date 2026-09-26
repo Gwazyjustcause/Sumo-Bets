@@ -365,10 +365,10 @@
       },
       "form": 70,
       "sourceIndex": 1,
-      "record": "0–0–14",
+      "record": "0–0–15",
       "wins": 0,
       "losses": 0,
-      "absences": 14,
+      "absences": 15,
       "kyujoDays": [
         1,
         2,
@@ -383,7 +383,8 @@
         11,
         12,
         13,
-        14
+        14,
+        15
       ],
       "currentKyujo": true,
       "status": "Kyujo · injured / withdrawn",
@@ -550,10 +551,10 @@
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         }
       ],
@@ -2548,14 +2549,15 @@
       },
       "form": 50,
       "sourceIndex": 9,
-      "record": "5–7–2",
+      "record": "5–7–3",
       "wins": 5,
       "losses": 7,
-      "absences": 2,
+      "absences": 3,
       "kyujoDays": [
         12,
         13,
-        14
+        14,
+        15
       ],
       "currentKyujo": true,
       "status": "Kyujo · injured / withdrawn",
@@ -2722,10 +2724,10 @@
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         }
       ],
@@ -4178,13 +4180,14 @@
       },
       "form": 49,
       "sourceIndex": 15,
-      "record": "4–9–1",
+      "record": "4–9–2",
       "wins": 4,
       "losses": 9,
-      "absences": 1,
+      "absences": 2,
       "kyujoDays": [
         13,
-        14
+        14,
+        15
       ],
       "currentKyujo": true,
       "status": "Kyujo · injured / withdrawn",
@@ -4351,10 +4354,10 @@
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         }
       ],
@@ -8517,10 +8520,10 @@
       },
       "form": 57,
       "sourceIndex": 31,
-      "record": "0–0–14",
+      "record": "0–0–15",
       "wins": 0,
       "losses": 0,
-      "absences": 14,
+      "absences": 15,
       "kyujoDays": [
         1,
         2,
@@ -8535,7 +8538,8 @@
         11,
         12,
         13,
-        14
+        14,
+        15
       ],
       "currentKyujo": true,
       "status": "Kyujo · injured / withdrawn",
@@ -8702,10 +8706,10 @@
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         }
       ],
@@ -10700,10 +10704,10 @@
       },
       "form": 68,
       "sourceIndex": 39,
-      "record": "0–0–14",
+      "record": "0–0–15",
       "wins": 0,
       "losses": 0,
-      "absences": 14,
+      "absences": 15,
       "kyujoDays": [
         1,
         2,
@@ -10718,7 +10722,8 @@
         11,
         12,
         13,
-        14
+        14,
+        15
       ],
       "currentKyujo": true,
       "status": "Kyujo · injured / withdrawn",
@@ -10885,10 +10890,10 @@
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         }
       ],
@@ -11439,6 +11444,6 @@
       "badge": null
     }
   ],
-  "generatedAt": "2026-09-26T11:29:29.298Z",
-  "dataSignature": "4c2c6eb828a5051abe9fc5ed66520c24d197b149bfffeea8b51913dcffd7b3d7"
+  "generatedAt": "2026-09-26T16:27:01.967Z",
+  "dataSignature": "12a09c5333b43015eb00c5bba0394ec05456d7c0cbfe0059b3837e165a06ba20"
 }
