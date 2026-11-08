@@ -2,7 +2,7 @@
 window.SUMO_DATA = {
   "meta": {
     "bashoId": "638",
-    "dataSignature": "d4548b801e236443ba5ae0487f0db9c0543d241bc0d67ece8e183b05f2de0600",
+    "dataSignature": "ef7efffe627903ca48241232c05f5216a9cecb11fe9b64da809fb987e96e769f",
     "tournament": "Kyushu Basho 2026",
     "shortTournament": "November 2026",
     "day": 0,
@@ -10,9 +10,9 @@ window.SUMO_DATA = {
     "totalDays": 15,
     "dateRange": "8–22 November 2026",
     "venue": "Fukuoka Kokusai Center, Fukuoka",
-    "lastUpdated": "Banzuke published · official snapshot 2026-11-06 06:53 UTC",
+    "lastUpdated": "Banzuke published · official snapshot 2026-11-08 06:08 UTC",
     "status": "Banzuke published · draft open",
-    "active": false,
+    "active": true,
     "sideTotals": {
       "East": 0,
       "West": 0
@@ -12210,8 +12210,8 @@ window.SUMO_DATA = {
         ]
       }
     ],
-    "generatedAt": "2026-11-06T06:53:53.684Z",
-    "dataSignature": "d4548b801e236443ba5ae0487f0db9c0543d241bc0d67ece8e183b05f2de0600"
+    "generatedAt": "2026-11-08T06:08:48.744Z",
+    "dataSignature": "ef7efffe627903ca48241232c05f5216a9cecb11fe9b64da809fb987e96e769f"
   },
   "history": [],
   "banzuke": {
