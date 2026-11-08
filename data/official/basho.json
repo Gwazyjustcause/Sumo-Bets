@@ -14,11 +14,11 @@
     "dateRange": "8–22 November 2026",
     "venueId": 4,
     "venue": "Fukuoka Kokusai Center, Fukuoka",
-    "currentDay": 0,
+    "currentDay": 1,
     "scheduledThroughDay": 2,
     "totalDays": 15,
     "active": true
   },
-  "generatedAt": "2026-11-08T06:08:48.744Z",
-  "dataSignature": "ef7efffe627903ca48241232c05f5216a9cecb11fe9b64da809fb987e96e769f"
+  "generatedAt": "2026-11-08T13:30:51.649Z",
+  "dataSignature": "89d1e31446d247dac1f366fa74ae2fa8be7df674e2f5ac3bd3719d9f9dc221f6"
 }
