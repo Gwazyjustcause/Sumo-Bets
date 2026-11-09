@@ -3301,7 +3301,7 @@
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3983/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-02T06:15:01.897Z",
+      "profileUpdatedAt": "2026-11-09T06:42:42.592Z",
       "height": "181.0cm",
       "weight": "154.0kg",
       "technique": "tsuki, oshi",
@@ -3392,7 +3392,7 @@
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/2629/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-02T06:15:01.897Z",
+      "profileUpdatedAt": "2026-11-09T06:42:42.592Z",
       "height": "189.0cm",
       "weight": "178.0kg",
       "technique": "oshi",
@@ -3483,7 +3483,7 @@
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3939/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-02T06:15:01.897Z",
+      "profileUpdatedAt": "2026-11-09T06:42:42.592Z",
       "height": "191.0cm",
       "weight": "159.0kg",
       "technique": "tsuppari, migi-yotsu, yori, uwatenage",
@@ -3574,7 +3574,7 @@
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4267/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-02T06:15:01.897Z",
+      "profileUpdatedAt": "2026-11-09T06:42:42.592Z",
       "height": "172.0cm",
       "weight": "123.0kg",
       "technique": "oshi",
@@ -3665,7 +3665,7 @@
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4232/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-02T06:15:01.897Z",
+      "profileUpdatedAt": "2026-11-09T06:42:42.592Z",
       "height": "183.0cm",
       "weight": "165.0kg",
       "technique": "oshi, hidari-yotsu, yori",
@@ -3756,7 +3756,7 @@
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4116/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-02T06:15:01.897Z",
+      "profileUpdatedAt": "2026-11-09T06:42:42.592Z",
       "height": "191.0cm",
       "weight": "171.0kg",
       "technique": "oshi, migi-yotsu, yori",
@@ -3829,6 +3829,6 @@
       "sourceIndex": 41
     }
   ],
-  "generatedAt": "2026-11-08T13:30:51.649Z",
-  "dataSignature": "89d1e31446d247dac1f366fa74ae2fa8be7df674e2f5ac3bd3719d9f9dc221f6"
+  "generatedAt": "2026-11-09T06:42:43.364Z",
+  "dataSignature": "80199e861487c3ac57000aead500ff567e845f520893d6a2234fb52c7bde6821"
 }
