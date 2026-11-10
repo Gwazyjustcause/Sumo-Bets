@@ -2,20 +2,20 @@
 window.SUMO_DATA = {
   "meta": {
     "bashoId": "638",
-    "dataSignature": "a562665e05d62433292992ecfafee51dadb98b7687d8672d409c463c5226d60d",
+    "dataSignature": "3fa914eb8a8a0a6eb83b3645713f18fab009e2c01def82d34d7d0ee06fc955d7",
     "tournament": "Kyushu Basho 2026",
     "shortTournament": "November 2026",
-    "day": 3,
+    "day": 4,
     "scheduledThroughDay": 4,
     "totalDays": 15,
     "dateRange": "8–22 November 2026",
     "venue": "Fukuoka Kokusai Center, Fukuoka",
-    "lastUpdated": "Day 3  November 10, 2026 · official snapshot 2026-11-10 07:24 UTC",
-    "status": "Day 3 official results",
+    "lastUpdated": "Day 4  November 11, 2026 · official snapshot 2026-11-10 19:47 UTC",
+    "status": "Day 4 official results",
     "active": true,
     "sideTotals": {
-      "East": 19,
-      "West": 27
+      "East": 28,
+      "West": 35
     },
     "sources": [
       {
@@ -24,7 +24,7 @@ window.SUMO_DATA = {
       },
       {
         "label": "Official matches & results",
-        "url": "https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/3/"
+        "url": "https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/4/"
       },
       {
         "label": "Official tournament records",
@@ -102,7 +102,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4227/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "190.0cm",
       "weight": "188.0kg",
       "technique": "tsuki, oshi, migi-yotsu, yori",
@@ -173,8 +173,8 @@ window.SUMO_DATA = {
       },
       "form": 66,
       "sourceIndex": 0,
-      "record": "1–1",
-      "wins": 1,
+      "record": "2–1",
+      "wins": 2,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -182,7 +182,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 1,
+      "points": 2,
       "dailyResults": [
         {
           "day": 1,
@@ -211,11 +211,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3682",
           "opponentId": "asanoyama",
           "opponent": "Asanoyama",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 71
         },
         {
           "day": 4,
@@ -373,7 +373,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3842/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "188.0cm",
       "weight": "148.0kg",
       "technique": "migi-yotsu, yori, nage",
@@ -444,9 +444,9 @@ window.SUMO_DATA = {
       },
       "form": 66,
       "sourceIndex": 1,
-      "record": "2–0",
+      "record": "2–1",
       "wins": 2,
-      "losses": 0,
+      "losses": 1,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -482,11 +482,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4336",
           "opponentId": "fujiryoga",
           "opponent": "Fujiryoga",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 17
         },
         {
           "day": 4,
@@ -644,7 +644,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4230/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "182.0cm",
       "weight": "142.0kg",
       "technique": "migi-yotsu, yori",
@@ -715,8 +715,8 @@ window.SUMO_DATA = {
       },
       "form": 72,
       "sourceIndex": 2,
-      "record": "1–1",
-      "wins": 1,
+      "record": "2–1",
+      "wins": 2,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -724,7 +724,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 1,
+      "points": 2,
       "dailyResults": [
         {
           "day": 1,
@@ -753,11 +753,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3616",
           "opponentId": "ura",
           "opponent": "Ura",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 4,
@@ -915,7 +915,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3661/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "189.0cm",
       "weight": "177.0kg",
       "technique": "migi-yotsu, yori, oshi",
@@ -986,8 +986,8 @@ window.SUMO_DATA = {
       },
       "form": 53,
       "sourceIndex": 3,
-      "record": "1–1",
-      "wins": 1,
+      "record": "2–1",
+      "wins": 2,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -995,7 +995,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 1,
+      "points": 2,
       "dailyResults": [
         {
           "day": 1,
@@ -1024,11 +1024,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4093",
           "opponentId": "fujiseiun",
           "opponent": "Fujiseiun",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 12
         },
         {
           "day": 4,
@@ -1186,7 +1186,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3622/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "186.0cm",
       "weight": "150.0kg",
       "technique": "hidari-yotsu, yori, nage",
@@ -1257,9 +1257,9 @@ window.SUMO_DATA = {
       },
       "form": 73,
       "sourceIndex": 4,
-      "record": "2–0",
+      "record": "2–1",
       "wins": 2,
-      "losses": 0,
+      "losses": 1,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -1295,11 +1295,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4279",
           "opponentId": "yoshinofuji",
           "opponent": "Yoshinofuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 12
         },
         {
           "day": 4,
@@ -1457,7 +1457,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4191/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "177.0cm",
       "weight": "125.0kg",
       "technique": "oshi",
@@ -1528,9 +1528,9 @@ window.SUMO_DATA = {
       },
       "form": 59,
       "sourceIndex": 5,
-      "record": "0–2",
+      "record": "0–3",
       "wins": 0,
-      "losses": 2,
+      "losses": 3,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -1566,11 +1566,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3711",
           "opponentId": "churanoumi",
           "opponent": "Churanoumi",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 12
         },
         {
           "day": 4,
@@ -1728,7 +1728,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4055/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "185.0cm",
       "weight": "198.0kg",
       "technique": "migi-yotsu, yori",
@@ -1799,8 +1799,8 @@ window.SUMO_DATA = {
       },
       "form": 64,
       "sourceIndex": 6,
-      "record": "2–0",
-      "wins": 2,
+      "record": "3–0",
+      "wins": 3,
       "losses": 0,
       "absences": 0,
       "kyujoDays": [],
@@ -1808,7 +1808,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 2,
+      "points": 3,
       "dailyResults": [
         {
           "day": 1,
@@ -1837,11 +1837,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3376",
           "opponentId": "daieisho",
           "opponent": "Daieisho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 4,
@@ -1999,7 +1999,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3711/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "176.0cm",
       "weight": "157.0kg",
       "technique": "hidari-yotsu, yori",
@@ -2070,8 +2070,8 @@ window.SUMO_DATA = {
       },
       "form": 52,
       "sourceIndex": 7,
-      "record": "0–2",
-      "wins": 0,
+      "record": "1–2",
+      "wins": 1,
       "losses": 2,
       "absences": 0,
       "kyujoDays": [],
@@ -2079,7 +2079,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 0,
+      "points": 1,
       "dailyResults": [
         {
           "day": 1,
@@ -2108,11 +2108,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4191",
           "opponentId": "fujinokawa",
           "opponent": "Fujinokawa",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 12
         },
         {
           "day": 4,
@@ -2270,7 +2270,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4279/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "185.0cm",
       "weight": "162.0kg",
       "technique": "migi-yotsu, yori",
@@ -2341,8 +2341,8 @@ window.SUMO_DATA = {
       },
       "form": 56,
       "sourceIndex": 8,
-      "record": "1–1",
-      "wins": 1,
+      "record": "2–1",
+      "wins": 2,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -2350,7 +2350,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 1,
+      "points": 2,
       "dailyResults": [
         {
           "day": 1,
@@ -2379,11 +2379,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3622",
           "opponentId": "kirishima",
           "opponent": "Kirishima",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 12
         },
         {
           "day": 4,
@@ -2541,7 +2541,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3682/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "188.0cm",
       "weight": "172.0kg",
       "technique": "oshi, migi-yotsu, yori",
@@ -2612,9 +2612,9 @@ window.SUMO_DATA = {
       },
       "form": 63,
       "sourceIndex": 9,
-      "record": "1–1",
+      "record": "1–2",
       "wins": 1,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -2650,11 +2650,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4227",
           "opponentId": "onosato",
           "opponent": "Onosato",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 71
         },
         {
           "day": 4,
@@ -2812,7 +2812,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4336/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "180.0cm",
       "weight": "184.0kg",
       "technique": "oshi",
@@ -2883,16 +2883,16 @@ window.SUMO_DATA = {
       },
       "form": 63,
       "sourceIndex": 10,
-      "record": "1–1",
-      "wins": 1,
+      "record": "2–1",
+      "wins": 2,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
       "status": "Active",
       "available": true,
-      "kinboshi": 0,
-      "points": 1,
+      "kinboshi": 1,
+      "points": 5,
       "dailyResults": [
         {
           "day": 1,
@@ -2921,11 +2921,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3842",
           "opponentId": "hoshoryu",
           "opponent": "Hoshoryu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 17
         },
         {
           "day": 4,
@@ -3062,7 +3062,7 @@ window.SUMO_DATA = {
       ],
       "photo": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20250038.jpg",
       "image": null,
-      "badge": null
+      "badge": "1 kinboshi"
     },
     {
       "id": "ura",
@@ -3083,7 +3083,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3616/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "173.0cm",
       "weight": "138.0kg",
       "technique": "oshi, ashitori",
@@ -3154,9 +3154,9 @@ window.SUMO_DATA = {
       },
       "form": 47,
       "sourceIndex": 11,
-      "record": "0–2",
+      "record": "0–3",
       "wins": 0,
-      "losses": 2,
+      "losses": 3,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -3192,11 +3192,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4230",
           "opponentId": "aonishiki",
           "opponent": "Aonishiki",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 4,
@@ -3354,7 +3354,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4093/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "185.0cm",
       "weight": "149.0kg",
       "technique": "migi-yotsu, yori",
@@ -3425,9 +3425,9 @@ window.SUMO_DATA = {
       },
       "form": 58,
       "sourceIndex": 12,
-      "record": "1–1",
+      "record": "1–2",
       "wins": 1,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -3463,11 +3463,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3661",
           "opponentId": "kotozakura",
           "opponent": "Kotozakura",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 12
         },
         {
           "day": 4,
@@ -3625,7 +3625,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/2775/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "188.0cm",
       "weight": "173.0kg",
       "technique": "tsuki, oshi",
@@ -3696,9 +3696,9 @@ window.SUMO_DATA = {
       },
       "form": 54,
       "sourceIndex": 13,
-      "record": "1–1",
+      "record": "1–2",
       "wins": 1,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -3734,11 +3734,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4187",
           "opponentId": "hakunofuji",
           "opponent": "Hakunofuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 4,
@@ -3896,7 +3896,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4187/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "181.0cm",
       "weight": "162.0kg",
       "technique": "tsuki, oshi, hidari-yotsu, yori",
@@ -3967,8 +3967,8 @@ window.SUMO_DATA = {
       },
       "form": 49,
       "sourceIndex": 14,
-      "record": "1–1",
-      "wins": 1,
+      "record": "2–1",
+      "wins": 2,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -3976,7 +3976,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 1,
+      "points": 2,
       "dailyResults": [
         {
           "day": 1,
@@ -4005,11 +4005,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "2775",
           "opponentId": "takayasu",
           "opponent": "Takayasu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 4,
@@ -4167,7 +4167,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4171/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "186.0cm",
       "weight": "149.0kg",
       "technique": "tsuki, oshi",
@@ -4238,8 +4238,8 @@ window.SUMO_DATA = {
       },
       "form": 60,
       "sourceIndex": 15,
-      "record": "1–1",
-      "wins": 1,
+      "record": "2–1",
+      "wins": 2,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -4247,7 +4247,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 1,
+      "points": 2,
       "dailyResults": [
         {
           "day": 1,
@@ -4276,11 +4276,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4079",
           "opponentId": "gonoyama",
           "opponent": "Gonoyama",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 53
         },
         {
           "day": 4,
@@ -4438,7 +4438,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3376/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "182.0cm",
       "weight": "163.0kg",
       "technique": "tsuki, oshi",
@@ -4509,9 +4509,9 @@ window.SUMO_DATA = {
       },
       "form": 51,
       "sourceIndex": 16,
-      "record": "1–1",
+      "record": "1–2",
       "wins": 1,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -4547,11 +4547,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4055",
           "opponentId": "atamifuji",
           "opponent": "Atamifuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 4,
@@ -4709,7 +4709,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3705/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "178.0cm",
       "weight": "142.0kg",
       "technique": "tsuki, oshi, migi-yotsu, yori",
@@ -4780,9 +4780,9 @@ window.SUMO_DATA = {
       },
       "form": 44,
       "sourceIndex": 17,
-      "record": "1–1",
+      "record": "1–2",
       "wins": 1,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -4818,11 +4818,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3840",
           "opponentId": "kotoshoho",
           "opponent": "Kotoshoho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 62
         },
         {
           "day": 4,
@@ -4980,7 +4980,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4079/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "178.0cm",
       "weight": "163.0kg",
       "technique": "tsuki, oshi",
@@ -5051,9 +5051,9 @@ window.SUMO_DATA = {
       },
       "form": 52,
       "sourceIndex": 18,
-      "record": "1–1",
+      "record": "1–2",
       "wins": 1,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -5089,11 +5089,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4171",
           "opponentId": "takerufuji",
           "opponent": "Takerufuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 53
         },
         {
           "day": 4,
@@ -5251,7 +5251,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3840/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "189.0cm",
       "weight": "170.0kg",
       "technique": "migi-yotsu, yori",
@@ -5322,8 +5322,8 @@ window.SUMO_DATA = {
       },
       "form": 54,
       "sourceIndex": 19,
-      "record": "1–1",
-      "wins": 1,
+      "record": "2–1",
+      "wins": 2,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -5331,7 +5331,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 1,
+      "points": 2,
       "dailyResults": [
         {
           "day": 1,
@@ -5360,11 +5360,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3705",
           "opponentId": "hiradoumi",
           "opponent": "Hiradoumi",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 62
         },
         {
           "day": 4,
@@ -5522,7 +5522,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4120/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "184.0cm",
       "weight": "140.0kg",
       "technique": "migi-yotsu, yori",
@@ -5593,14 +5593,17 @@ window.SUMO_DATA = {
       },
       "form": 58,
       "sourceIndex": 20,
-      "record": "1–1",
+      "record": "1–2–1",
       "wins": 1,
-      "losses": 1,
-      "absences": 0,
-      "kyujoDays": [],
-      "currentKyujo": false,
-      "status": "Active",
-      "available": true,
+      "losses": 2,
+      "absences": 1,
+      "kyujoDays": [
+        3,
+        4
+      ],
+      "currentKyujo": true,
+      "status": "Kyujo · injured / withdrawn",
+      "available": false,
       "kinboshi": 0,
       "points": 1,
       "dailyResults": [
@@ -5631,21 +5634,21 @@ window.SUMO_DATA = {
           "opponentJsaId": "4112",
           "opponentId": "kinbozan",
           "opponent": "Kinbozan",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
-          "kyujo": false,
-          "techniqueId": -1
+          "completed": true,
+          "status": "forfeit-loss",
+          "result": "loss",
+          "kyujo": true,
+          "techniqueId": 74
         },
         {
           "day": 4,
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -5793,7 +5796,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3371/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "186.0cm",
       "weight": "149.0kg",
       "technique": "hidari-yotsu, yori",
@@ -5864,8 +5867,8 @@ window.SUMO_DATA = {
       },
       "form": 44,
       "sourceIndex": 21,
-      "record": "1–1",
-      "wins": 1,
+      "record": "2–1",
+      "wins": 2,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -5873,7 +5876,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 1,
+      "points": 2,
       "dailyResults": [
         {
           "day": 1,
@@ -5902,11 +5905,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3907",
           "opponentId": "roga",
           "opponent": "Roga",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 4,
@@ -6064,7 +6067,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4112/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "194.0cm",
       "weight": "181.0kg",
       "technique": "tsuki, oshi",
@@ -6135,8 +6138,8 @@ window.SUMO_DATA = {
       },
       "form": 49,
       "sourceIndex": 22,
-      "record": "2–0",
-      "wins": 2,
+      "record": "3–0",
+      "wins": 3,
       "losses": 0,
       "absences": 0,
       "kyujoDays": [],
@@ -6144,7 +6147,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 2,
+      "points": 3,
       "dailyResults": [
         {
           "day": 1,
@@ -6173,11 +6176,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4120",
           "opponentId": "kotoeiho",
           "opponent": "Kotoeiho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "forfeit-win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 74
         },
         {
           "day": 4,
@@ -6335,7 +6338,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3907/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "185.0cm",
       "weight": "159.0kg",
       "technique": "migi-yotsu, yori",
@@ -6406,9 +6409,9 @@ window.SUMO_DATA = {
       },
       "form": 49,
       "sourceIndex": 23,
-      "record": "1–1",
+      "record": "1–2",
       "wins": 1,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -6444,11 +6447,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3371",
           "opponentId": "wakamotoharu",
           "opponent": "Wakamotoharu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 4,
@@ -6606,7 +6609,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3742/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "184.0cm",
       "weight": "155.0kg",
       "technique": "hidari-yotsu, yori",
@@ -6677,8 +6680,8 @@ window.SUMO_DATA = {
       },
       "form": 53,
       "sourceIndex": 24,
-      "record": "0–2",
-      "wins": 0,
+      "record": "1–2",
+      "wins": 1,
       "losses": 2,
       "absences": 0,
       "kyujoDays": [],
@@ -6686,7 +6689,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 0,
+      "points": 1,
       "dailyResults": [
         {
           "day": 1,
@@ -6715,11 +6718,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4101",
           "opponentId": "asakoryu",
           "opponent": "Asakoryu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 4,
@@ -6877,7 +6880,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4108/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "190.0cm",
       "weight": "162.0kg",
       "technique": "oshi, inashi",
@@ -6948,8 +6951,8 @@ window.SUMO_DATA = {
       },
       "form": 42,
       "sourceIndex": 25,
-      "record": "1–1",
-      "wins": 1,
+      "record": "2–1",
+      "wins": 2,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -6957,7 +6960,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 1,
+      "points": 2,
       "dailyResults": [
         {
           "day": 1,
@@ -6986,11 +6989,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3990",
           "opponentId": "shishi",
           "opponent": "Shishi",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 62
         },
         {
           "day": 4,
@@ -7148,7 +7151,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4101/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "178.0cm",
       "weight": "122.0kg",
       "technique": "oshi, migi-yotsu, yori",
@@ -7219,9 +7222,9 @@ window.SUMO_DATA = {
       },
       "form": 57,
       "sourceIndex": 26,
-      "record": "1–1",
+      "record": "1–2",
       "wins": 1,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -7257,11 +7260,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3742",
           "opponentId": "nishikifuji",
           "opponent": "Nishikifuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 4,
@@ -7419,7 +7422,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3990/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "193.0cm",
       "weight": "182.0kg",
       "technique": "oshi",
@@ -7490,9 +7493,9 @@ window.SUMO_DATA = {
       },
       "form": 49,
       "sourceIndex": 27,
-      "record": "0–2",
+      "record": "0–3",
       "wins": 0,
-      "losses": 2,
+      "losses": 3,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -7528,11 +7531,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4108",
           "opponentId": "oshoma",
           "opponent": "Oshoma",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 62
         },
         {
           "day": 4,
@@ -7690,7 +7693,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3844/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "192.0cm",
       "weight": "185.0kg",
       "technique": "tsuki, oshi",
@@ -7761,8 +7764,8 @@ window.SUMO_DATA = {
       },
       "form": 40,
       "sourceIndex": 28,
-      "record": "1–1",
-      "wins": 1,
+      "record": "2–1",
+      "wins": 2,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -7770,7 +7773,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 1,
+      "points": 2,
       "dailyResults": [
         {
           "day": 1,
@@ -7799,11 +7802,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4175",
           "opponentId": "asahakuryu",
           "opponent": "Asahakuryu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 4,
@@ -7961,7 +7964,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3265/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "184.0cm",
       "weight": "176.0kg",
       "technique": "oshi",
@@ -8032,8 +8035,8 @@ window.SUMO_DATA = {
       },
       "form": 41,
       "sourceIndex": 29,
-      "record": "2–0",
-      "wins": 2,
+      "record": "3–0",
+      "wins": 3,
       "losses": 0,
       "absences": 0,
       "kyujoDays": [],
@@ -8041,7 +8044,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 2,
+      "points": 3,
       "dailyResults": [
         {
           "day": 1,
@@ -8070,11 +8073,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3753",
           "opponentId": "ichiyamamoto",
           "opponent": "Ichiyamamoto",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 62
         },
         {
           "day": 4,
@@ -8232,7 +8235,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4175/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "185.0cm",
       "weight": "157.0kg",
       "technique": "migi-yotsu, yori",
@@ -8303,9 +8306,9 @@ window.SUMO_DATA = {
       },
       "form": 53,
       "sourceIndex": 30,
-      "record": "2–0",
+      "record": "2–1",
       "wins": 2,
-      "losses": 0,
+      "losses": 1,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -8341,11 +8344,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3844",
           "opponentId": "oho",
           "opponent": "Oho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 4,
@@ -8503,7 +8506,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3753/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "190.0cm",
       "weight": "160.0kg",
       "technique": "tsuki, oshi",
@@ -8574,9 +8577,9 @@ window.SUMO_DATA = {
       },
       "form": 44,
       "sourceIndex": 31,
-      "record": "1–1",
+      "record": "1–2",
       "wins": 1,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -8612,11 +8615,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3265",
           "opponentId": "takanosho",
           "opponent": "Takanosho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 62
         },
         {
           "day": 4,
@@ -8774,7 +8777,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3485/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "186.0cm",
       "weight": "167.0kg",
       "technique": "tsuki, oshi",
@@ -8845,9 +8848,9 @@ window.SUMO_DATA = {
       },
       "form": 46,
       "sourceIndex": 32,
-      "record": "1–1",
+      "record": "1–2",
       "wins": 1,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -8883,11 +8886,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4285",
           "opponentId": "asasuiryu",
           "opponent": "Asasuiryu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 4,
@@ -9045,7 +9048,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4243/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "195.0cm",
       "weight": "156.0kg",
       "technique": "migi-yotsu, yori, uwatenage",
@@ -9316,7 +9319,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4285/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "175.0cm",
       "weight": "120.0kg",
       "technique": "oshi",
@@ -9387,8 +9390,8 @@ window.SUMO_DATA = {
       },
       "form": 60,
       "sourceIndex": 34,
-      "record": "1–1",
-      "wins": 1,
+      "record": "2–1",
+      "wins": 2,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -9396,7 +9399,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 1,
+      "points": 2,
       "dailyResults": [
         {
           "day": 1,
@@ -9425,11 +9428,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3485",
           "opponentId": "abi",
           "opponent": "Abi",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 4,
@@ -9587,7 +9590,7 @@ window.SUMO_DATA = {
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3933/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-03T14:23:05.206Z",
+      "profileUpdatedAt": "2026-11-10T19:47:32.052Z",
       "height": "179.0cm",
       "weight": "135.0kg",
       "technique": "hidari-yotsu, yori, uwatenage",
@@ -11466,93 +11469,32 @@ window.SUMO_DATA = {
       "badge": null
     }
   ],
-  "bouts": [
-    {
-      "id": "3-4267-4232",
-      "day": 3,
-      "east": "arashifuji",
-      "west": "kyokukaiyu",
-      "eastJsaId": "4267",
-      "westJsaId": "4232",
-      "eastName": "Arashifuji",
-      "westName": "Kyokukaiyu",
-      "completed": true,
-      "winner": "kyokukaiyu",
-      "winnerJsaId": "4232",
-      "technique": "tsukite",
-      "techniqueId": 92,
-      "eastRecord": "2–1",
-      "westRecord": "2–1",
-      "importance": 1
-    },
-    {
-      "id": "3-2629-4116",
-      "day": 3,
-      "east": "tamawashi",
-      "west": "daiseizan",
-      "eastJsaId": "2629",
-      "westJsaId": "4116",
-      "eastName": "Tamawashi",
-      "westName": "Daiseizan",
-      "completed": true,
-      "winner": "tamawashi",
-      "winnerJsaId": "2629",
-      "technique": "oshidashi",
-      "techniqueId": 18,
-      "eastRecord": "2–1",
-      "westRecord": "0–3",
-      "importance": 1
-    },
-    {
-      "id": "3-3939-3983",
-      "day": 3,
-      "east": "kitanowaka",
-      "west": "dewanoryu",
-      "eastJsaId": "3939",
-      "westJsaId": "3983",
-      "eastName": "Kitanowaka",
-      "westName": "Dewanoryu",
-      "completed": true,
-      "winner": "dewanoryu",
-      "winnerJsaId": "3983",
-      "technique": "uwatedashinage",
-      "techniqueId": 11,
-      "eastRecord": "1–2",
-      "westRecord": "3–0",
-      "importance": 1
-    },
-    {
-      "id": "3-4243-3933",
-      "day": 3,
-      "east": "toshinofuji",
-      "west": "tokihayate",
-      "eastJsaId": "4243",
-      "westJsaId": "3933",
-      "eastName": "Toshinofuji",
-      "westName": "Tokihayate",
-      "completed": true,
-      "winner": "tokihayate",
-      "winnerJsaId": "3933",
-      "technique": "oshidashi",
-      "techniqueId": 18,
-      "eastRecord": "0–3",
-      "westRecord": "1–2",
-      "importance": 1
-    }
-  ],
+  "bouts": [],
   "results": {
     "schemaVersion": 1,
     "bashoId": "638",
     "bashoSlug": "kyushu-2026",
     "division": "Makuuchi",
-    "currentDay": 3,
+    "currentDay": 4,
     "scheduledThroughDay": 4,
     "sideTotals": {
-      "East": 19,
-      "West": 27
+      "East": 28,
+      "West": 35
     },
-    "injuries": [],
-    "source": "https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/3/",
+    "injuries": [
+      {
+        "id": "kotoeiho",
+        "jsaId": "4120",
+        "name": "Kotoeiho",
+        "absences": 1,
+        "kyujoDays": [
+          3,
+          4
+        ],
+        "status": "Kyujo · injured / withdrawn"
+      }
+    ],
+    "source": "https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/4/",
     "days": [
       {
         "day": 1,
@@ -12285,7 +12227,7 @@ window.SUMO_DATA = {
       {
         "day": 3,
         "label": "Day 3  November 10, 2026",
-        "completed": false,
+        "completed": true,
         "bouts": [
           {
             "id": "3-4267-4232",
@@ -12364,13 +12306,13 @@ window.SUMO_DATA = {
             "westJsaId": "3485",
             "eastName": "Asasuiryu",
             "westName": "Abi",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "1–1"
+            "completed": true,
+            "winner": "asasuiryu",
+            "winnerJsaId": "4285",
+            "technique": "oshidashi",
+            "techniqueId": 18,
+            "eastRecord": "2–1",
+            "westRecord": "1–2"
           },
           {
             "id": "3-3265-3753",
@@ -12381,13 +12323,13 @@ window.SUMO_DATA = {
             "westJsaId": "3753",
             "eastName": "Takanosho",
             "westName": "Ichiyamamoto",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "2–0",
-            "westRecord": "1–1"
+            "completed": true,
+            "winner": "takanosho",
+            "winnerJsaId": "3265",
+            "technique": "hatakikomi",
+            "techniqueId": 62,
+            "eastRecord": "3–0",
+            "westRecord": "1–2"
           },
           {
             "id": "3-4175-3844",
@@ -12398,13 +12340,13 @@ window.SUMO_DATA = {
             "westJsaId": "3844",
             "eastName": "Asahakuryu",
             "westName": "Oho",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "2–0",
-            "westRecord": "1–1"
+            "completed": true,
+            "winner": "oho",
+            "winnerJsaId": "3844",
+            "technique": "yorikiri",
+            "techniqueId": 70,
+            "eastRecord": "2–1",
+            "westRecord": "2–1"
           },
           {
             "id": "3-4108-3990",
@@ -12415,13 +12357,13 @@ window.SUMO_DATA = {
             "westJsaId": "3990",
             "eastName": "Oshoma",
             "westName": "Shishi",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "0–2"
+            "completed": true,
+            "winner": "oshoma",
+            "winnerJsaId": "4108",
+            "technique": "hatakikomi",
+            "techniqueId": 62,
+            "eastRecord": "2–1",
+            "westRecord": "0–3"
           },
           {
             "id": "3-4101-3742",
@@ -12432,13 +12374,13 @@ window.SUMO_DATA = {
             "westJsaId": "3742",
             "eastName": "Asakoryu",
             "westName": "Nishikifuji",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "0–2"
+            "completed": true,
+            "winner": "nishikifuji",
+            "winnerJsaId": "3742",
+            "technique": "yorikiri",
+            "techniqueId": 70,
+            "eastRecord": "1–2",
+            "westRecord": "1–2"
           },
           {
             "id": "3-3371-3907",
@@ -12449,13 +12391,13 @@ window.SUMO_DATA = {
             "westJsaId": "3907",
             "eastName": "Wakamotoharu",
             "westName": "Roga",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "1–1"
+            "completed": true,
+            "winner": "wakamotoharu",
+            "winnerJsaId": "3371",
+            "technique": "yorikiri",
+            "techniqueId": 70,
+            "eastRecord": "2–1",
+            "westRecord": "1–2"
           },
           {
             "id": "3-4112-4120",
@@ -12466,13 +12408,13 @@ window.SUMO_DATA = {
             "westJsaId": "4120",
             "eastName": "Kinbozan",
             "westName": "Kotoeiho",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "2–0",
-            "westRecord": "1–1"
+            "completed": true,
+            "winner": "kinbozan",
+            "winnerJsaId": "4112",
+            "technique": "fusen",
+            "techniqueId": 74,
+            "eastRecord": "3–0",
+            "westRecord": "1–2"
           },
           {
             "id": "3-3705-3840",
@@ -12483,13 +12425,13 @@ window.SUMO_DATA = {
             "westJsaId": "3840",
             "eastName": "Hiradoumi",
             "westName": "Kotoshoho",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "1–1"
+            "completed": true,
+            "winner": "kotoshoho",
+            "winnerJsaId": "3840",
+            "technique": "hatakikomi",
+            "techniqueId": 62,
+            "eastRecord": "1–2",
+            "westRecord": "2–1"
           },
           {
             "id": "3-4171-4079",
@@ -12500,13 +12442,13 @@ window.SUMO_DATA = {
             "westJsaId": "4079",
             "eastName": "Takerufuji",
             "westName": "Gonoyama",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "1–1"
+            "completed": true,
+            "winner": "takerufuji",
+            "winnerJsaId": "4171",
+            "technique": "tsukiotoshi",
+            "techniqueId": 53,
+            "eastRecord": "2–1",
+            "westRecord": "1–2"
           },
           {
             "id": "3-2775-4187",
@@ -12517,13 +12459,13 @@ window.SUMO_DATA = {
             "westJsaId": "4187",
             "eastName": "Takayasu",
             "westName": "Hakunofuji",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "1–1"
+            "completed": true,
+            "winner": "hakunofuji",
+            "winnerJsaId": "4187",
+            "technique": "yorikiri",
+            "techniqueId": 70,
+            "eastRecord": "1–2",
+            "westRecord": "2–1"
           },
           {
             "id": "3-3376-4055",
@@ -12534,13 +12476,13 @@ window.SUMO_DATA = {
             "westJsaId": "4055",
             "eastName": "Daieisho",
             "westName": "Atamifuji",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "2–0"
+            "completed": true,
+            "winner": "atamifuji",
+            "winnerJsaId": "4055",
+            "technique": "oshidashi",
+            "techniqueId": 18,
+            "eastRecord": "1–2",
+            "westRecord": "3–0"
           },
           {
             "id": "3-4191-3711",
@@ -12551,13 +12493,13 @@ window.SUMO_DATA = {
             "westJsaId": "3711",
             "eastName": "Fujinokawa",
             "westName": "Churanoumi",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "0–2",
-            "westRecord": "0–2"
+            "completed": true,
+            "winner": "churanoumi",
+            "winnerJsaId": "3711",
+            "technique": "uwatenage",
+            "techniqueId": 12,
+            "eastRecord": "0–3",
+            "westRecord": "1–2"
           },
           {
             "id": "3-4093-3661",
@@ -12568,13 +12510,13 @@ window.SUMO_DATA = {
             "westJsaId": "3661",
             "eastName": "Fujiseiun",
             "westName": "Kotozakura",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "1–1"
+            "completed": true,
+            "winner": "kotozakura",
+            "winnerJsaId": "3661",
+            "technique": "uwatenage",
+            "techniqueId": 12,
+            "eastRecord": "1–2",
+            "westRecord": "2–1"
           },
           {
             "id": "3-4230-3616",
@@ -12585,13 +12527,13 @@ window.SUMO_DATA = {
             "westJsaId": "3616",
             "eastName": "Aonishiki",
             "westName": "Ura",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "0–2"
+            "completed": true,
+            "winner": "aonishiki",
+            "winnerJsaId": "4230",
+            "technique": "yorikiri",
+            "techniqueId": 70,
+            "eastRecord": "2–1",
+            "westRecord": "0–3"
           },
           {
             "id": "3-3622-4279",
@@ -12602,13 +12544,13 @@ window.SUMO_DATA = {
             "westJsaId": "4279",
             "eastName": "Kirishima",
             "westName": "Yoshinofuji",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "2–0",
-            "westRecord": "1–1"
+            "completed": true,
+            "winner": "yoshinofuji",
+            "winnerJsaId": "4279",
+            "technique": "uwatenage",
+            "techniqueId": 12,
+            "eastRecord": "2–1",
+            "westRecord": "2–1"
           },
           {
             "id": "3-4336-3842",
@@ -12619,13 +12561,13 @@ window.SUMO_DATA = {
             "westJsaId": "3842",
             "eastName": "Fujiryoga",
             "westName": "Hoshoryu",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "2–0"
+            "completed": true,
+            "winner": "fujiryoga",
+            "winnerJsaId": "4336",
+            "technique": "oshitaoshi",
+            "techniqueId": 17,
+            "eastRecord": "2–1",
+            "westRecord": "2–1"
           },
           {
             "id": "3-4227-3682",
@@ -12636,13 +12578,13 @@ window.SUMO_DATA = {
             "westJsaId": "3682",
             "eastName": "Onosato",
             "westName": "Asanoyama",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "1–1"
+            "completed": true,
+            "winner": "onosato",
+            "winnerJsaId": "4227",
+            "technique": "yoritaoshi",
+            "techniqueId": 71,
+            "eastRecord": "2–1",
+            "westRecord": "1–2"
           }
         ]
       },
@@ -12734,7 +12676,7 @@ window.SUMO_DATA = {
             "technique": "&nbsp;",
             "techniqueId": -1,
             "eastRecord": "0–3",
-            "westRecord": "1–1"
+            "westRecord": "2–1"
           },
           {
             "id": "4-3753-3485",
@@ -12750,8 +12692,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "1–1"
+            "eastRecord": "1–2",
+            "westRecord": "1–2"
           },
           {
             "id": "4-3265-4175",
@@ -12767,8 +12709,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "2–0",
-            "westRecord": "2–0"
+            "eastRecord": "3–0",
+            "westRecord": "2–1"
           },
           {
             "id": "4-3990-3844",
@@ -12784,8 +12726,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "0–2",
-            "westRecord": "1–1"
+            "eastRecord": "0–3",
+            "westRecord": "2–1"
           },
           {
             "id": "4-4108-4101",
@@ -12801,8 +12743,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "1–1"
+            "eastRecord": "2–1",
+            "westRecord": "1–2"
           },
           {
             "id": "4-3907-3742",
@@ -12818,8 +12760,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "0–2"
+            "eastRecord": "1–2",
+            "westRecord": "1–2"
           },
           {
             "id": "4-3371-4112",
@@ -12835,8 +12777,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "2–0"
+            "eastRecord": "2–1",
+            "westRecord": "3–0"
           },
           {
             "id": "4-4171-3840",
@@ -12852,8 +12794,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "1–1"
+            "eastRecord": "2–1",
+            "westRecord": "2–1"
           },
           {
             "id": "4-3705-3376",
@@ -12869,8 +12811,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "1–1"
+            "eastRecord": "1–2",
+            "westRecord": "1–2"
           },
           {
             "id": "4-4079-4187",
@@ -12886,8 +12828,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "1–1"
+            "eastRecord": "1–2",
+            "westRecord": "2–1"
           },
           {
             "id": "4-4191-4279",
@@ -12903,8 +12845,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "0–2",
-            "westRecord": "1–1"
+            "eastRecord": "0–3",
+            "westRecord": "2–1"
           },
           {
             "id": "4-3711-4055",
@@ -12920,8 +12862,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "0–2",
-            "westRecord": "2–0"
+            "eastRecord": "1–2",
+            "westRecord": "3–0"
           },
           {
             "id": "4-3622-2775",
@@ -12937,8 +12879,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "2–0",
-            "westRecord": "1–1"
+            "eastRecord": "2–1",
+            "westRecord": "1–2"
           },
           {
             "id": "4-3682-3661",
@@ -12954,8 +12896,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "1–1"
+            "eastRecord": "1–2",
+            "westRecord": "2–1"
           },
           {
             "id": "4-4230-4336",
@@ -12971,8 +12913,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "1–1"
+            "eastRecord": "2–1",
+            "westRecord": "2–1"
           },
           {
             "id": "4-4227-4093",
@@ -12988,8 +12930,8 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "1–1",
-            "westRecord": "1–1"
+            "eastRecord": "2–1",
+            "westRecord": "1–2"
           },
           {
             "id": "4-3616-3842",
@@ -13005,14 +12947,14 @@ window.SUMO_DATA = {
             "winnerJsaId": null,
             "technique": "&nbsp;",
             "techniqueId": -1,
-            "eastRecord": "0–2",
-            "westRecord": "2–0"
+            "eastRecord": "0–3",
+            "westRecord": "2–1"
           }
         ]
       }
     ],
-    "generatedAt": "2026-11-10T07:24:34.391Z",
-    "dataSignature": "a562665e05d62433292992ecfafee51dadb98b7687d8672d409c463c5226d60d"
+    "generatedAt": "2026-11-10T19:47:33.525Z",
+    "dataSignature": "3fa914eb8a8a0a6eb83b3645713f18fab009e2c01def82d34d7d0ee06fc955d7"
   },
   "history": [],
   "banzuke": {
