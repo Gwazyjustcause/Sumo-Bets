@@ -15,10 +15,10 @@
     "venueId": 4,
     "venue": "Fukuoka Kokusai Center, Fukuoka",
     "currentDay": 7,
-    "scheduledThroughDay": 7,
+    "scheduledThroughDay": 8,
     "totalDays": 15,
     "active": true
   },
-  "generatedAt": "2026-11-13T19:46:56.784Z",
-  "dataSignature": "c847217c7aa218a43463af52a56c3fae549d2736f3ac254d8b4d3ea2468fa120"
+  "generatedAt": "2026-11-14T06:31:34.646Z",
+  "dataSignature": "574a2a1e602e1d969015b46b080e074abe87e897d4543d9ae8aada28c569a8f4"
 }
