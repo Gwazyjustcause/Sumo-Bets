@@ -94,8 +94,8 @@
       },
       "form": 66,
       "sourceIndex": 0,
-      "record": "8–2",
-      "wins": 8,
+      "record": "9–2",
+      "wins": 9,
       "losses": 2,
       "absences": 0,
       "kyujoDays": [],
@@ -103,7 +103,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 8,
+      "points": 9,
       "dailyResults": [
         {
           "day": 1,
@@ -220,11 +220,11 @@
           "opponentJsaId": "4191",
           "opponentId": "fujinokawa",
           "opponent": "Fujinokawa",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 12,
@@ -365,8 +365,8 @@
       },
       "form": 66,
       "sourceIndex": 1,
-      "record": "5–5",
-      "wins": 5,
+      "record": "6–5",
+      "wins": 6,
       "losses": 5,
       "absences": 0,
       "kyujoDays": [],
@@ -374,7 +374,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 5,
+      "points": 6,
       "dailyResults": [
         {
           "day": 1,
@@ -491,11 +491,11 @@
           "opponentJsaId": "3622",
           "opponentId": "kirishima",
           "opponent": "Kirishima",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 12,
@@ -636,9 +636,9 @@
       },
       "form": 72,
       "sourceIndex": 2,
-      "record": "6–4",
+      "record": "6–5",
       "wins": 6,
-      "losses": 4,
+      "losses": 5,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -762,11 +762,11 @@
           "opponentJsaId": "4171",
           "opponentId": "takerufuji",
           "opponent": "Takerufuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 71
         },
         {
           "day": 12,
@@ -907,8 +907,8 @@
       },
       "form": 53,
       "sourceIndex": 3,
-      "record": "5–5",
-      "wins": 5,
+      "record": "6–5",
+      "wins": 6,
       "losses": 5,
       "absences": 0,
       "kyujoDays": [],
@@ -916,7 +916,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 5,
+      "points": 6,
       "dailyResults": [
         {
           "day": 1,
@@ -1033,11 +1033,11 @@
           "opponentJsaId": "4055",
           "opponentId": "atamifuji",
           "opponent": "Atamifuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 12
         },
         {
           "day": 12,
@@ -1178,9 +1178,9 @@
       },
       "form": 73,
       "sourceIndex": 4,
-      "record": "8–2",
+      "record": "8–3",
       "wins": 8,
-      "losses": 2,
+      "losses": 3,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -1304,11 +1304,11 @@
           "opponentJsaId": "3842",
           "opponentId": "hoshoryu",
           "opponent": "Hoshoryu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 12,
@@ -1449,9 +1449,9 @@
       },
       "form": 59,
       "sourceIndex": 5,
-      "record": "5–5",
+      "record": "5–6",
       "wins": 5,
-      "losses": 5,
+      "losses": 6,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -1575,11 +1575,11 @@
           "opponentJsaId": "4227",
           "opponentId": "onosato",
           "opponent": "Onosato",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 12,
@@ -1720,9 +1720,9 @@
       },
       "form": 64,
       "sourceIndex": 6,
-      "record": "9–1",
+      "record": "9–2",
       "wins": 9,
-      "losses": 1,
+      "losses": 2,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -1846,11 +1846,11 @@
           "opponentJsaId": "3661",
           "opponentId": "kotozakura",
           "opponent": "Kotozakura",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 12
         },
         {
           "day": 12,
@@ -1991,8 +1991,8 @@
       },
       "form": 52,
       "sourceIndex": 7,
-      "record": "1–9",
-      "wins": 1,
+      "record": "2–9",
+      "wins": 2,
       "losses": 9,
       "absences": 0,
       "kyujoDays": [],
@@ -2000,7 +2000,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 0,
+      "points": 1,
       "dailyResults": [
         {
           "day": 1,
@@ -2117,11 +2117,11 @@
           "opponentJsaId": "2775",
           "opponentId": "takayasu",
           "opponent": "Takayasu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 12,
@@ -2262,8 +2262,8 @@
       },
       "form": 56,
       "sourceIndex": 8,
-      "record": "5–5",
-      "wins": 5,
+      "record": "6–5",
+      "wins": 6,
       "losses": 5,
       "absences": 0,
       "kyujoDays": [],
@@ -2271,7 +2271,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 5,
+      "points": 6,
       "dailyResults": [
         {
           "day": 1,
@@ -2388,11 +2388,11 @@
           "opponentJsaId": "4093",
           "opponentId": "fujiseiun",
           "opponent": "Fujiseiun",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 39
         },
         {
           "day": 12,
@@ -2533,8 +2533,8 @@
       },
       "form": 63,
       "sourceIndex": 9,
-      "record": "6–4",
-      "wins": 6,
+      "record": "7–4",
+      "wins": 7,
       "losses": 4,
       "absences": 0,
       "kyujoDays": [],
@@ -2542,7 +2542,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 6,
+      "points": 7,
       "dailyResults": [
         {
           "day": 1,
@@ -2659,11 +2659,11 @@
           "opponentJsaId": "4336",
           "opponentId": "fujiryoga",
           "opponent": "Fujiryoga",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 12,
@@ -2804,9 +2804,9 @@
       },
       "form": 63,
       "sourceIndex": 10,
-      "record": "5–5",
+      "record": "5–6",
       "wins": 5,
-      "losses": 5,
+      "losses": 6,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -2930,11 +2930,11 @@
           "opponentJsaId": "3682",
           "opponentId": "asanoyama",
           "opponent": "Asanoyama",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 12,
@@ -3075,8 +3075,8 @@
       },
       "form": 47,
       "sourceIndex": 11,
-      "record": "4–6",
-      "wins": 4,
+      "record": "5–6",
+      "wins": 5,
       "losses": 6,
       "absences": 0,
       "kyujoDays": [],
@@ -3084,7 +3084,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 1,
-      "points": 7,
+      "points": 8,
       "dailyResults": [
         {
           "day": 1,
@@ -3201,11 +3201,11 @@
           "opponentJsaId": "4187",
           "opponentId": "hakunofuji",
           "opponent": "Hakunofuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 16
         },
         {
           "day": 12,
@@ -3346,9 +3346,9 @@
       },
       "form": 58,
       "sourceIndex": 12,
-      "record": "5–5",
+      "record": "5–6",
       "wins": 5,
-      "losses": 5,
+      "losses": 6,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -3472,11 +3472,11 @@
           "opponentJsaId": "4279",
           "opponentId": "yoshinofuji",
           "opponent": "Yoshinofuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 39
         },
         {
           "day": 12,
@@ -3617,9 +3617,9 @@
       },
       "form": 54,
       "sourceIndex": 13,
-      "record": "2–8",
+      "record": "2–9",
       "wins": 2,
-      "losses": 8,
+      "losses": 9,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -3743,11 +3743,11 @@
           "opponentJsaId": "3711",
           "opponentId": "churanoumi",
           "opponent": "Churanoumi",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 12,
@@ -3888,9 +3888,9 @@
       },
       "form": 49,
       "sourceIndex": 14,
-      "record": "5–5",
+      "record": "5–6",
       "wins": 5,
-      "losses": 5,
+      "losses": 6,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -4014,11 +4014,11 @@
           "opponentJsaId": "3616",
           "opponentId": "ura",
           "opponent": "Ura",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 16
         },
         {
           "day": 12,
@@ -4159,8 +4159,8 @@
       },
       "form": 60,
       "sourceIndex": 15,
-      "record": "2–8",
-      "wins": 2,
+      "record": "3–8",
+      "wins": 3,
       "losses": 8,
       "absences": 0,
       "kyujoDays": [],
@@ -4168,7 +4168,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 1,
+      "points": 2,
       "dailyResults": [
         {
           "day": 1,
@@ -4285,11 +4285,11 @@
           "opponentJsaId": "4230",
           "opponentId": "aonishiki",
           "opponent": "Aonishiki",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 71
         },
         {
           "day": 12,
@@ -4430,9 +4430,9 @@
       },
       "form": 51,
       "sourceIndex": 16,
-      "record": "2–8",
+      "record": "2–9",
       "wins": 2,
-      "losses": 8,
+      "losses": 9,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -4556,11 +4556,11 @@
           "opponentJsaId": "3907",
           "opponentId": "roga",
           "opponent": "Roga",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 53
         },
         {
           "day": 12,
@@ -4701,9 +4701,9 @@
       },
       "form": 44,
       "sourceIndex": 17,
-      "record": "2–8",
+      "record": "2–9",
       "wins": 2,
-      "losses": 8,
+      "losses": 9,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -4827,11 +4827,11 @@
           "opponentJsaId": "4120",
           "opponentId": "kotoeiho",
           "opponent": "Kotoeiho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 12,
@@ -4972,8 +4972,8 @@
       },
       "form": 52,
       "sourceIndex": 18,
-      "record": "4–6",
-      "wins": 4,
+      "record": "5–6",
+      "wins": 5,
       "losses": 6,
       "absences": 0,
       "kyujoDays": [],
@@ -4981,7 +4981,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 4,
+      "points": 5,
       "dailyResults": [
         {
           "day": 1,
@@ -5098,11 +5098,11 @@
           "opponentJsaId": "4285",
           "opponentId": "asasuiryu",
           "opponent": "Asasuiryu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 62
         },
         {
           "day": 12,
@@ -5243,8 +5243,8 @@
       },
       "form": 54,
       "sourceIndex": 19,
-      "record": "5–5",
-      "wins": 5,
+      "record": "6–5",
+      "wins": 6,
       "losses": 5,
       "absences": 0,
       "kyujoDays": [],
@@ -5252,7 +5252,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 5,
+      "points": 6,
       "dailyResults": [
         {
           "day": 1,
@@ -5369,11 +5369,11 @@
           "opponentJsaId": "4101",
           "opponentId": "asakoryu",
           "opponent": "Asakoryu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "forfeit-win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 74
         },
         {
           "day": 12,
@@ -5514,8 +5514,8 @@
       },
       "form": 58,
       "sourceIndex": 20,
-      "record": "2–2–6",
-      "wins": 2,
+      "record": "3–2–6",
+      "wins": 3,
       "losses": 2,
       "absences": 6,
       "kyujoDays": [
@@ -5531,7 +5531,7 @@
       "status": "Returned from kyujo",
       "available": true,
       "kinboshi": 0,
-      "points": 2,
+      "points": 3,
       "dailyResults": [
         {
           "day": 1,
@@ -5648,11 +5648,11 @@
           "opponentJsaId": "3705",
           "opponentId": "hiradoumi",
           "opponent": "Hiradoumi",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 70
         },
         {
           "day": 12,
@@ -5793,8 +5793,8 @@
       },
       "form": 44,
       "sourceIndex": 21,
-      "record": "9–1",
-      "wins": 9,
+      "record": "10–1",
+      "wins": 10,
       "losses": 1,
       "absences": 0,
       "kyujoDays": [],
@@ -5802,7 +5802,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 9,
+      "points": 10,
       "dailyResults": [
         {
           "day": 1,
@@ -5919,11 +5919,11 @@
           "opponentJsaId": "3983",
           "opponentId": "dewanoryu",
           "opponent": "Dewanoryu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 13
         },
         {
           "day": 12,
@@ -6064,8 +6064,8 @@
       },
       "form": 49,
       "sourceIndex": 22,
-      "record": "8–2",
-      "wins": 8,
+      "record": "9–2",
+      "wins": 9,
       "losses": 2,
       "absences": 0,
       "kyujoDays": [],
@@ -6073,7 +6073,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 8,
+      "points": 9,
       "dailyResults": [
         {
           "day": 1,
@@ -6190,11 +6190,11 @@
           "opponentJsaId": "4175",
           "opponentId": "asahakuryu",
           "opponent": "Asahakuryu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 12,
@@ -6335,8 +6335,8 @@
       },
       "form": 49,
       "sourceIndex": 23,
-      "record": "7–3",
-      "wins": 7,
+      "record": "8–3",
+      "wins": 8,
       "losses": 3,
       "absences": 0,
       "kyujoDays": [],
@@ -6344,7 +6344,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 7,
+      "points": 8,
       "dailyResults": [
         {
           "day": 1,
@@ -6461,11 +6461,11 @@
           "opponentJsaId": "3376",
           "opponentId": "daieisho",
           "opponent": "Daieisho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 53
         },
         {
           "day": 12,
@@ -6606,9 +6606,9 @@
       },
       "form": 53,
       "sourceIndex": 24,
-      "record": "7–3",
+      "record": "7–4",
       "wins": 7,
-      "losses": 3,
+      "losses": 4,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -6732,11 +6732,11 @@
           "opponentJsaId": "3265",
           "opponentId": "takanosho",
           "opponent": "Takanosho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 16
         },
         {
           "day": 12,
@@ -7148,14 +7148,17 @@
       },
       "form": 57,
       "sourceIndex": 26,
-      "record": "1–9",
+      "record": "1–10–1",
       "wins": 1,
-      "losses": 9,
-      "absences": 0,
-      "kyujoDays": [],
-      "currentKyujo": false,
-      "status": "Active",
-      "available": true,
+      "losses": 10,
+      "absences": 1,
+      "kyujoDays": [
+        11,
+        12
+      ],
+      "currentKyujo": true,
+      "status": "Kyujo · injured / withdrawn",
+      "available": false,
       "kinboshi": 0,
       "points": 0,
       "dailyResults": [
@@ -7274,21 +7277,21 @@
           "opponentJsaId": "3840",
           "opponentId": "kotoshoho",
           "opponent": "Kotoshoho",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
-          "kyujo": false,
-          "techniqueId": -1
+          "completed": true,
+          "status": "forfeit-loss",
+          "result": "loss",
+          "kyujo": true,
+          "techniqueId": 74
         },
         {
           "day": 12,
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -7419,12 +7422,13 @@
       },
       "form": 49,
       "sourceIndex": 27,
-      "record": "0–11",
+      "record": "0–11–1",
       "wins": 0,
       "losses": 11,
-      "absences": 0,
+      "absences": 1,
       "kyujoDays": [
-        11
+        11,
+        12
       ],
       "currentKyujo": true,
       "status": "Kyujo · injured / withdrawn",
@@ -7558,10 +7562,10 @@
           "opponentJsaId": null,
           "opponentId": null,
           "opponent": null,
-          "completed": false,
-          "status": null,
+          "completed": true,
+          "status": "absent",
           "result": null,
-          "kyujo": false,
+          "kyujo": true,
           "techniqueId": null
         },
         {
@@ -7963,8 +7967,8 @@
       },
       "form": 41,
       "sourceIndex": 29,
-      "record": "6–4",
-      "wins": 6,
+      "record": "7–4",
+      "wins": 7,
       "losses": 4,
       "absences": 0,
       "kyujoDays": [],
@@ -7972,7 +7976,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 6,
+      "points": 7,
       "dailyResults": [
         {
           "day": 1,
@@ -8089,11 +8093,11 @@
           "opponentJsaId": "3742",
           "opponentId": "nishikifuji",
           "opponent": "Nishikifuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 16
         },
         {
           "day": 12,
@@ -8234,9 +8238,9 @@
       },
       "form": 53,
       "sourceIndex": 30,
-      "record": "7–3",
+      "record": "7–4",
       "wins": 7,
-      "losses": 3,
+      "losses": 4,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -8360,11 +8364,11 @@
           "opponentJsaId": "4112",
           "opponentId": "kinbozan",
           "opponent": "Kinbozan",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 18
         },
         {
           "day": 12,
@@ -9318,16 +9322,16 @@
       },
       "form": 60,
       "sourceIndex": 34,
-      "record": "3–7",
+      "record": "3–8",
       "wins": 3,
-      "losses": 7,
+      "losses": 8,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 3,
+      "points": 2,
       "dailyResults": [
         {
           "day": 1,
@@ -9444,11 +9448,11 @@
           "opponentJsaId": "4079",
           "opponentId": "gonoyama",
           "opponent": "Gonoyama",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 62
         },
         {
           "day": 12,
@@ -9860,9 +9864,9 @@
       },
       "form": 61,
       "sourceIndex": 36,
-      "record": "8–2",
+      "record": "8–3",
       "wins": 8,
-      "losses": 2,
+      "losses": 3,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -9986,11 +9990,11 @@
           "opponentJsaId": "3371",
           "opponentId": "wakamotoharu",
           "opponent": "Wakamotoharu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 13
         },
         {
           "day": 12,
@@ -11397,6 +11401,6 @@
       "badge": null
     }
   ],
-  "generatedAt": "2026-11-18T07:36:01.246Z",
-  "dataSignature": "19d3024fdf19cb0ebbe3133b23c477b4e447581496223bfd47fa5c2e944abe7c"
+  "generatedAt": "2026-11-18T20:36:44.677Z",
+  "dataSignature": "707f7177d45d8ab01cd99ee8ec8bdee32c94b2dd1395b8a003421f76bc0c125a"
 }
