@@ -1,0 +1,11 @@
+{
+  "name": "sumo-battle-shared",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-11-18",
+  "vars": { "ALLOWED_ORIGINS": "https://gwazyjustcause.github.io,http://localhost:4173" },
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "sumo-battle",
+    "database_id": "7b117f0e-5cc9-40ca-b0fa-ff6b9dabb695"
+  }]
+}

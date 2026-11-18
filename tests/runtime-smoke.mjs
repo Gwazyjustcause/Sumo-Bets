@@ -121,6 +121,12 @@ const context = vm.createContext({
 });
 
 vm.runInContext(load("data/sumo-data.js"), context, { filename: "data/sumo-data.js" });
+// These scenarios require fixed roster categories, independent of promotions
+// and demotions in the regularly updated official banzuke.
+vm.runInContext(`for (const [id, rank] of Object.entries({hakunofuji:'Komusubi',churanoumi:'Maegashira 3',asakoryu:'Maegashira 13',abi:'Maegashira 13',roga:'Maegashira 14'})) {
+  const rikishi=window.SUMO_DATA.rikishi.find((item)=>item.id===id);
+  rikishi.rank=rank; rikishi.rankNumber=rank.startsWith('Maegashira')?Number(rank.split(' ')[1]):null;
+}`, context);
 vm.runInContext(load("image-resolver.js"), context, { filename: "image-resolver.js" });
 vm.runInContext(load("app.js"), context, { filename: "app.js" });
 await new Promise((resolve) => setTimeout(resolve, 240));
@@ -330,33 +336,41 @@ vm.runInContext("state.drafts[state.selectedBashoId]=emptyDraftPlayers(); savedS
 
 assert.equal(vm.runInContext("substituteRules(['onosato','takayasu','abi']).valid", context), true, "A legal substitute roster needs one Sanyaku and two Maegashira");
 assert.equal(vm.runInContext("substituteRules(['onosato','hoshoryu','abi']).valid", context), false, "A second Sanyaku substitute must be rejected");
-vm.runInContext(`state.activePlayer='gwazy'; savedSharedDraft.playerLocks={gwazy:true,jake:true};savedSharedDraft.locked=true;savedSharedDraft.status='tournament'; state.drafts[state.selectedBashoId].gwazy={mainPicks:['kirishima','wakanosho'],substitutes:['onosato','takayasu','abi'],sidePrediction:null,substitutionEvents:[]}; for(const id of ['kirishima','wakanosho']){const result=getRikishi(id).dailyResults.find((item)=>item.day===8);result.status='absent';result.kyujo=true;result.completed=false;result.result=null;} saveState();`, context);
+vm.runInContext(`state.activePlayer='gwazy'; savedSharedDraft.playerLocks={gwazy:true,jake:true};savedSharedDraft.locked=true;savedSharedDraft.status='tournament'; state.drafts[state.selectedBashoId].gwazy={mainPicks:['kirishima','arashifuji'],substitutes:['onosato','takayasu','abi'],sidePrediction:null,substitutionEvents:[]}; for(const id of ['kirishima','arashifuji']){const result=getRikishi(id).dailyResults.find((item)=>item.day===8);result.status='absent';result.kyujo=true;result.completed=false;result.result=null;} saveState();`, context);
 const liveSubstitutions = JSON.parse(vm.runInContext("JSON.stringify(substitutionTimeline('gwazy'))", context));
 assert(liveSubstitutions.assignments.some((entry) => entry.mainId === "kirishima" && entry.subId === "onosato"), "A Kyujo Sanyaku main pick must activate the Sanyaku substitute");
-assert(liveSubstitutions.assignments.some((entry) => entry.mainId === "wakanosho" && entry.subId === "takayasu"), "A Kyujo Maegashira main pick must activate the first Maegashira substitute");
+assert(liveSubstitutions.assignments.some((entry) => entry.mainId === "arashifuji" && entry.subId === "takayasu"), "A Kyujo Maegashira main pick must activate the first Maegashira substitute");
 assert(liveSubstitutions.standbySubIds.includes("abi"), "An unused Maegashira substitute must remain on standby");
 assert.equal(vm.runInContext("countedPointsForRikishi('gwazy','abi')", context), 0, "A standby substitute must contribute zero points");
-assert.equal(vm.runInContext("countedPointsForRikishi('gwazy','onosato')", context), vm.runInContext("pointsThroughDay(getRikishi('onosato'),15)-pointsThroughDay(getRikishi('onosato'),7)", context), "An activated substitute must count points only from its activation day");
+assert.equal(vm.runInContext("countedPointsForRikishi('gwazy','onosato',7)", context), 0, "A replacement's earlier points must stay hidden before activation");
+assert.equal(vm.runInContext("countedPointsForRikishi('gwazy','onosato',8)", context), vm.runInContext("pointsThroughDay(getRikishi('onosato'),8)", context), "Activation must credit the substitute's earlier basho wins");
+assert.equal(vm.runInContext("countedPointsForRikishi('gwazy','onosato')", context), vm.runInContext("pointsThroughDay(getRikishi('onosato'),15)", context), "An active substitute must count their full basho points");
+assert.equal(vm.runInContext("playerScore('gwazy',8)", context), vm.runInContext("getRoster('gwazy').team.concat(getRoster('gwazy').subs).reduce((total,id)=>total+countedPointsForRikishi('gwazy',id,8),0)", context), "The team total must include the replacement's retroactive points");
 assert(liveSubstitutions.events.some((event) => event.type === "activated"), "Automatic activations must be present in the live substitution log");
-vm.runInContext(`globalThis.__subTestBackup={tobizaru:JSON.parse(JSON.stringify(getRikishi('tobizaru').dailyResults)),takayasu:JSON.parse(JSON.stringify(getRikishi('takayasu').dailyResults))}; for(const day of [8,9]){const result=getRikishi('tobizaru').dailyResults.find((item)=>item.day===day); result.status='absent'; result.kyujo=true; result.completed=false; result.result=null; result.opponentId=null; result.opponentJsaId=null;} getDraftPlayer('gwazy').mainPicks=['wakanosho','tobizaru'];`, context);
+vm.runInContext(`globalThis.__returnScoreBackup=JSON.parse(JSON.stringify(getRikishi('kirishima').dailyResults)); Object.assign(getRikishi('kirishima').dailyResults[8],{status:'scheduled',kyujo:false}); Object.assign(getRikishi('kirishima').dailyResults[9],{status:'absent',kyujo:true});`, context);
+assert.equal(vm.runInContext("countedPointsForRikishi('gwazy','onosato',9)", context), vm.runInContext("pointsThroughDay(getRikishi('onosato'),8)", context), "A deactivated substitute must retain their banked points");
+assert.equal(vm.runInContext("countedPointsForRikishi('gwazy','onosato',10)", context), vm.runInContext("pointsThroughDay(getRikishi('onosato'),10)", context), "Reactivation must catch up to the full record without double counting earlier points");
+assert(vm.runInContext("overviewPickRow(getPlayerDefinition('gwazy'),'onosato','standby',1,9).includes('Standby · banked points')", context), "A previously activated substitute must display their banked points on standby");
+vm.runInContext(`getRikishi('kirishima').dailyResults=__returnScoreBackup; delete globalThis.__returnScoreBackup;`, context);
+vm.runInContext(`globalThis.__subTestBackup={roga:JSON.parse(JSON.stringify(getRikishi('roga').dailyResults)),takayasu:JSON.parse(JSON.stringify(getRikishi('takayasu').dailyResults))}; for(const day of [8,9]){const result=getRikishi('roga').dailyResults.find((item)=>item.day===day); result.status='absent'; result.kyujo=true; result.completed=false; result.result=null; result.opponentId=null; result.opponentJsaId=null;} getDraftPlayer('gwazy').mainPicks=['arashifuji','roga'];`, context);
 const twoMaegashiraReplacements = JSON.parse(vm.runInContext("JSON.stringify(substitutionTimeline('gwazy',9))", context));
-assert(twoMaegashiraReplacements.assignments.some((entry) => entry.mainId === "wakanosho" && entry.subId === "takayasu"), "The first withdrawn Maegashira must use the first Maegashira substitute");
-assert(twoMaegashiraReplacements.assignments.some((entry) => entry.mainId === "tobizaru" && entry.subId === "abi"), "A second withdrawn Maegashira must use the second Maegashira substitute");
-vm.runInContext(`getDraftPlayer('gwazy').mainPicks=['wakanosho']; for(const day of [9]){const result=getRikishi('takayasu').dailyResults.find((item)=>item.day===day); result.status='absent'; result.kyujo=true; result.completed=false; result.result=null; result.opponentId=null; result.opponentJsaId=null;}`, context);
+assert(twoMaegashiraReplacements.assignments.some((entry) => entry.mainId === "arashifuji" && entry.subId === "takayasu"), "The first withdrawn Maegashira must use the first Maegashira substitute");
+assert(twoMaegashiraReplacements.assignments.some((entry) => entry.mainId === "roga" && entry.subId === "abi"), "A second withdrawn Maegashira must use the second Maegashira substitute");
+vm.runInContext(`getDraftPlayer('gwazy').mainPicks=['arashifuji']; for(const day of [9]){const result=getRikishi('takayasu').dailyResults.find((item)=>item.day===day); result.status='absent'; result.kyujo=true; result.completed=false; result.result=null; result.opponentId=null; result.opponentJsaId=null;}`, context);
 const unavailableSubstitute = JSON.parse(vm.runInContext("JSON.stringify(substitutionTimeline('gwazy',9))", context));
-assert(unavailableSubstitute.assignments.some((entry) => entry.mainId === "wakanosho" && entry.subId === "abi"), "A withdrawn substitute must be released and the next eligible substitute activated");
+assert(unavailableSubstitute.assignments.some((entry) => entry.mainId === "arashifuji" && entry.subId === "abi"), "A withdrawn substitute must be released and the next eligible substitute activated");
 assert(unavailableSubstitute.events.some((event) => event.type === "substitute-kyujo" && event.subId === "takayasu"), "A substitute withdrawal must be logged");
-vm.runInContext(`getRikishi('tobizaru').dailyResults=__subTestBackup.tobizaru; getRikishi('takayasu').dailyResults=__subTestBackup.takayasu; getDraftPlayer('gwazy').mainPicks=['kirishima','wakanosho']; delete globalThis.__subTestBackup;`, context);
+vm.runInContext(`getRikishi('roga').dailyResults=__subTestBackup.roga; getRikishi('takayasu').dailyResults=__subTestBackup.takayasu; getDraftPlayer('gwazy').mainPicks=['kirishima','arashifuji']; delete globalThis.__subTestBackup;`, context);
 location.hash = "#roster";
 window.listeners.hashchange();
 await new Promise((resolve) => setTimeout(resolve, 160));
 assert(app.innerHTML.includes("KYUJO · INACTIVE") && app.innerHTML.includes("ACTIVE SUBSTITUTE") && app.innerHTML.includes("STANDBY · 0 PTS"), "The roster must visually distinguish injured, active-replacement, and standby states");
 assert(app.innerHTML.includes("Substitution log") && app.innerHTML.includes("activated for"), "The roster must render its automatic substitution log");
-vm.runInContext(`getRikishi('wakanosho').dailyResults[8].status='scheduled'; getRikishi('wakanosho').dailyResults[8].opponentId='abi';`, context);
+vm.runInContext(`getRikishi('arashifuji').dailyResults[8].status='scheduled'; getRikishi('arashifuji').dailyResults[8].opponentId='abi';`, context);
 const returnTimeline = JSON.parse(vm.runInContext("JSON.stringify(substitutionTimeline('gwazy',9))", context));
-assert(!returnTimeline.assignments.some((entry) => entry.mainId === "wakanosho"), "A returning main wrestler must automatically reclaim his position");
-assert(returnTimeline.events.some((event) => event.type === "returned" && event.mainId === "wakanosho"), "A return from Kyujo must be logged");
-vm.runInContext(`getRikishi('wakanosho').dailyResults[8].status=null; getRikishi('wakanosho').dailyResults[8].opponentId=null; getRikishi('hoshoryu').available=true; savedSharedDraft.playerLocks={gwazy:false,jake:false};savedSharedDraft.locked=false;savedSharedDraft.status='draft'; resetCurrentDraft(); state.activePlayer='jake'; saveState();`, context);
+assert(!returnTimeline.assignments.some((entry) => entry.mainId === "arashifuji"), "A returning main wrestler must automatically reclaim his position");
+assert(returnTimeline.events.some((event) => event.type === "returned" && event.mainId === "arashifuji"), "A return from Kyujo must be logged");
+vm.runInContext(`getRikishi('arashifuji').dailyResults[8].status=null; getRikishi('arashifuji').dailyResults[8].opponentId=null; getRikishi('hoshoryu').available=true; savedSharedDraft.playerLocks={gwazy:false,jake:false};savedSharedDraft.locked=false;savedSharedDraft.status='draft'; resetCurrentDraft(); state.activePlayer='jake'; saveState();`, context);
 
 assert.equal(vm.runInContext("championMode()", context), false, "Draft editing must remain available before official completion");
 vm.runInContext("addPick('hoshoryu');", context);

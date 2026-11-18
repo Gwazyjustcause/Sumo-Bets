@@ -167,7 +167,7 @@ const readState = () => {
     const selectedBashoId = data.banzuke?.bashos.some((basho) => basho.id === saved.selectedBashoId)
       ? saved.selectedBashoId
       : defaults.selectedBashoId;
-    // Rosters are never restored from localStorage. The Supabase-backed shared
+    // Rosters are never restored from localStorage. The server-backed shared
     // draft is loaded after startup and remains the single source of truth.
     const drafts = emptyDrafts();
     const officialBashoId = saved.officialBashoId || defaults.officialBashoId;
@@ -643,7 +643,7 @@ function subscribeToSharedDraft() {
   stopSharedDraftSubscription?.();
   stopSharedDraftSubscription = window.SHARED_DRAFT_API.subscribe(state.selectedBashoId, applyRealtimeSharedDraft, (status) => {
     if (["CHANNEL_ERROR", "TIMED_OUT"].includes(status)) {
-      sharedDraftError = "Supabase Realtime is unavailable. Confirm shared_drafts is in the supabase_realtime publication.";
+      sharedDraftError = "Shared updates are unavailable. Check your connection or refresh the shared draft.";
       render();
     }
   });
@@ -664,7 +664,7 @@ function subscribeToLifecycle() {
     render();
   }, (status) => {
     if (["CHANNEL_ERROR", "TIMED_OUT"].includes(status)) {
-      sharedDraftError = "Supabase lifecycle updates are unavailable. Refresh to check for Start or Skip decisions.";
+      sharedDraftError = "Shared game updates are unavailable. Refresh to check for Start or Skip decisions.";
       render();
     }
   });
@@ -1054,14 +1054,9 @@ function sideWinner(day = spoilerVisibleDay()) {
 function playerScore(id, day = spoilerVisibleDay()) {
   if (!tournamentStarted()) return 0;
   const timeline = substitutionTimeline(id, day);
-  let pickPoints = 0;
-  for (let currentDay = 1; currentDay <= day; currentDay += 1) {
-    const lineup = timeline.byDay.get(currentDay);
-    for (const rikishiId of lineup?.activeIds || []) {
-      const rikishi = getRikishi(rikishiId);
-      pickPoints += pointsThroughDay(rikishi, currentDay) - pointsThroughDay(rikishi, currentDay - 1);
-    }
-  }
+  const roster = getRoster(id);
+  const pickPoints = [...new Set([...roster.team, ...roster.subs])].reduce(
+    (total, rikishiId) => total + countedPointsForRikishi(id, rikishiId, day, timeline), 0);
   return pickPoints + (getSidePrediction(id) && getSidePrediction(id) === sideWinner(day) ? 20 : 0);
 }
 
@@ -1070,9 +1065,17 @@ function playerDayScore(id, day = spoilerVisibleDay()) {
   return playerScore(id, day) - playerScore(id, day - 1);
 }
 
-function countedPointsForRikishi(playerId, rikishiId, day = spoilerVisibleDay()) {
-  const timeline = substitutionTimeline(playerId, day);
+function countedPointsForRikishi(playerId, rikishiId, day = spoilerVisibleDay(), timeline = substitutionTimeline(playerId, day)) {
   const rikishi = getRikishi(rikishiId);
+  if (!rikishi) return 0;
+  if (getRoster(playerId).subs.includes(rikishiId)) {
+    // Activation credits the full basho record. Bank it when the substitute
+    // leaves the lineup, and catch up to the full record on reactivation.
+    for (let currentDay = day; currentDay >= 1; currentDay -= 1) {
+      if (timeline.byDay.get(currentDay)?.activeSubIds.includes(rikishiId)) return pointsThroughDay(rikishi, currentDay);
+    }
+    return 0;
+  }
   let points = 0;
   for (let currentDay = 1; currentDay <= day; currentDay += 1) {
     if (!timeline.byDay.get(currentDay)?.activeIds.includes(rikishiId)) continue;
@@ -1658,7 +1661,7 @@ function rosterCard(rikishi, playerId, substitute = false, role = "active") {
     : isActiveSubstitute
       ? '<span class="roster-status-badge active-substitute">✓ ACTIVE SUBSTITUTE</span>'
       : isStandbySubstitute
-        ? '<span class="roster-status-badge standby">○ STANDBY · 0 PTS</span>'
+        ? `<span class="roster-status-badge standby">○ STANDBY · ${points ? "BANKED PTS" : "0 PTS"}</span>`
         : '<span class="roster-status-badge active-main">● ACTIVE MAIN</span>';
   return `
     <article class="roster-card ${heat} ${isKyujo ? "is-kyujo" : ""} ${isActiveSubstitute ? "is-active-substitute" : ""} ${isStandbySubstitute ? "is-standby-substitute" : ""}" data-profile="${rikishi.id}">
@@ -1672,7 +1675,7 @@ function rosterCard(rikishi, playerId, substitute = false, role = "active") {
         <div class="record-line"><strong>${stats.record}</strong><span><b>${stats.wins}</b> wins · <b>${stats.losses}</b> losses</span></div>
         <div class="heat-track"><span style="--width:${stats.form}%"></span></div>
       </div>
-      <div class="roster-points"><strong>${isStandbySubstitute ? 0 : points}</strong><small>${isKyujo ? "BANKED PTS" : isStandbySubstitute ? "INACTIVE" : "COUNTED PTS"}</small></div>
+      <div class="roster-points"><strong>${points}</strong><small>${isKyujo || (isStandbySubstitute && points) ? "BANKED PTS" : isStandbySubstitute ? "INACTIVE" : "COUNTED PTS"}</small></div>
       ${!activeHiddenDay() && rikishi.badge ? `<span class="clutch-badge">✦ ${rikishi.badge}</span>` : ""}
       ${readOnly ? '<div class="roster-card-readonly">🔒 LOCKED</div>' : `<div class="roster-card-actions">
         ${substitute ? `<button class="move-section" type="button" data-roster-move="${rikishi.id}:main">&larr; Main</button>` : ""}
@@ -1716,11 +1719,11 @@ function overviewPickRow(player, rikishiId, status, slot, day = overviewSelected
   const rikishi = getRikishi(rikishiId);
   if (!rikishi) return "";
   const points = countedPointsForRikishi(player.id, rikishi.id, day);
-  const statusCopy = status === "kyujo" ? "Kyujo · inactive" : status === "active-substitute" ? "Active replacement" : status === "standby" ? "Standby · 0 points" : "Active main";
+  const statusCopy = status === "kyujo" ? "Kyujo · inactive" : status === "active-substitute" ? "Active replacement" : status === "standby" ? points ? "Standby · banked points" : "Standby · 0 points" : "Active main";
   return `<button class="dashboard-pick-row ${status}" type="button" data-profile="${rikishi.id}">
     <span class="dashboard-slot-number">${slot}</span>${wrestlerImage(rikishi)}
     <span><b>${escapeHtml(rikishi.name)}</b><small>${statusCopy}</small></span>
-    <strong>${status === "standby" ? 0 : points}<small> PTS</small></strong>
+    <strong>${points}<small> PTS</small></strong>
   </button>`;
 }
 
@@ -1785,10 +1788,10 @@ function championDebugPanel() {
       <span><small>DAY 15 RESULTS COMPLETE</small><b class="${debug.day15Complete ? "pass" : "fail"}">${debug.day15Complete ? "TRUE ✓" : "FALSE ✗"}</b><em>${debug.completedBouts} / ${debug.totalBouts} published · explicit state ${debug.explicitComplete === null ? "not supplied" : debug.explicitComplete}</em></span>
       <span><small>COMPLETE SHARED ROSTERS</small><b class="${debug.completeSharedRosters ? "pass" : "fail"}">${debug.completeSharedRosters ? "TRUE ✓" : "FALSE ✗"}</b><em>Required before a completed tournament can enter Champion Mode</em></span>
       <span><small>CHAMPION MODE AVAILABLE</small><b class="${debug.available ? "pass" : "fail"}">${debug.available ? "TRUE ✓" : "FALSE ✗"}</b></span>
-      <span><small>SUPABASE SNAPSHOT</small><b>${escapeHtml(debug.sharedStatus)}</b><em>Gwazy lock ${debug.sharedLocks.gwazy} · Jake lock ${debug.sharedLocks.jake} · both ${debug.sharedLocked}</em></span>
+      <span><small>SHARED SNAPSHOT</small><b>${escapeHtml(debug.sharedStatus)}</b><em>Gwazy lock ${debug.sharedLocks.gwazy} · Jake lock ${debug.sharedLocks.jake} · both ${debug.sharedLocked}</em></span>
     </div>
-    <div class="champion-debug-expression"><small>BOOLEAN EXPRESSION</small><code>${escapeHtml(debug.expression)}</code><b>${debug.falseTerms.length ? `FALSE TERM${debug.falseTerms.length === 1 ? "" : "S"}: ${escapeHtml(debug.falseTerms.join(", "))}` : "No false terms — Champion Mode is available."}</b>${checkedAt ? `<em>Fresh Supabase check: ${escapeHtml(checkedAt)}</em>` : "<em>Supabase values shown are the current synchronized snapshot. Pressing Enter performs a fresh read.</em>"}</div>
-    <div class="champion-debug-expression legacy"><small>PREVIOUS BLOCKING GATE (REMOVED)</small><code>${escapeHtml(debug.legacyExpression)}</code><b class="${debug.legacyRemoteReady ? "pass" : "fail"}">${debug.legacyFalseTerms.length ? `FALSE TERM${debug.legacyFalseTerms.length === 1 ? "" : "S"}: ${escapeHtml(debug.legacyFalseTerms.join(", "))}` : "The legacy gate currently evaluates true."}</b><em>This stale Supabase lifecycle check is diagnostic only and no longer prevents Champion Mode.</em></div>
+    <div class="champion-debug-expression"><small>BOOLEAN EXPRESSION</small><code>${escapeHtml(debug.expression)}</code><b>${debug.falseTerms.length ? `FALSE TERM${debug.falseTerms.length === 1 ? "" : "S"}: ${escapeHtml(debug.falseTerms.join(", "))}` : "No false terms — Champion Mode is available."}</b>${checkedAt ? `<em>Fresh shared storage check: ${escapeHtml(checkedAt)}</em>` : "<em>Shared storage values shown are the current synchronized snapshot. Pressing Enter performs a fresh read.</em>"}</div>
+    <div class="champion-debug-expression legacy"><small>PREVIOUS BLOCKING GATE (REMOVED)</small><code>${escapeHtml(debug.legacyExpression)}</code><b class="${debug.legacyRemoteReady ? "pass" : "fail"}">${debug.legacyFalseTerms.length ? `FALSE TERM${debug.legacyFalseTerms.length === 1 ? "" : "S"}: ${escapeHtml(debug.legacyFalseTerms.join(", "))}` : "The legacy gate currently evaluates true."}</b><em>This stale shared storage lifecycle check is diagnostic only and no longer prevents Champion Mode.</em></div>
   </details>`;
 }
 
@@ -1980,7 +1983,7 @@ function rosterView() {
       ${pageIntro(lifecycleHold ? pendingDecision ? "NEW BANZUKE · AWAITING DECISION" : "CHAMPION MODE · READ ONLY" : "TEAM WORKSPACE", `${player.name}'s roster`, lifecycleHold ? pendingDecision ? "The new official banzuke is available, but roster editing begins only after Start New Draft is selected." : "The previous result is archived and no new roster can be created until Start New Draft is selected from the Champion page." : "Move or remove wrestlers directly from their cards. Add new picks from the Banzuke.", `<a class="primary-button" href="${lifecycleHold ? "#overview" : "#banzuke"}">${lifecycleHold ? "Review New Basho" : "Add from Banzuke"}</a>`)}
       ${editingBanner(lifecycleHold ? "Draft editing is paused. A newly published banzuke remains browseable, but it does not create a draft automatically." : `This roster belongs only to ${player.name}. Use the header selector to edit the other player.`)}
       <div class="rules-strip reveal">
-        <span><b>6</b> starters</span><i></i><span><b>1</b> Sanyaku substitute</span><i></i><span><b>2</b> Maegashira substitutes</span><i></i><span><b>SUBS SCORE</b> only while activated</span>
+        <span><b>6</b> starters</span><i></i><span><b>1</b> Sanyaku substitute</span><i></i><span><b>2</b> Maegashira substitutes</span><i></i><span><b>SUBS SCORE</b> full basho points on activation</span>
       </div>
       <section class="shared-draft-bar reveal ${unsaved ? "dirty" : ""}">
         <div><small>${player.name.toUpperCase()} DRAFT STATUS</small><b>${sharedDraftLoading ? "Loading shared draft..." : sharedDraftError && !savedSharedDraft ? "Connection required" : pendingDecision ? "New draft not started" : lifecycleHold ? "🏆 Champion Mode · editing paused" : locked ? "🔒 Permanently locked" : unsaved ? "&#9679; Unsaved Changes" : "&#10003; Ready to edit"}</b></div>
@@ -2323,7 +2326,7 @@ function banzukeView() {
         <div class="banzuke-integrity"><span class="status-dot"></span><b id="banzuke-render-count">Checking ${basho.expectedRikishi} official entries…</b><small>Every data-layer rikishi must render.</small></div>
         <div class="banzuke-rows">${rows.map(banzukeRow).join("")}</div>
       </section>
-      <p class="source-note"><a href="${basho.officialUrl}" target="_blank" rel="noreferrer">Official Japan Sumo Association banzuke ↗</a> · Records update from the read-only JSA snapshot. ${player.name}'s working copy publishes to the shared Supabase draft only when Save Picks is pressed.</p>
+      <p class="source-note"><a href="${basho.officialUrl}" target="_blank" rel="noreferrer">Official Japan Sumo Association banzuke ↗</a> · Records update from the read-only JSA snapshot. ${player.name}'s working copy publishes to the shared draft only when Save Picks is pressed.</p>
       ${appFooter()}
     </section>`;
 }
@@ -2673,7 +2676,7 @@ function settingsView() {
   const player = getPlayerDefinition();
   const playerState = getPlayerState();
   const storageKilobytes = (JSON.stringify(state).length / 1024).toFixed(1);
-  const sharedSetup = window.SHARED_DRAFT_API?.setupStatus?.() || { ready: false, missing: ["Supabase client"] };
+  const sharedSetup = window.SHARED_DRAFT_API?.setupStatus?.() || { ready: false, missing: ["Shared storage connection"] };
   const sharedBackendReady = sharedSetup.ready;
   const sharedBackendUrl = window.SHARED_DRAFT_API?.config?.url || "Not configured";
   return `
@@ -2704,12 +2707,12 @@ function settingsView() {
           <div class="source-list">${data.meta.sources.map((source) => `<a href="${source.url}" target="_blank" rel="noreferrer"><span>${icons.source}</span><b>${source.label}</b><small>sumo.or.jp</small></a>`).join("")}</div>
           <button class="secondary-button" type="button" data-mock-sync>Check data now</button>
         </section>
-        <section class="settings-card reveal"><div class="settings-card-title"><span>⌁</span><div><h2>Realtime shared draft</h2><p>Rosters and predictions sync through Supabase without a personal write token.</p></div></div>
-          <div class="sync-panel"><span class="sync-icon">${sharedBackendReady ? "✓" : "!"}</span><div><b>${sharedBackendReady ? "Supabase connection configured" : `Missing: ${escapeHtml(sharedSetup.missing.join(", "))}`}</b><small>${escapeHtml(sharedBackendUrl)}</small></div><span class="sync-badge"><i></i> LIVE</span></div>
-          <button class="secondary-button" type="button" data-refresh-shared>Refresh realtime draft</button>
+        <section class="settings-card reveal"><div class="settings-card-title"><span>⌁</span><div><h2>Shared draft</h2><p>Rosters and predictions update every 15 seconds while this tab is visible.</p></div></div>
+          <div class="sync-panel"><span class="sync-icon">${sharedBackendReady ? "✓" : "!"}</span><div><b>${sharedBackendReady ? "Shared storage configured" : `Missing: ${escapeHtml(sharedSetup.missing.join(", "))}`}</b><small>${escapeHtml(sharedBackendUrl)}</small></div><span class="sync-badge"><i></i> SYNC</span></div>
+          <button class="secondary-button" type="button" data-refresh-shared>Refresh shared draft</button>
           <div class="storage-meter"><div><span>Local preferences only</span><b>${storageKilobytes} KB</b></div><span><i style="--width:${Math.min(100, Number(storageKilobytes) * 4)}%"></i></span></div>
           <button class="danger-button" type="button" data-reset-draft>Reset current draft only</button>
-          <p class="microcopy">No GitHub or player credential is stored in the browser. The public Supabase key is limited by the database policies in supabase/schema.sql.</p>
+          <p class="microcopy">Your game is saved online for both players. No hosting account credential is stored in the browser.</p>
         </section>
       </div>
       ${appFooter()}
@@ -2720,7 +2723,7 @@ function appFooter() {
   return `
     <footer class="app-footer">
       <div class="brand footer-brand"><span class="brand-mon"><span>相</span></span><span><strong>SUMO BATTLE</strong><small>Made for the rivalry, not for money.</small></span></div>
-      <p>Official results come from the <a href="${data.meta.sources[0].url}" target="_blank" rel="noreferrer">Nihon Sumo Kyokai</a>. Picks sync through the realtime Supabase draft.</p>
+      <p>Official results come from the <a href="${data.meta.sources[0].url}" target="_blank" rel="noreferrer">Nihon Sumo Kyokai</a>. Picks are saved online and shared between both players.</p>
       <span>v3.0 · ${data.meta.shortTournament}</span>
     </footer>`;
 }

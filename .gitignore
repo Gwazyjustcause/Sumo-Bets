@@ -1,0 +1,4 @@
+# Private migration snapshots and local Cloudflare tooling
+backups/
+.wrangler/
+node_modules/

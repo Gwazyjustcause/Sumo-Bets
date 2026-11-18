@@ -57,7 +57,7 @@ else assert(data.rikishi.every((rikishi) => rikishi.wins === 0 && rikishi.losses
 assert(data.rikishi.every((rikishi) => Number.isFinite(rikishi.wins) && Number.isFinite(rikishi.losses)), "Every rikishi needs numeric official records");
 assert(data.rikishi.every((rikishi) => Array.isArray(rikishi.kyujoDays) && typeof rikishi.currentKyujo === "boolean"), "Every official rikishi needs day-specific Kyujo status");
 if (data.meta.day === 0) assert(data.rikishi.every((rikishi) => !rikishi.currentKyujo && rikishi.kyujoDays.length === 0), "A new banzuke must begin without stale prior-basho withdrawal state");
-if (data.meta.day > 0) assert(data.bouts.length > 0, "The official layer must include the latest published Makuuchi results");
+if (data.meta.day > 0) assert(data.results.days.some((day) => day.bouts.length > 0), "The official layer must include published Makuuchi results even before today's bouts are scheduled");
 else assert.equal(data.bouts.length, 0, "A pre-basho snapshot must not invent official results");
 assert.equal(data.history.length, 0, "Version 3 must not ship previous basho history");
 
@@ -86,7 +86,7 @@ const app = load("app.js");
 const sharedDraftApi = load("shared-draft.js");
 const imageResolver = load("image-resolver.js");
 const css = load("styles.css");
-for (const asset of ["styles.css", "data/sumo-data.js", "image-resolver.js", "supabase-config.js", "shared-draft.js", "app.js"]) {
+for (const asset of ["styles.css", "data/sumo-data.js", "image-resolver.js", "shared-config.js", "cloudflare-draft.js", "app.js"]) {
   assert(html.includes(asset), `index.html must reference ${asset}`);
 }
 assert(existsSync(new URL("assets/rikishi-placeholder.svg", root)), "The silhouette fallback asset must exist");
@@ -148,7 +148,8 @@ assert(!app.includes("FORM GUIDE"), "The obsolete Overview Form Guide card must 
 for (const capability of ["createClient", "save_shared_draft", "postgres_changes", "SHARED_DRAFT_API", "p_expected_revision", "setupStatus", "Project URL", "Publishable Key"]) {
   assert(sharedDraftApi.includes(capability), `Missing shared draft transport capability: ${capability}`);
 }
-assert(app.includes("supabase_realtime publication"), "Realtime setup failures must identify the missing publication");
+assert(app.includes("Shared updates are unavailable"), "Shared update failures must explain how to refresh");
+assert(!html.includes("supabase"), "The migrated site must not load Supabase scripts");
 for (const removedCredentialPath of ["api.github.com/repos", "sessionStorage", "Authorization", "setToken", "GitHub write token"]) {
   assert(!sharedDraftApi.includes(removedCredentialPath), `Personal GitHub credential path must be removed: ${removedCredentialPath}`);
 }

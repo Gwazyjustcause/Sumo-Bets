@@ -17,6 +17,11 @@ const types = {
 createServer((request, response) => {
   const requested = decodeURIComponent(new URL(request.url, `http://${request.headers.host}`).pathname);
   const relative = requested === "/" ? "index.html" : requested.replace(/^\/+/, "");
+  if (relative.split(/[\\/]/).some((part) => part.startsWith(".") || part === "backups" || part === "node_modules")) {
+    response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+    response.end("Not found");
+    return;
+  }
   const file = normalize(join(root, relative));
 
   if (!file.startsWith(root) || !existsSync(file) || !statSync(file).isFile()) {
