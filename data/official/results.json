@@ -3,21 +3,22 @@
   "bashoId": "638",
   "bashoSlug": "kyushu-2026",
   "division": "Makuuchi",
-  "currentDay": 12,
+  "currentDay": 13,
   "scheduledThroughDay": 13,
   "sideTotals": {
-    "East": 124,
-    "West": 112
+    "East": 129,
+    "West": 122
   },
   "injuries": [
     {
       "id": "asakoryu",
       "jsaId": "4101",
       "name": "Asakoryu",
-      "absences": 1,
+      "absences": 2,
       "kyujoDays": [
         11,
-        12
+        12,
+        13
       ],
       "status": "Kyujo · injured / withdrawn"
     },
@@ -25,15 +26,16 @@
       "id": "shishi",
       "jsaId": "3990",
       "name": "Shishi",
-      "absences": 1,
+      "absences": 2,
       "kyujoDays": [
         11,
-        12
+        12,
+        13
       ],
       "status": "Kyujo · injured / withdrawn"
     }
   ],
-  "source": "https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/12/",
+  "source": "https://www.sumo.or.jp/EnHonbashoMain/torikumi/1/13/",
   "days": [
     {
       "day": 1,
@@ -4042,7 +4044,7 @@
     {
       "day": 12,
       "label": "Day 12  November 19, 2026",
-      "completed": false,
+      "completed": true,
       "bouts": [
         {
           "id": "12-3933-3485",
@@ -4138,13 +4140,13 @@
           "westJsaId": "3742",
           "eastName": "Ichiyamamoto",
           "westName": "Nishikifuji",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "7–4",
-          "westRecord": "7–4"
+          "completed": true,
+          "winner": "nishikifuji",
+          "winnerJsaId": "3742",
+          "technique": "oshidashi",
+          "techniqueId": 18,
+          "eastRecord": "7–5",
+          "westRecord": "8–4"
         },
         {
           "id": "12-3983-4112",
@@ -4155,13 +4157,13 @@
           "westJsaId": "4112",
           "eastName": "Dewanoryu",
           "westName": "Kinbozan",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "8–3",
-          "westRecord": "9–2"
+          "completed": true,
+          "winner": "kinbozan",
+          "winnerJsaId": "4112",
+          "technique": "shitatedashinage",
+          "techniqueId": 38,
+          "eastRecord": "8–4",
+          "westRecord": "10–2"
         },
         {
           "id": "12-3840-2629",
@@ -4172,13 +4174,13 @@
           "westJsaId": "2629",
           "eastName": "Kotoshoho",
           "westName": "Tamawashi",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "6–5",
-          "westRecord": "8–3"
+          "completed": true,
+          "winner": "kotoshoho",
+          "winnerJsaId": "3840",
+          "technique": "tsukiotoshi",
+          "techniqueId": 53,
+          "eastRecord": "7–5",
+          "westRecord": "8–4"
         },
         {
           "id": "12-3939-4120",
@@ -4189,13 +4191,13 @@
           "westJsaId": "4120",
           "eastName": "Kitanowaka",
           "westName": "Kotoeiho",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "6–5",
-          "westRecord": "3–2-6"
+          "completed": true,
+          "winner": "kotoeiho",
+          "winnerJsaId": "4120",
+          "technique": "yorikiri",
+          "techniqueId": 70,
+          "eastRecord": "6–6",
+          "westRecord": "4–2-6"
         },
         {
           "id": "12-3705-4285",
@@ -4206,13 +4208,13 @@
           "westJsaId": "4285",
           "eastName": "Hiradoumi",
           "westName": "Asasuiryu",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "2–9",
-          "westRecord": "3–8"
+          "completed": true,
+          "winner": "asasuiryu",
+          "winnerJsaId": "4285",
+          "technique": "hatakikomi",
+          "techniqueId": 62,
+          "eastRecord": "2–10",
+          "westRecord": "4–8"
         },
         {
           "id": "12-4232-4079",
@@ -4223,13 +4225,13 @@
           "westJsaId": "4079",
           "eastName": "Kyokukaiyu",
           "westName": "Gonoyama",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "6–5",
-          "westRecord": "5–6"
+          "completed": true,
+          "winner": "gonoyama",
+          "winnerJsaId": "4079",
+          "technique": "oshidashi",
+          "techniqueId": 18,
+          "eastRecord": "6–6",
+          "westRecord": "6–6"
         },
         {
           "id": "12-2775-3376",
@@ -4240,13 +4242,13 @@
           "westJsaId": "3376",
           "eastName": "Takayasu",
           "westName": "Daieisho",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "2–9",
-          "westRecord": "2–9"
+          "completed": true,
+          "winner": "daieisho",
+          "winnerJsaId": "3376",
+          "technique": "tsukiotoshi",
+          "techniqueId": 53,
+          "eastRecord": "2–10",
+          "westRecord": "3–9"
         },
         {
           "id": "12-3682-4093",
@@ -4257,13 +4259,13 @@
           "westJsaId": "4093",
           "eastName": "Asanoyama",
           "westName": "Fujiseiun",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "7–4",
-          "westRecord": "5–6"
+          "completed": true,
+          "winner": "asanoyama",
+          "winnerJsaId": "3682",
+          "technique": "tsukiotoshi",
+          "techniqueId": 53,
+          "eastRecord": "8–4",
+          "westRecord": "5–7"
         },
         {
           "id": "12-3616-4336",
@@ -4274,13 +4276,13 @@
           "westJsaId": "4336",
           "eastName": "Ura",
           "westName": "Fujiryoga",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "5–6",
-          "westRecord": "5–6"
+          "completed": true,
+          "winner": "fujiryoga",
+          "winnerJsaId": "4336",
+          "technique": "tsukiotoshi",
+          "techniqueId": 53,
+          "eastRecord": "5–7",
+          "westRecord": "6–6"
         },
         {
           "id": "12-3711-4187",
@@ -4291,13 +4293,13 @@
           "westJsaId": "4187",
           "eastName": "Churanoumi",
           "westName": "Hakunofuji",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "2–9",
-          "westRecord": "5–6"
+          "completed": true,
+          "winner": "churanoumi",
+          "winnerJsaId": "3711",
+          "technique": "yorikiri",
+          "techniqueId": 70,
+          "eastRecord": "3–9",
+          "westRecord": "5–7"
         },
         {
           "id": "12-3371-4279",
@@ -4308,13 +4310,13 @@
           "westJsaId": "4279",
           "eastName": "Wakamotoharu",
           "westName": "Yoshinofuji",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "10–1",
-          "westRecord": "6–5"
+          "completed": true,
+          "winner": "wakamotoharu",
+          "winnerJsaId": "3371",
+          "technique": "yorikiri",
+          "techniqueId": 70,
+          "eastRecord": "11–1",
+          "westRecord": "6–6"
         },
         {
           "id": "12-4171-3661",
@@ -4325,13 +4327,13 @@
           "westJsaId": "3661",
           "eastName": "Takerufuji",
           "westName": "Kotozakura",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "3–8",
-          "westRecord": "6–5"
+          "completed": true,
+          "winner": "kotozakura",
+          "winnerJsaId": "3661",
+          "technique": "yorikiri",
+          "techniqueId": 70,
+          "eastRecord": "3–9",
+          "westRecord": "7–5"
         },
         {
           "id": "12-4230-4055",
@@ -4342,13 +4344,13 @@
           "westJsaId": "4055",
           "eastName": "Aonishiki",
           "westName": "Atamifuji",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "6–5",
-          "westRecord": "9–2"
+          "completed": true,
+          "winner": "atamifuji",
+          "winnerJsaId": "4055",
+          "technique": "oshidashi",
+          "techniqueId": 18,
+          "eastRecord": "6–6",
+          "westRecord": "10–2"
         },
         {
           "id": "12-4227-3622",
@@ -4359,13 +4361,13 @@
           "westJsaId": "3622",
           "eastName": "Onosato",
           "westName": "Kirishima",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "9–2",
-          "westRecord": "8–3"
+          "completed": true,
+          "winner": "onosato",
+          "winnerJsaId": "4227",
+          "technique": "oshidashi",
+          "techniqueId": 18,
+          "eastRecord": "10–2",
+          "westRecord": "8–4"
         },
         {
           "id": "12-4191-3842",
@@ -4376,13 +4378,13 @@
           "westJsaId": "3842",
           "eastName": "Fujinokawa",
           "westName": "Hoshoryu",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "5–6",
-          "westRecord": "6–5"
+          "completed": true,
+          "winner": "hoshoryu",
+          "winnerJsaId": "3842",
+          "technique": "kotenage",
+          "techniqueId": 34,
+          "eastRecord": "5–7",
+          "westRecord": "7–5"
         }
       ]
     },
@@ -4422,8 +4424,8 @@
           "winnerJsaId": null,
           "technique": "&nbsp;",
           "techniqueId": -1,
-          "eastRecord": "7–4",
-          "westRecord": "6–5"
+          "eastRecord": "7–5",
+          "westRecord": "6–6"
         },
         {
           "id": "13-4116-4175",
@@ -4474,7 +4476,7 @@
           "technique": "&nbsp;",
           "techniqueId": -1,
           "eastRecord": "7–5",
-          "westRecord": "6–5"
+          "westRecord": "6–6"
         },
         {
           "id": "13-4285-4120",
@@ -4490,8 +4492,8 @@
           "winnerJsaId": null,
           "technique": "&nbsp;",
           "techniqueId": -1,
-          "eastRecord": "3–8",
-          "westRecord": "3–2-6"
+          "eastRecord": "4–8",
+          "westRecord": "4–2-6"
         },
         {
           "id": "13-3840-4243",
@@ -4507,7 +4509,7 @@
           "winnerJsaId": null,
           "technique": "&nbsp;",
           "techniqueId": -1,
-          "eastRecord": "6–5",
+          "eastRecord": "7–5",
           "westRecord": "6–6"
         },
         {
@@ -4524,7 +4526,7 @@
           "winnerJsaId": null,
           "technique": "&nbsp;",
           "techniqueId": -1,
-          "eastRecord": "2–9",
+          "eastRecord": "2–10",
           "westRecord": "7–5"
         },
         {
@@ -4541,8 +4543,8 @@
           "winnerJsaId": null,
           "technique": "&nbsp;",
           "techniqueId": -1,
-          "eastRecord": "7–4",
-          "westRecord": "2–9"
+          "eastRecord": "8–4",
+          "westRecord": "3–9"
         },
         {
           "id": "13-4187-4093",
@@ -4558,8 +4560,8 @@
           "winnerJsaId": null,
           "technique": "&nbsp;",
           "techniqueId": -1,
-          "eastRecord": "5–6",
-          "westRecord": "5–6"
+          "eastRecord": "5–7",
+          "westRecord": "5–7"
         },
         {
           "id": "13-2775-4336",
@@ -4575,8 +4577,8 @@
           "winnerJsaId": null,
           "technique": "&nbsp;",
           "techniqueId": -1,
-          "eastRecord": "2–9",
-          "westRecord": "5–6"
+          "eastRecord": "2–10",
+          "westRecord": "6–6"
         },
         {
           "id": "13-3682-3616",
@@ -4592,8 +4594,8 @@
           "winnerJsaId": null,
           "technique": "&nbsp;",
           "techniqueId": -1,
-          "eastRecord": "7–4",
-          "westRecord": "5–6"
+          "eastRecord": "8–4",
+          "westRecord": "5–7"
         },
         {
           "id": "13-2629-4279",
@@ -4609,8 +4611,8 @@
           "winnerJsaId": null,
           "technique": "&nbsp;",
           "techniqueId": -1,
-          "eastRecord": "8–3",
-          "westRecord": "6–5"
+          "eastRecord": "8–4",
+          "westRecord": "6–6"
         },
         {
           "id": "13-3711-4171",
@@ -4626,8 +4628,8 @@
           "winnerJsaId": null,
           "technique": "&nbsp;",
           "techniqueId": -1,
-          "eastRecord": "2–9",
-          "westRecord": "3–8"
+          "eastRecord": "3–9",
+          "westRecord": "3–9"
         },
         {
           "id": "13-3907-4055",
@@ -4644,7 +4646,7 @@
           "technique": "&nbsp;",
           "techniqueId": -1,
           "eastRecord": "8–4",
-          "westRecord": "9–2"
+          "westRecord": "10–2"
         },
         {
           "id": "13-4191-3983",
@@ -4660,8 +4662,8 @@
           "winnerJsaId": null,
           "technique": "&nbsp;",
           "techniqueId": -1,
-          "eastRecord": "5–6",
-          "westRecord": "8–3"
+          "eastRecord": "5–7",
+          "westRecord": "8–4"
         },
         {
           "id": "13-3622-4112",
@@ -4677,8 +4679,8 @@
           "winnerJsaId": null,
           "technique": "&nbsp;",
           "techniqueId": -1,
-          "eastRecord": "8–3",
-          "westRecord": "9–2"
+          "eastRecord": "8–4",
+          "westRecord": "10–2"
         },
         {
           "id": "13-4079-3661",
@@ -4694,8 +4696,8 @@
           "winnerJsaId": null,
           "technique": "&nbsp;",
           "techniqueId": -1,
-          "eastRecord": "5–6",
-          "westRecord": "6–5"
+          "eastRecord": "6–6",
+          "westRecord": "7–5"
         },
         {
           "id": "13-4230-3842",
@@ -4711,8 +4713,8 @@
           "winnerJsaId": null,
           "technique": "&nbsp;",
           "techniqueId": -1,
-          "eastRecord": "6–5",
-          "westRecord": "6–5"
+          "eastRecord": "6–6",
+          "westRecord": "7–5"
         },
         {
           "id": "13-4227-3371",
@@ -4728,12 +4730,12 @@
           "winnerJsaId": null,
           "technique": "&nbsp;",
           "techniqueId": -1,
-          "eastRecord": "9–2",
-          "westRecord": "10–1"
+          "eastRecord": "10–2",
+          "westRecord": "11–1"
         }
       ]
     }
   ],
-  "generatedAt": "2026-11-19T07:31:35.313Z",
-  "dataSignature": "7599eee533ce30f7042a83ad68dd986c927c0a87c45d336d8c0c0b676760e657"
+  "generatedAt": "2026-11-19T20:42:18.360Z",
+  "dataSignature": "7eb8dfd4ddbb78d8c23f38dec7205848bd25c8f4badf4dbeecc8f08c5b3c1a02"
 }
