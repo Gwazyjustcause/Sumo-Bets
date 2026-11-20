@@ -6,8 +6,8 @@
   "currentDay": 13,
   "scheduledThroughDay": 13,
   "sideTotals": {
-    "East": 129,
-    "West": 122
+    "East": 131,
+    "West": 123
   },
   "injuries": [
     {
@@ -4402,13 +4402,13 @@
           "westJsaId": "3485",
           "eastName": "Arashifuji",
           "westName": "Abi",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "6–6",
-          "westRecord": "6–6"
+          "completed": true,
+          "winner": "arashifuji",
+          "winnerJsaId": "4267",
+          "technique": "oshidashi",
+          "techniqueId": 18,
+          "eastRecord": "7–6",
+          "westRecord": "6–7"
         },
         {
           "id": "13-3753-4232",
@@ -4419,13 +4419,13 @@
           "westJsaId": "4232",
           "eastName": "Ichiyamamoto",
           "westName": "Kyokukaiyu",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "7–5",
-          "westRecord": "6–6"
+          "completed": true,
+          "winner": "ichiyamamoto",
+          "winnerJsaId": "3753",
+          "technique": "hatakikomi",
+          "techniqueId": 62,
+          "eastRecord": "8–5",
+          "westRecord": "6–7"
         },
         {
           "id": "13-4116-4175",
@@ -4436,13 +4436,13 @@
           "westJsaId": "4175",
           "eastName": "Daiseizan",
           "westName": "Asahakuryu",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "3–9",
-          "westRecord": "8–4"
+          "completed": true,
+          "winner": "asahakuryu",
+          "winnerJsaId": "4175",
+          "technique": "yorikiri",
+          "techniqueId": 70,
+          "eastRecord": "3–10",
+          "westRecord": "9–4"
         },
         {
           "id": "13-3265-3933",
@@ -4736,6 +4736,6 @@
       ]
     }
   ],
-  "generatedAt": "2026-11-19T20:42:18.360Z",
-  "dataSignature": "7eb8dfd4ddbb78d8c23f38dec7205848bd25c8f4badf4dbeecc8f08c5b3c1a02"
+  "generatedAt": "2026-11-20T07:23:20.217Z",
+  "dataSignature": "4b8e21162514d9f2b9710203c75abd70092b61a8a70408e39cf62dca039cc92d"
 }
