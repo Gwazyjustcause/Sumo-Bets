@@ -9055,8 +9055,8 @@
       },
       "form": 65,
       "sourceIndex": 33,
-      "record": "7–6",
-      "wins": 7,
+      "record": "8–6",
+      "wins": 8,
       "losses": 6,
       "absences": 0,
       "kyujoDays": [],
@@ -9064,7 +9064,7 @@
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 7,
+      "points": 8,
       "dailyResults": [
         {
           "day": 1,
@@ -9214,11 +9214,11 @@
           "opponentJsaId": "3983",
           "opponentId": "dewanoryu",
           "opponent": "Dewanoryu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 12
         },
         {
           "day": 15,
@@ -9868,9 +9868,9 @@
       },
       "form": 61,
       "sourceIndex": 36,
-      "record": "8–5",
+      "record": "8–6",
       "wins": 8,
-      "losses": 5,
+      "losses": 6,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -10027,11 +10027,11 @@
           "opponentJsaId": "4243",
           "opponentId": "toshinofuji",
           "opponent": "Toshinofuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 12
         },
         {
           "day": 15,
@@ -11405,6 +11405,6 @@
       "badge": null
     }
   ],
-  "generatedAt": "2026-11-20T20:26:42.827Z",
-  "dataSignature": "0614a5a6f969eef4e5b8d2f3cc5407d1ba0625b75fd61c540ce0347e31aa21c1"
+  "generatedAt": "2026-11-21T07:16:24.202Z",
+  "dataSignature": "4d0f14678303834dac4dbee0df93c31ca86e61cca9ed5a953b21e005504d1dc1"
 }

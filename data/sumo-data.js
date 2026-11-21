@@ -2,7 +2,7 @@
 window.SUMO_DATA = {
   "meta": {
     "bashoId": "638",
-    "dataSignature": "0614a5a6f969eef4e5b8d2f3cc5407d1ba0625b75fd61c540ce0347e31aa21c1",
+    "dataSignature": "4d0f14678303834dac4dbee0df93c31ca86e61cca9ed5a953b21e005504d1dc1",
     "tournament": "Kyushu Basho 2026",
     "shortTournament": "November 2026",
     "day": 14,
@@ -10,11 +10,11 @@ window.SUMO_DATA = {
     "totalDays": 15,
     "dateRange": "8–22 November 2026",
     "venue": "Fukuoka Kokusai Center, Fukuoka",
-    "lastUpdated": "Day 14  November 21, 2026 · official snapshot 2026-11-20 20:26 UTC",
+    "lastUpdated": "Day 14  November 21, 2026 · official snapshot 2026-11-21 07:16 UTC",
     "status": "Day 14 official results",
     "active": true,
     "sideTotals": {
-      "East": 138,
+      "East": 139,
       "West": 133
     },
     "sources": [
@@ -9134,8 +9134,8 @@ window.SUMO_DATA = {
       },
       "form": 65,
       "sourceIndex": 33,
-      "record": "7–6",
-      "wins": 7,
+      "record": "8–6",
+      "wins": 8,
       "losses": 6,
       "absences": 0,
       "kyujoDays": [],
@@ -9143,7 +9143,7 @@ window.SUMO_DATA = {
       "status": "Active",
       "available": true,
       "kinboshi": 0,
-      "points": 7,
+      "points": 8,
       "dailyResults": [
         {
           "day": 1,
@@ -9293,11 +9293,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "3983",
           "opponentId": "dewanoryu",
           "opponent": "Dewanoryu",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "win",
+          "result": "win",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 12
         },
         {
           "day": 15,
@@ -9947,9 +9947,9 @@ window.SUMO_DATA = {
       },
       "form": 61,
       "sourceIndex": 36,
-      "record": "8–5",
+      "record": "8–6",
       "wins": 8,
-      "losses": 5,
+      "losses": 6,
       "absences": 0,
       "kyujoDays": [],
       "currentKyujo": false,
@@ -10106,11 +10106,11 @@ window.SUMO_DATA = {
           "opponentJsaId": "4243",
           "opponentId": "toshinofuji",
           "opponent": "Toshinofuji",
-          "completed": false,
-          "status": "scheduled",
-          "result": null,
+          "completed": true,
+          "status": "loss",
+          "result": "loss",
           "kyujo": false,
-          "techniqueId": -1
+          "techniqueId": 12
         },
         {
           "day": 15,
@@ -11484,7 +11484,26 @@ window.SUMO_DATA = {
       "badge": null
     }
   ],
-  "bouts": [],
+  "bouts": [
+    {
+      "id": "14-4243-3983",
+      "day": 14,
+      "east": "toshinofuji",
+      "west": "dewanoryu",
+      "eastJsaId": "4243",
+      "westJsaId": "3983",
+      "eastName": "Toshinofuji",
+      "westName": "Dewanoryu",
+      "completed": true,
+      "winner": "toshinofuji",
+      "winnerJsaId": "4243",
+      "technique": "uwatenage",
+      "techniqueId": 12,
+      "eastRecord": "8–6",
+      "westRecord": "8–6",
+      "importance": 1
+    }
+  ],
   "results": {
     "schemaVersion": 1,
     "bashoId": "638",
@@ -11493,7 +11512,7 @@ window.SUMO_DATA = {
     "currentDay": 14,
     "scheduledThroughDay": 14,
     "sideTotals": {
-      "East": 138,
+      "East": 139,
       "West": 133
     },
     "injuries": [
@@ -16238,13 +16257,13 @@ window.SUMO_DATA = {
             "westJsaId": "3983",
             "eastName": "Toshinofuji",
             "westName": "Dewanoryu",
-            "completed": false,
-            "winner": null,
-            "winnerJsaId": null,
-            "technique": "&nbsp;",
-            "techniqueId": -1,
-            "eastRecord": "7–6",
-            "westRecord": "8–5"
+            "completed": true,
+            "winner": "toshinofuji",
+            "winnerJsaId": "4243",
+            "technique": "uwatenage",
+            "techniqueId": 12,
+            "eastRecord": "8–6",
+            "westRecord": "8–6"
           },
           {
             "id": "14-3753-4116",
@@ -16572,8 +16591,8 @@ window.SUMO_DATA = {
         ]
       }
     ],
-    "generatedAt": "2026-11-20T20:26:42.827Z",
-    "dataSignature": "0614a5a6f969eef4e5b8d2f3cc5407d1ba0625b75fd61c540ce0347e31aa21c1"
+    "generatedAt": "2026-11-21T07:16:24.202Z",
+    "dataSignature": "4d0f14678303834dac4dbee0df93c31ca86e61cca9ed5a953b21e005504d1dc1"
   },
   "history": [],
   "banzuke": {

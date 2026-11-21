@@ -6,7 +6,7 @@
   "currentDay": 14,
   "scheduledThroughDay": 14,
   "sideTotals": {
-    "East": 138,
+    "East": 139,
     "West": 133
   },
   "injuries": [
@@ -4751,13 +4751,13 @@
           "westJsaId": "3983",
           "eastName": "Toshinofuji",
           "westName": "Dewanoryu",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "7–6",
-          "westRecord": "8–5"
+          "completed": true,
+          "winner": "toshinofuji",
+          "winnerJsaId": "4243",
+          "technique": "uwatenage",
+          "techniqueId": 12,
+          "eastRecord": "8–6",
+          "westRecord": "8–6"
         },
         {
           "id": "14-3753-4116",
@@ -5085,6 +5085,6 @@
       ]
     }
   ],
-  "generatedAt": "2026-11-20T20:26:42.827Z",
-  "dataSignature": "0614a5a6f969eef4e5b8d2f3cc5407d1ba0625b75fd61c540ce0347e31aa21c1"
+  "generatedAt": "2026-11-21T07:16:24.202Z",
+  "dataSignature": "4d0f14678303834dac4dbee0df93c31ca86e61cca9ed5a953b21e005504d1dc1"
 }
