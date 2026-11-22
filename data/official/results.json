@@ -6,8 +6,8 @@
   "currentDay": 15,
   "scheduledThroughDay": 15,
   "sideTotals": {
-    "East": 148,
-    "West": 143
+    "East": 150,
+    "West": 144
   },
   "injuries": [
     {
@@ -5100,13 +5100,13 @@
           "westJsaId": "4285",
           "eastName": "Tamawashi",
           "westName": "Asasuiryu",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "9–5",
-          "westRecord": "4–10"
+          "completed": true,
+          "winner": "tamawashi",
+          "winnerJsaId": "2629",
+          "technique": "kotenage",
+          "techniqueId": 34,
+          "eastRecord": "10–5",
+          "westRecord": "4–11"
         },
         {
           "id": "15-3753-3939",
@@ -5117,13 +5117,13 @@
           "westJsaId": "3939",
           "eastName": "Ichiyamamoto",
           "westName": "Kitanowaka",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "9–5",
-          "westRecord": "8–6"
+          "completed": true,
+          "winner": "kitanowaka",
+          "winnerJsaId": "3939",
+          "technique": "oshitaoshi",
+          "techniqueId": 17,
+          "eastRecord": "9–6",
+          "westRecord": "9–6"
         },
         {
           "id": "15-3265-3983",
@@ -5134,13 +5134,13 @@
           "westJsaId": "3983",
           "eastName": "Takanosho",
           "westName": "Dewanoryu",
-          "completed": false,
-          "winner": null,
-          "winnerJsaId": null,
-          "technique": "&nbsp;",
-          "techniqueId": -1,
-          "eastRecord": "9–5",
-          "westRecord": "8–6"
+          "completed": true,
+          "winner": "takanosho",
+          "winnerJsaId": "3265",
+          "technique": "tsukiotoshi",
+          "techniqueId": 53,
+          "eastRecord": "10–5",
+          "westRecord": "8–7"
         },
         {
           "id": "15-4108-4232",
@@ -5434,6 +5434,6 @@
       ]
     }
   ],
-  "generatedAt": "2026-11-21T19:20:57.054Z",
-  "dataSignature": "99e43b5351a1ae96028c9b8292117229879142214baf997a8200db5649077fe7"
+  "generatedAt": "2026-11-22T06:56:47.713Z",
+  "dataSignature": "66d9099743cf39185797b9a62f3a58cdac29a285086da3e50d360ddd1df1eeb6"
 }
