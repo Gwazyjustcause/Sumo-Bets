@@ -9799,19 +9799,28 @@
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3983/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-17T07:59:41.181Z",
+      "profileUpdatedAt": "2026-11-24T09:59:02.573Z",
       "height": "181.0cm",
       "weight": "154.0kg",
       "technique": "tsuki, oshi",
       "careerHigh": "Maegashira #14",
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20190073.jpg",
       "recentForm": {
-        "percentage": 61,
-        "wins": 50,
-        "losses": 32,
+        "percentage": 59,
+        "wins": 53,
+        "losses": 37,
         "absences": 0,
         "bashos": 6,
         "records": [
+          {
+            "basho": "2026 November",
+            "rank": "West Maegashira #14",
+            "shikona": "Dewanoryu Kazuki",
+            "record": "8-7",
+            "wins": 8,
+            "losses": 7,
+            "absences": 0
+          },
           {
             "basho": "2026 September",
             "rank": "East Juryo #1",
@@ -9856,19 +9865,10 @@
             "wins": 8,
             "losses": 7,
             "absences": 0
-          },
-          {
-            "basho": "2025 November",
-            "rank": "West Makushita #3",
-            "shikona": "Dewanoryu Kazuki",
-            "record": "5-2",
-            "wins": 5,
-            "losses": 2,
-            "absences": 0
           }
         ]
       },
-      "form": 61,
+      "form": 59,
       "sourceIndex": 36,
       "record": "8–7",
       "wins": 8,
@@ -10070,19 +10070,28 @@
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/2629/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-17T07:59:41.181Z",
+      "profileUpdatedAt": "2026-11-24T09:59:02.573Z",
       "height": "189.0cm",
       "weight": "178.0kg",
       "technique": "oshi",
       "careerHigh": "Sekiwake",
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20040005.jpg",
       "recentForm": {
-        "percentage": 42,
-        "wins": 38,
-        "losses": 52,
+        "percentage": 46,
+        "wins": 41,
+        "losses": 49,
         "absences": 0,
         "bashos": 6,
         "records": [
+          {
+            "basho": "2026 November",
+            "rank": "East Maegashira #15",
+            "shikona": "Tamawashi Ichiro",
+            "record": "10-5",
+            "wins": 10,
+            "losses": 5,
+            "absences": 0
+          },
           {
             "basho": "2026 September",
             "rank": "East Juryo #3",
@@ -10127,19 +10136,10 @@
             "wins": 5,
             "losses": 10,
             "absences": 0
-          },
-          {
-            "basho": "2025 November",
-            "rank": "East Maegashira #4",
-            "shikona": "Tamawashi Ichiro",
-            "record": "7-8",
-            "wins": 7,
-            "losses": 8,
-            "absences": 0
           }
         ]
       },
-      "form": 42,
+      "form": 46,
       "sourceIndex": 37,
       "record": "10–5",
       "wins": 10,
@@ -10341,19 +10341,28 @@
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/3939/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-17T07:59:41.181Z",
+      "profileUpdatedAt": "2026-11-24T09:59:02.573Z",
       "height": "191.0cm",
       "weight": "159.0kg",
       "technique": "tsuppari, migi-yotsu, yori, uwatenage",
       "careerHigh": "Maegashira #14",
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20190026.jpg",
       "recentForm": {
-        "percentage": 56,
-        "wins": 50,
-        "losses": 40,
+        "percentage": 57,
+        "wins": 51,
+        "losses": 39,
         "absences": 0,
         "bashos": 6,
         "records": [
+          {
+            "basho": "2026 November",
+            "rank": "West Maegashira #15",
+            "shikona": "Kitanowaka Daisuke",
+            "record": "9-6",
+            "wins": 9,
+            "losses": 6,
+            "absences": 0
+          },
           {
             "basho": "2026 September",
             "rank": "East Juryo #6",
@@ -10398,19 +10407,10 @@
             "wins": 7,
             "losses": 8,
             "absences": 0
-          },
-          {
-            "basho": "2025 November",
-            "rank": "East Juryo #12",
-            "shikona": "Kitanowaka Daisuke",
-            "record": "8-7",
-            "wins": 8,
-            "losses": 7,
-            "absences": 0
           }
         ]
       },
-      "form": 56,
+      "form": 57,
       "sourceIndex": 38,
       "record": "9–6",
       "wins": 9,
@@ -10612,19 +10612,28 @@
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4267/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-17T07:59:41.181Z",
+      "profileUpdatedAt": "2026-11-24T09:59:02.573Z",
       "height": "172.0cm",
       "weight": "123.0kg",
       "technique": "oshi",
       "careerHigh": "Maegashira #16",
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20240031.jpg",
       "recentForm": {
-        "percentage": 67,
-        "wins": 39,
-        "losses": 19,
+        "percentage": 64,
+        "wins": 42,
+        "losses": 24,
         "absences": 0,
         "bashos": 6,
         "records": [
+          {
+            "basho": "2026 November",
+            "rank": "East Maegashira #16",
+            "shikona": "Arashifuji Kanato",
+            "record": "7-8",
+            "wins": 7,
+            "losses": 8,
+            "absences": 0
+          },
           {
             "basho": "2026 September",
             "rank": "West Juryo #5",
@@ -10669,19 +10678,10 @@
             "wins": 4,
             "losses": 3,
             "absences": 0
-          },
-          {
-            "basho": "2025 November",
-            "rank": "West Makushita #11",
-            "shikona": "Matsui Kanato",
-            "record": "4-3",
-            "wins": 4,
-            "losses": 3,
-            "absences": 0
           }
         ]
       },
-      "form": 67,
+      "form": 64,
       "sourceIndex": 39,
       "record": "7–8",
       "wins": 7,
@@ -10883,19 +10883,28 @@
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4232/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-17T07:59:41.181Z",
+      "profileUpdatedAt": "2026-11-24T09:59:02.573Z",
       "height": "183.0cm",
       "weight": "165.0kg",
       "technique": "oshi, hidari-yotsu, yori",
       "careerHigh": "Maegashira #16",
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20230054.jpg",
       "recentForm": {
-        "percentage": 59,
-        "wins": 48,
-        "losses": 34,
+        "percentage": 57,
+        "wins": 51,
+        "losses": 39,
         "absences": 0,
         "bashos": 6,
         "records": [
+          {
+            "basho": "2026 November",
+            "rank": "West Maegashira #16",
+            "shikona": "Kyokukaiyu Ren",
+            "record": "8-7",
+            "wins": 8,
+            "losses": 7,
+            "absences": 0
+          },
           {
             "basho": "2026 September",
             "rank": "West Juryo #1",
@@ -10940,19 +10949,10 @@
             "wins": 10,
             "losses": 5,
             "absences": 0
-          },
-          {
-            "basho": "2025 November",
-            "rank": "West Makushita #1",
-            "shikona": "Kyokukaiyu Ren",
-            "record": "5-2",
-            "wins": 5,
-            "losses": 2,
-            "absences": 0
           }
         ]
       },
-      "form": 59,
+      "form": 57,
       "sourceIndex": 40,
       "record": "8–7",
       "wins": 8,
@@ -11154,19 +11154,28 @@
       "wikipedia": null,
       "profile": "https://www.sumo.or.jp/EnSumoDataRikishi/profile/4116/",
       "profileVerified": true,
-      "profileUpdatedAt": "2026-11-17T07:59:41.181Z",
+      "profileUpdatedAt": "2026-11-24T09:59:02.573Z",
       "height": "191.0cm",
       "weight": "171.0kg",
       "technique": "oshi, migi-yotsu, yori",
       "careerHigh": "Maegashira #16",
       "jsaPortrait": "https://www.sumo.or.jp/img/sumo_data/rikishi/270x474/20210061.jpg",
       "recentForm": {
-        "percentage": 52,
-        "wins": 47,
-        "losses": 43,
+        "percentage": 46,
+        "wins": 41,
+        "losses": 49,
         "absences": 0,
         "bashos": 6,
         "records": [
+          {
+            "basho": "2026 November",
+            "rank": "East Maegashira #17",
+            "shikona": "Daiseizan Daisuke",
+            "record": "3-12",
+            "wins": 3,
+            "losses": 12,
+            "absences": 0
+          },
           {
             "basho": "2026 September",
             "rank": "East Juryo #2",
@@ -11211,19 +11220,10 @@
             "wins": 7,
             "losses": 8,
             "absences": 0
-          },
-          {
-            "basho": "2025 November",
-            "rank": "West Juryo #3",
-            "shikona": "Daiseizan Daisuke",
-            "record": "9-6",
-            "wins": 9,
-            "losses": 6,
-            "absences": 0
           }
         ]
       },
-      "form": 52,
+      "form": 46,
       "sourceIndex": 41,
       "record": "3–12",
       "wins": 3,
@@ -11407,6 +11407,6 @@
       "badge": null
     }
   ],
-  "generatedAt": "2026-11-22T19:45:03.349Z",
-  "dataSignature": "24e8fd9f3f80d7c0199c18be1fbab6e6aa356a9bf9600856e7cd9020e1f6cb13"
+  "generatedAt": "2026-11-24T09:59:03.728Z",
+  "dataSignature": "8f9c28fdc4e2a5eb30aa8079c1a7544f60f0956178231213fcd51423d24b8674"
 }
